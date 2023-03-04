@@ -1,4 +1,4 @@
-package io.flowing.retail.inventory.messages;
+package ch.unisg.senty.scraper.messages;
 
 import java.time.Instant;
 import java.util.UUID;

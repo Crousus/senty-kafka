@@ -1,4 +1,4 @@
-package io.flowing.retail.inventory.domain;
+package ch.unisg.senty.scraper.domain;
 
 public class Item {
 

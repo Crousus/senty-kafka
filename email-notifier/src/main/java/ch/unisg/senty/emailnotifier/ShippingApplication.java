@@ -1,4 +1,4 @@
-package io.flowing.retail.shipping;
+package ch.unisg.senty.emailnotifier;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

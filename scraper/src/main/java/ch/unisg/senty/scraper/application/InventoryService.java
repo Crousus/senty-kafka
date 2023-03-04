@@ -1,4 +1,4 @@
-package io.flowing.retail.inventory.application;
+package ch.unisg.senty.scraper.application;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -1,4 +1,4 @@
-package io.flowing.retail.shipping.application;
+package ch.unisg.senty.emailnotifier.application;
 
 import java.util.UUID;
 

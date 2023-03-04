@@ -1,4 +1,4 @@
-package io.flowing.retail.shipping.messages;
+package ch.unisg.senty.commentanalysis.messages;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.admin.NewTopic;

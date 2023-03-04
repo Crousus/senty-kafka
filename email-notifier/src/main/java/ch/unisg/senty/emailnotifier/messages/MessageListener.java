@@ -1,4 +1,4 @@
-package io.flowing.retail.shipping.messages;
+package ch.unisg.senty.emailnotifier.messages;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;

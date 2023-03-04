@@ -1,4 +1,4 @@
-package io.flowing.retail.inventory.messages;
+package ch.unisg.senty.scraper.messages;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -16,8 +16,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import io.flowing.retail.inventory.application.InventoryService;
-import io.flowing.retail.inventory.domain.Item;
+import ch.unisg.senty.scraper.application.InventoryService;
+import ch.unisg.senty.scraper.domain.Item;
 
 @Component
 public class MessageListener {

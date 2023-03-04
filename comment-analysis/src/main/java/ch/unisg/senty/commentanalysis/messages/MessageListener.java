@@ -1,4 +1,4 @@
-package io.flowing.retail.payment.messages;
+package ch.unisg.senty.commentanalysis.messages;
 
 import java.util.UUID;
 

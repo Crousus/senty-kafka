@@ -6,8 +6,15 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="senty-kafka" />
+        <module name="comment-analysis" />
+        <module name="email-notifier" />
+        <module name="scraper" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="senty-kafka (1)" target="1.8" />
+      <module name="senty-kafka (2)" target="1.8" />
+      <module name="senty-kafka (3)" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

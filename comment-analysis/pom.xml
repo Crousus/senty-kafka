@@ -32,7 +32,7 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>              
                 <configuration>                         
-    				  <mainClass>io.flowing.retail.payment.PaymentApplication</mainClass>
+    				  <mainClass>ch.unisg.senty.commentanalysis.CommentAnalysisApplication</mainClass>
                 </configuration>
              </plugin>
 			 <plugin>

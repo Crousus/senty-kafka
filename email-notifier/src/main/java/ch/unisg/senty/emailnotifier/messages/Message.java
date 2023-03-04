@@ -1,17 +1,17 @@
-package io.flowing.retail.payment.messages;
+package ch.unisg.senty.emailnotifier.messages;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.Instant;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 public class Message<T> {
 
-  // Cloud Events attributes (https://github.com/cloudevents/spec/blob/v1.0/spec.md)
+  // Cloud Events compliant 
   private String type;
   private String id = UUID.randomUUID().toString(); // unique id of this message
-  private String source = "Payment-Choreography";
-  @JsonFormat(shape = JsonFormat.Shape.STRING) // ISO-8601 compliant format  
+  private String source = "Shipping-Choreography";
+  @JsonFormat(shape = JsonFormat.Shape.STRING) // ISO-8601 compliant format
   private Instant time = Instant.now();
   private T data;
   private String datacontenttype="application/json";

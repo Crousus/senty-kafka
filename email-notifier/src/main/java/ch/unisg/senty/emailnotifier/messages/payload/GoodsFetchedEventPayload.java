@@ -1,4 +1,4 @@
-package io.flowing.retail.shipping.messages.payload;
+package ch.unisg.senty.emailnotifier.messages.payload;
 
 public class GoodsFetchedEventPayload {
   

@@ -16,8 +16,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import ch.unisg.senty.scraper.application.InventoryService;
-import ch.unisg.senty.scraper.domain.Item;
+import ch.unisg.senty.scraper.application.ScraperService;
+import ch.unisg.senty.scraper.domain.Comment;
 
 @Component
 public class MessageListener {
@@ -26,7 +26,7 @@ public class MessageListener {
   private MessageSender messageSender;
   
   @Autowired
-  private InventoryService inventoryService;
+  private ScraperService scraperService;
   
   @Autowired
   private ObjectMapper objectMapper;
@@ -38,15 +38,15 @@ public class MessageListener {
       Message<JsonNode> message = objectMapper.readValue(messageJson, new TypeReference<Message<JsonNode>>(){});
 
       ObjectNode payload = (ObjectNode) message.getData();
-      Item[] items = objectMapper.treeToValue(payload.get("items"), Item[].class);
+      Comment[] comments = objectMapper.treeToValue(payload.get("items"), Comment[].class);
 
-      String pickId = inventoryService.pickItems( //
-              Arrays.asList(items), "order", payload.get("orderId").asText());
+//      String pickId = scraperService.pickItems( //
+//              Arrays.asList(comments), "order", payload.get("orderId").asText());
 
       // as in payment - we have to keep the whole order in the payload
       // as the data flows through this service
 
-      payload.put("pickId", pickId);
+//      payload.put("pickId", pickId);
 
       messageSender.send( //
               new Message<JsonNode>( //

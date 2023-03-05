@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class InventoryApplication {
+public class ScraperApplication {
 
   public static void main(String[] args) throws Exception {
-    SpringApplication.run(InventoryApplication.class, args);
+    SpringApplication.run(ScraperApplication.class, args);
   }
 
 }

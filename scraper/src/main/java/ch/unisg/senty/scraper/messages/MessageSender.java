@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MessageSender {
 
-  public static final String TOPIC_NAME = "flowing-retail";
+  public static final String TOPIC_NAME = "senty";
 
   @Autowired
   private KafkaTemplate<String, String> kafkaTemplate;

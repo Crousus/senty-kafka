@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import io.flowing.retail.inventory.domain.Item;
-import io.flowing.retail.inventory.domain.PickOrder;
+import ch.unisg.senty.scraper.domain.Item;
+import ch.unisg.senty.scraper.domain.PickOrder;
 
 @Component
 public class InventoryService {

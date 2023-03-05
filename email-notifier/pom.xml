@@ -25,6 +25,21 @@
 			<artifactId>spring-boot-starter-json</artifactId>
 			<version>2.7.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+			<version>${spring.boot.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.simplejavamail</groupId>
+			<artifactId>simple-java-mail</artifactId>
+			<version>7.9.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.simplejavamail</groupId>
+			<artifactId>spring-module</artifactId>
+			<version>7.9.1</version>
+		</dependency>
 	</dependencies>
     <build>
     	<plugins>
@@ -32,7 +47,7 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>              
                 <configuration>                         
-    				  <mainClass>io.flowing.retail.shipping.ShippingApplication</mainClass>
+    				  <mainClass>ch.unisg.senty.emailnotifier.EmailNotifierApplication</mainClass>
                 </configuration>
              </plugin>
 			 <plugin>

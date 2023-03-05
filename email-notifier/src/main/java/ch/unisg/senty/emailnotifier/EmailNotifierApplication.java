@@ -4,10 +4,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ShippingApplication {
+public class EmailNotifierApplication {
 
   public static void main(String[] args) throws Exception {
-    SpringApplication.run(ShippingApplication.class, args);
+    SpringApplication.run(EmailNotifierApplication.class, args);
+
+
   }
 
 }

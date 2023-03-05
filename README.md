@@ -1,0 +1,1 @@
+![senty-kafka](assets/senty-kafka-banner.png)

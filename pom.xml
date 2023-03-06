@@ -11,6 +11,8 @@
         <module>scraper</module>
         <module>comment-analysis</module>
         <module>email-notifier</module>
+        <module>comment-stream-consumer</module>
+        <module>comment-stream-producer</module>
         <!--
         <module>zeebe-monitor</module>
         -->

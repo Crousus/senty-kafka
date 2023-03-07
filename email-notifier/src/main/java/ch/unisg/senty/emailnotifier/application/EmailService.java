@@ -24,7 +24,7 @@ public class EmailService {
 
     Email email = EmailBuilder.startingBlank()
             .from("postmaster@sandbox40cfeb661b37499fb93ad47f53c543a4.mailgun.org")
-            .to("Philipp John", "philipp.john@student.unisg.ch")
+            .to("Johannes Wenz", "johannesandreas.wenz@student.unisg.ch")
             .withSubject("Senty System Notification")
             .withPlainText(content)
             .buildEmail();

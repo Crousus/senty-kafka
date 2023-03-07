@@ -13,6 +13,7 @@
         <module>email-notifier</module>
         <module>comment-stream-consumer</module>
         <module>comment-stream-producer</module>
+        <module>project-manager</module>
         <!--
         <module>zeebe-monitor</module>
         -->

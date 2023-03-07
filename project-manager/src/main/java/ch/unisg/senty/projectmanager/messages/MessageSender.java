@@ -1,4 +1,4 @@
-package ch.unisg.senty.scraper.messages;
+package ch.unisg.senty.projectmanager.messages;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.admin.NewTopic;

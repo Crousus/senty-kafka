@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.unisg</groupId>
-	<artifactId>comment-analysis</artifactId>
+	<artifactId>project-manager</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<properties>
 		<maven.compiler.release>8</maven.compiler.release>
@@ -28,35 +28,35 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>RELEASE</version>
+			<version>1.18.24</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
-    <build>
-    	<plugins>
-			 <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>              
-                <configuration>                         
-    				  <mainClass>ch.unisg.senty.commentanalysis.CommentAnalysisApplication</mainClass>
-                </configuration>
-             </plugin>
-			 <plugin>
-	            <groupId>org.springframework.boot</groupId>
-	            <artifactId>spring-boot-maven-plugin</artifactId>
-	            <executions>
-			        <execution>
-			          <goals>
-			            <goal>repackage</goal>
-			          </goals>
-			        </execution>
-			    </executions>
-	        </plugin>
+	<build>
+		<plugins>
 			<plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-compiler-plugin</artifactId>
-			    <version>3.8.1</version>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>ch.unisg.senty.projectmanager.ProjectManagerApplication</mainClass>
+				</configuration>
 			</plugin>
-    	</plugins>
-    </build>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+			</plugin>
+		</plugins>
+	</build>
 </project>

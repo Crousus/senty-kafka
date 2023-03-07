@@ -1,4 +1,4 @@
-package ch.unisg.senty.commentstreamconsumer.examples;
+package ch.unisg.senty.commentstreamconsumer.application;
 
 import com.google.common.io.Resources;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.Properties;
 
 
-public class ConsumerForAllEvents {
+public class CommentConsumer {
     public static void main(String[] args) throws IOException, ParseException {
 
         // Read Kafka properties file and create Kafka consumer with the given properties

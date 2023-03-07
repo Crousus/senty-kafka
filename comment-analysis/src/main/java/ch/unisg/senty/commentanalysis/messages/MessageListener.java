@@ -1,11 +1,10 @@
 package ch.unisg.senty.commentanalysis.messages;
 
-import java.util.UUID;
-
+import ch.unisg.senty.commentanalysis.domain.Comment;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.messaging.handler.annotation.Header;
 
 
@@ -13,56 +12,42 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import ch.unisg.senty.commentanalysis.application.PaymentService;
-
 @Component
 public class MessageListener {    
   
   @Autowired
   private MessageSender messageSender;
-  
-  @Autowired
-  private PaymentService paymentService;
 
   @Autowired
   private ObjectMapper objectMapper;
 
-  @Transactional
-  @KafkaListener(id = "payment", topics = MessageSender.TOPIC_NAME)
+  private int count;
+
+
+  @KafkaListener(id = "comment-analyzer", topics = MessageSender.TOPIC_NAME)
   public void orderPlaced(String messageJson, @Header("type") String messageType) throws Exception {
-    if ("OrderPlacedEvent".equals(messageType)) {
-// Note that we now have to read order data from this message!
-      // Bad smell 1 (reading some event instead of dedicated command)
-      JsonNode message = objectMapper.readTree(messageJson);
-      ObjectNode payload = (ObjectNode) message.get("data");
+    if ("CommentAddedEvent".equals(messageType)) {
+      System.out.println(messageJson);
+      Message<JsonNode> message = objectMapper.readValue(messageJson, new TypeReference<Message<JsonNode>>(){});
 
-      String orderId = payload.get("orderId").asText();
-      if (orderId == null) {
-        // We do not yet have an order id - as the responsibility who creates that is unclear
-        // Bad smell 2 (order context missing)
-        // But actually not that problematic - as a good practice could be to
-        // generate it in the checkout anyway to improve idempotency
-        orderId = UUID.randomUUID().toString();
-        payload.put("orderId", orderId);
+      ObjectNode payload = (ObjectNode) message.getData();
+      Comment comment = objectMapper.treeToValue(payload, Comment.class);
+
+      // hardcoded milestones to avoid continuous spam
+      int milestone1 = 10;
+      int milestone2 = 30;
+      int milestone3 = 100;
+
+      if (count == milestone1 || count == milestone2 || count == milestone3) {
+
+        messageSender.send(
+                new Message<>(
+                        "CommentCountMilestoneEvent",
+                        comment.getCommentId(), //
+                        count));
       }
-      // the totalSum needs to be calculated by the checkout in this case - responsibility unclear
-      // as this is not done we have to calculate it here - which means we have to learn to much about orders!
-      // Bad smell 3 (order context missing)
-      long amount = payload.get("items").iterator().next().get("amount").asLong();
-      //long amount = payload.get("totalSum").asLong();
 
-      String paymentId = paymentService.createPayment(orderId, amount);
-
-      // Note that we need to pass along the whole order object
-      // Maybe with additional data we have
-      // Bad smell 4 (data flow passing through - data might grow big and most data is not needed for payment)
-      payload.put("paymentId", paymentId);
-
-      messageSender.send( //
-              new Message<JsonNode>( //
-                      "PaymentReceivedEvent", //
-                      message.get("traceid").asText(), //
-                      message.get("data")));
+      count++;
     }
   }
     

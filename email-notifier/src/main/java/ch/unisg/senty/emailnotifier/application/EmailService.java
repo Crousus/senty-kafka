@@ -1,18 +1,12 @@
 package ch.unisg.senty.emailnotifier.application;
 
-import java.util.UUID;
-
 import org.simplejavamail.api.email.Email;
 import org.simplejavamail.api.mailer.Mailer;
-import org.simplejavamail.api.mailer.MailerGenericBuilder;
 import org.simplejavamail.email.EmailBuilder;
 import org.simplejavamail.mailer.MailerBuilder;
-import org.simplejavamail.springsupport.SimpleJavaMailSpringSupport;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.UUID;
 
 
 @Component
@@ -25,14 +19,14 @@ public class EmailService {
             .withSMTPServerHost("smtp.mailgun.org")
             .withSMTPServerPort(587)
             .withSMTPServerUsername("postmaster@sandbox40cfeb661b37499fb93ad47f53c543a4.mailgun.org")
-            .withSMTPServerPassword("<<PASSWORT>>")
+            .withSMTPServerPassword("b5b79ef6e37879273e1a58af945a64b7-15b35dee-82f37a84")
             .buildMailer();
 
     Email email = EmailBuilder.startingBlank()
             .from("postmaster@sandbox40cfeb661b37499fb93ad47f53c543a4.mailgun.org")
-            .to("Johannes Wenz", "johannesandreas.wenz@student.unisg.ch")
-            .withSubject("Test Email from Spring service")
-            .withPlainText("Hello this is a Test Mail from the Spring service")
+            .to("Philipp John", "philipp.john@student.unisg.ch")
+            .withSubject("Senty System Notification")
+            .withPlainText(content)
             .buildEmail();
 
     mailer.sendMail(email);

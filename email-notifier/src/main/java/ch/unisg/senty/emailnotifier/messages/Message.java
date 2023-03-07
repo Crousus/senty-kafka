@@ -10,7 +10,7 @@ public class Message<T> {
   // Cloud Events compliant 
   private String type;
   private String id = UUID.randomUUID().toString(); // unique id of this message
-  private String source = "Shipping-Choreography";
+  private String source = "Email";
   @JsonFormat(shape = JsonFormat.Shape.STRING) // ISO-8601 compliant format
   private Instant time = Instant.now();
   private T data;
@@ -20,7 +20,7 @@ public class Message<T> {
   // Extension attributes
   private String traceid = UUID.randomUUID().toString(); // trace id, default: new unique
   private String correlationid; // id which can be used for correlation later if required
-  private String group = "flowing-retail";
+  private String group = "senty";
   
   public Message() {    
   }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -36,7 +35,7 @@ public class MessageSender {
       String jsonMessage = objectMapper.writeValueAsString(m);
 
       // wrap into a proper message for Kafka including a header
-      ProducerRecord<String, String> record = new ProducerRecord<String, String>("flowing-retail", jsonMessage);
+      ProducerRecord<String, String> record = new ProducerRecord<String, String>("senty", jsonMessage);
       record.headers().add("type", m.getType().getBytes());
 
       // and send it

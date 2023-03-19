@@ -11,9 +11,9 @@
         <module>scraper</module>
         <module>comment-analysis</module>
         <module>email-notifier</module>
-        <module>comment-stream-consumer</module>
-        <module>comment-stream-producer</module>
         <module>project-manager</module>
+        <module>order</module>
+        <module>checkout</module>
         <!--
         <module>zeebe-monitor</module>
         -->

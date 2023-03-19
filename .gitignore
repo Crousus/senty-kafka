@@ -4,3 +4,6 @@
 /scraper/target/
 /comment-analysis/target/
 /email-notifier/target/
+/scraper/target/
+/order/target/
+/checkout/target/

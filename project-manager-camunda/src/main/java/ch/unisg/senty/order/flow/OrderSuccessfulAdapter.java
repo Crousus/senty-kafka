@@ -5,33 +5,30 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import ch.unisg.senty.order.domain.Order;
 import ch.unisg.senty.order.messages.Message;
 import ch.unisg.senty.order.messages.MessageSender;
-import ch.unisg.senty.order.persistence.OrderRepository;
 
 @Component
-public class FetchGoodsAdapter implements JavaDelegate {
+public class OrderSuccessfulAdapter implements JavaDelegate {
   
   @Autowired
   private MessageSender messageSender;  
 
-  @Autowired
-  private OrderRepository orderRepository;  
-
   @Override
   public void execute(DelegateExecution context) throws Exception {
-    Order order = orderRepository.findById( //
-        (String)context.getVariable("orderId")).get(); 
+    String orderId = (String)context.getVariable("orderId"); 
     String traceId = context.getProcessBusinessKey();
 
-    // publish
-    messageSender.send(new Message<FetchGoodsCommandPayload>( //
-            "FetchGoodsCommand", //
+    System.out.println("Order Successful");
+
+    messageSender.send( //
+        new Message<OrderSuccessfulEventPayload>( //
+            "OrderSuccessfulEvent", //
             traceId, //
-            new FetchGoodsCommandPayload() //
-              .setRefId(order.getId()) //
-              .setItems(order.getItems())));
+            new OrderSuccessfulEventPayload() //
+              .setOrderId(orderId)));
   }
+
   
+
 }

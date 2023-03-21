@@ -22,15 +22,39 @@ Moreover, as suggested for Task 2, we implemented a simple HTML user interface t
 
 <img src="form.png"  width="600">
 
+The form has some user support to display success and error messages:
+
+<img src="form-success.png"  width="350">
+
+<img src="form-error.png"  width="350">
+
 <br>
 
 ## Exercise 4
 
-We have extended the order flow to include the following services which orchestrate a workflow (see BPMNs):
-- `checkout`
-- `order`
-- `project-manager-camunda`
+We have extended our project to realize the following flow:
+
+`checkout` --> `order` (see BPMN below) --> `project-manager-camunda` (see BMPN above) --> `scraper` --> `comment-analysis`
+
+`order` BPMN:
+
+<img src="order-bpmn.png"  width="600">
+
+Currently, mostly the "happy path" has been covered, and we plan to add a payment service similar to the flowing retail example. Moreover, we will still have to improve the naming and refactor our project a bit.
+
+As we further explored the implementation of our system, we recognized the importance of applying the concepts of commands and events as learned in the lecture. Although we are still in the process of implementing these concepts, we have considered their application to our system design.
+
+To optimize the sequence of crucial actions and ensure that they are executed reliably, we have chosen to implement payment retrieval and topUp messages as commands. The payment service and the selected scraper service are solely responsible for their actions, respectively. We have also incorporated an answer verification step in the project manager's BPMN to ensure that the designated scraper takes on the required job.
+
+While determining the optimal approach for the order succeeded/placed event, we have implemented it as an event for the time being. Additionally, we have decided to implement the retrieve active scrapers step as an event to guarantee that all active scrapers respond to the "call" and indicate their availability.
+
+<br>
 
 ## Contributions:
-- Johannes, Luka, Philipp
+|          | Johannes | Luka | Philipp |
+|----------|----------|------|---------|
+| Backend  | ++       | +    | +       |
+| Frontend | +        | +    | ++      |
+| BPMN     | ++       | ++   | ++      |
+| ADR      | ++       | +    | ++      |
 

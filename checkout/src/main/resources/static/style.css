@@ -1,0 +1,171 @@
+/* style.css */
+
+body {
+    font-family: Avenir, 'Avenir Next LT Pro', Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+    background-color: #ecf0f1;
+    color: #000000;
+    padding: 0;
+    margin: 0;
+}
+
+h1,
+h2 {
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+h1 {
+    font-size: 3rem;
+    margin-top: 3rem;
+}
+
+h2 {
+    font-size: 2rem;
+    margin-top: 0.1rem;
+}
+
+p {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #0062cc;
+}
+
+input,
+select,
+option{
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+    font-size: 12px;
+}
+
+form {
+    margin: 0 auto;
+    max-width: 800px;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+label {
+    display: block;
+    margin-top: 1rem;
+}
+
+input[type="text"],
+input[type="number"] {
+    display: block;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    width: 100%;
+    background-color: #ecf0f1;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+select {
+    display: block;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    width: 100%;
+    background-color: #f0f6f6;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+input[type="submit"] {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    background-color: #4ecdc4;
+    color: #000000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+input[type="submit"]:hover {
+    background-color: #3d8c87;
+}
+
+#thanks {
+    margin-top: 16px;
+}
+
+.hero-section {
+    height: 100vh;
+    max-height: 600px;
+    background: linear-gradient(to bottom right, #ffffff, #007700);
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1rem;
+    text-align: center;
+}
+
+.hero-section h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #000000;
+}
+
+.hero-section p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    color: #000000;
+}
+
+.hero-section img {
+    max-width: 600px;
+    width: 50%;
+    margin-top: 2rem;
+    margin-bottom: 20px;
+}
+
+@media screen and (max-width: 768px) {
+    .hero-section {
+        max-height: 500px;
+    }
+
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+
+    .hero-section p {
+        font-size: 1.2rem;
+    }
+
+    .hero-section img {
+        width: 80%;
+        margin-bottom: 50px;
+    }
+}

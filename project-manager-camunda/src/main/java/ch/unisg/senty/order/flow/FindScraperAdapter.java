@@ -6,18 +6,25 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
-public class VerifyInputsAdapter implements JavaDelegate {
+import java.util.HashMap;
 
+@Component
+public class FindScraperAdapter implements JavaDelegate {
+
+    private HashMap<String, String> scraperList = new HashMap<>();
     @Autowired
     private MessageSender messageSender;
 
+    public FindScraperAdapter() {
+        //Hard code scraper for now. First field would be type the other the "id" of the specific scraper
+        scraperList.put("YouTube", "yt-scraper1");
+    }
+
     @Override
     public void execute(DelegateExecution context) throws Exception {
-        String traceId = context.getProcessBusinessKey();
 
+        System.out.println("Order Successful");
 
-        context.setVariable("useVoucher", true);
-        System.out.println("Input check passed");
+        context.setVariable("target-scraper", scraperList.get("YouTube"));
     }
 }

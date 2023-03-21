@@ -9,7 +9,7 @@ import ch.unisg.senty.order.messages.Message;
 import ch.unisg.senty.order.messages.MessageSender;
 
 @Component
-public class OrderSuccessfulAdapter implements JavaDelegate {
+public class NotifyScrapeStartAdapter implements JavaDelegate {
   
   @Autowired
   private MessageSender messageSender;  
@@ -22,10 +22,10 @@ public class OrderSuccessfulAdapter implements JavaDelegate {
     System.out.println("Order Successful");
 
     messageSender.send( //
-        new Message<OrderSuccessfulEventPayload>( //
+        new Message<ScrapeStartEventPayload>( //
             "OrderSuccessfulEvent", //
             traceId, //
-            new OrderSuccessfulEventPayload() //
+            new ScrapeStartEventPayload() //
               .setOrderId(orderId)));
   }
 

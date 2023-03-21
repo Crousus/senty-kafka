@@ -1,6 +1,6 @@
 package ch.unisg.senty.order.flow;
 
-public class OrderSuccessfulEventPayload {
+public class ScrapeStartEventPayload {
   
   private String orderId;
 
@@ -8,7 +8,7 @@ public class OrderSuccessfulEventPayload {
     return orderId;
   }
 
-  public OrderSuccessfulEventPayload setOrderId(String orderId) {
+  public ScrapeStartEventPayload setOrderId(String orderId) {
     this.orderId = orderId;
     return this;
   }

@@ -1,17 +1,21 @@
 package ch.unisg.senty.rest;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import ch.unisg.senty.domain.Customer;
 import ch.unisg.senty.domain.Order;
 import ch.unisg.senty.messages.Message;
 import ch.unisg.senty.messages.MessageSender;
+
+import java.util.UUID;
 
 @RestController
 public class ShopRestController {
@@ -19,22 +23,24 @@ public class ShopRestController {
   @Autowired
   private MessageSender messageSender;
   
-  @RequestMapping(path = "/api/cart/order", method = POST)
-  public String placeOrder() {
-    
-    Order order = new Order();
-    order.addItem("article1", 5);
-    order.addItem("article2", 10);
-    
-    order.setCustomer(new Customer("Camunda", "Zossener Strasse 55\n10961 Berlin\nGermany"));
-    
+  @PostMapping(path = "/api/cart/order", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> placeOrder(@RequestBody Order order) {
+    if (order.getCompanyName().isEmpty()) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Company Name is required\"}");
+    } else if (order.getCustomerId().isEmpty()) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Customer ID is required\"}");
+    } else if (order.getVideoId().isEmpty()) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Video ID is required\"}");
+    } else if (order.getTokens().isEmpty()) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Tokens are required\"}");
+    } else if (order.getPlatform().isEmpty()) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Platform is required\"}");
+    }
+
     Message<Order> message = new Message<Order>("OrderPlacedEvent", order);
     messageSender.send(message);
-        
-    // note that we cannot easily return an order id here - as everything is asynchronous
-    // and blocking the client is not what we want.
-    // but we return an own correlationId which can be used in the UI to show status maybe later
-    return "{\"traceId\": \"" + message.getTraceid() + "\"}";
-  }
 
+    String responseJson = "{\"traceId\": \"" + message.getTraceid() + "\"}";
+    return ResponseEntity.status(HttpStatus.OK).body(responseJson);
+  }
 }

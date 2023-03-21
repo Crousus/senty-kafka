@@ -49,12 +49,12 @@
       </select>
 
       <div id="voucher-code-field" style="display: none">
-        <label for="voucher-code">Voucher Code</label>
-        <input type="text" id="voucher-code" name="voucher-code" />
+        <label for="voucher">Voucher Code</label>
+        <input type="text" id="voucher" name="voucher" />
       </div>
 
-      <label for="social-media-platform">Social Media Platform</label>
-      <select id="social-media-platform" name="social-media-platform" required>
+      <label for="platform">Social Media Platform</label>
+      <select id="platform" name="platform" required>
         <option value="">Select Platform</option>
         <option value="YouTube">YouTube</option>
       </select>
@@ -69,20 +69,44 @@
 
       function placeOrder() {
         event.preventDefault();
+
+        // Serialize the form data as JSON
+        var formData = {
+          companyName: $("#company-name").val(),
+          customerId: $("#customer-id").val(),
+          videoId: $("#video-id").val(),
+          tokens: $("#tokens").val(),
+          voucher: $("#voucher-code").val(),
+          platform: $("#platform").val()
+        };
+        var jsonData = JSON.stringify(formData);
+
+        // Send the request with the correct content type
         $.ajax({
           url: $("#order-form").attr("action"),
-          type: $("#order-form").attr("method"),
-          data: $("#order-form").serialize(),
-        }).done(function (result) {
+          type: "POST",
+          data: jsonData,
+          contentType: "application/json"
+        }).done(function(result) {
           count++;
           $("#thanks").html(
-            "<div style='padding: 1rem; \n" +
+                  "<div style='padding: 1rem; \n" +
                   "background-color: #ecfdf5; \n" +
                   "border-radius: 0.375rem; '>Thank you for order #" +
-              count +
-              ".<br>Trace id: <b>" +
-              JSON.parse(result).traceId +
-              "</b></div>"
+                  count +
+                  "<br>Trace id: <b>" +
+                  JSON.parse(result).traceId +
+                  "</b></div>"
+          );
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+          var errorMessage = jqXHR.responseText;
+          $("#thanks").html(
+                  "<div style='padding: 1rem; \n" +
+                  "background-color: #fdebeb; \n" +
+                  "border-radius: 0.375rem; '>Error placing order<br>" +
+                  "Error: <b>" +
+                  JSON.parse(errorMessage).error +
+                  "</b></div>"
           );
         });
       }

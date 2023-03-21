@@ -1,6 +1,8 @@
 package ch.unisg.senty.order.messages;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import ch.unisg.senty.order.domain.Order;
 import org.camunda.bpm.engine.ProcessEngine;
@@ -17,13 +19,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ch.unisg.senty.order.persistence.OrderRepository;
-
 @Component
 public class MessageListener {
-  
-  @Autowired
-  private OrderRepository repository;
   
   @Autowired
   private ProcessEngine camunda;
@@ -37,17 +34,13 @@ public class MessageListener {
    */
   @Transactional
   public void orderPlacedReceived(Message<Order> message) throws JsonParseException, JsonMappingException, IOException {
+    
+    System.out.println("New order placed, start flow." + message);
+
     Order order = message.getData();
-    
-    System.out.println("New order placed, start flow. " + order);
-    
-    // persist domain entity
-    repository.save(order);    
-    
-    // and kick of a new flow instance
+
     camunda.getRuntimeService().createMessageCorrelation(message.getType())
-      .processInstanceBusinessKey(message.getTraceid())
-      .setVariable("orderId", order.getId())
+      .processInstanceBusinessKey(message.getTraceid()).setVariables(order.toMap())
       .correlateWithResult();
   }
   

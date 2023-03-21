@@ -1,7 +1,6 @@
 package ch.unisg.senty.scraper.application;
 
 import ch.unisg.senty.scraper.domain.Comment;
-import ch.unisg.senty.scraper.domain.TopUp;
 import ch.unisg.senty.scraper.messages.Message;
 import ch.unisg.senty.scraper.messages.MessageSender;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,9 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.FileReader;
 
-import java.util.HashMap;
-import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -30,42 +26,7 @@ public class ScraperService {
     @Autowired
     private ObjectMapper objectMapper;
 
-
-    private HashMap<String, ConcurrentHashMap<String, Integer>> jobs = new HashMap<>();
-
-    public void topUpTokens(TopUp topUp) {
-        ConcurrentHashMap<String, Integer> customerJobs = jobs.get(topUp.getCustomerId());
-        if (customerJobs.isEmpty()) {
-            customerJobs = new ConcurrentHashMap<>();
-            jobs.put(topUp.getCustomerId(), customerJobs);
-        }
-
-        int tokens = customerJobs.get(topUp.getVideoId()) + topUp.getTokens();
-
-        customerJobs.put(topUp.getVideoId(), tokens);
-
-    }
-
-
     @EventListener(ApplicationReadyEvent.class)
-    public void startAllJobs() {
-
-    }
-
-    class TimedScrapeTask extends TimerTask {
-
-        private
-
-        TimedScrapeTask() {
-
-        }
-
-        @Override
-        public void run() {
-
-        }
-    }
-
     public void startScraper() {
 
         try {

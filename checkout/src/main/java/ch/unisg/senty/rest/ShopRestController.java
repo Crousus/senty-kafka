@@ -38,7 +38,10 @@ public class ShopRestController {
     }
 
     Message<Order> message = new Message<Order>("OrderPlacedEvent", order);
+
     messageSender.send(message);
+
+    System.out.println("MessageSend");
 
     String responseJson = "{\"traceId\": \"" + message.getTraceid() + "\"}";
     return ResponseEntity.status(HttpStatus.OK).body(responseJson);

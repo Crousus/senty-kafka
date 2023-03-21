@@ -17,13 +17,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ch.unisg.senty.order.persistence.OrderRepository;
-
 @Component
 public class MessageListener {
-  
-  @Autowired
-  private OrderRepository repository;
+
   
   @Autowired
   private ProcessEngine camunda;
@@ -37,18 +33,14 @@ public class MessageListener {
    */
   @Transactional
   public void orderPlacedReceived(Message<Order> message) throws JsonParseException, JsonMappingException, IOException {
+    // persist domain entit
+
     Order order = message.getData();
-    
     System.out.println("New order placed, start flow. " + order);
-    
-    // persist domain entity
-    repository.save(order);    
-    
-    // and kick of a new flow instance
+
     camunda.getRuntimeService().createMessageCorrelation(message.getType())
-      .processInstanceBusinessKey(message.getTraceid())
-      .setVariable("orderId", order.getId())
-      .correlateWithResult();
+            .processInstanceBusinessKey(message.getTraceid()).setVariables(order.toMap())
+            .correlateWithResult();
   }
   
   /**
@@ -59,9 +51,9 @@ public class MessageListener {
    * It might make more sense to handle each and every message type individually.
    */
   @Transactional
-  @KafkaListener(id = "order", topics = MessageSender.TOPIC_NAME)
+  @KafkaListener(id = "project-manager", topics = MessageSender.TOPIC_NAME)
   public void messageReceived(String messagePayloadJson, @Header("type") String messageType) throws Exception{
-    if ("OrderPlacedEvent".equals(messageType)) {
+    if ("OrderSuccessfulEvent".equals(messageType)) {
       orderPlacedReceived(objectMapper.readValue(messagePayloadJson, new TypeReference<Message<Order>>() {}));
     }
     Message<JsonNode> message = objectMapper.readValue( //

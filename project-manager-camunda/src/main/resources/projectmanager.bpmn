@@ -16,7 +16,7 @@
       <bpmn:messageEventDefinition id="MessageEventDefinition_1cs2m0o" camunda:delegateExpression="#{NotifyAdminAdapter}" />
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_1agomwg" sourceRef="Activity_1nf44zk" targetRef="Activity_0mktf4x" />
-    <bpmn:sendTask id="Activity_0mktf4x" name="top up tokens for video id" camunda:delegateExpression="#{TopUpTokensAdapter}">
+    <bpmn:sendTask id="Activity_0mktf4x" name="top up tokens for video id" camunda:delegateExpression="#{topUpTokensAdapter}">
       <bpmn:incoming>Flow_1agomwg</bpmn:incoming>
       <bpmn:outgoing>Flow_1c2qd6k</bpmn:outgoing>
     </bpmn:sendTask>
@@ -24,7 +24,7 @@
       <bpmn:incoming>Flow_18rstbu</bpmn:incoming>
       <bpmn:messageEventDefinition id="MessageEventDefinition_0ewu8ep" camunda:delegateExpression="#{NotifyScrapeStartAdapter}" />
     </bpmn:endEvent>
-    <bpmn:serviceTask id="Activity_1nf44zk" name="find plattform&#10;scraper" camunda:delegateExpression="#{FindScraperAdapter}">
+    <bpmn:serviceTask id="Activity_1nf44zk" name="find plattform&#10;scraper" camunda:delegateExpression="#{findScraperAdapter}">
       <bpmn:incoming>Flow_1jh2gw2</bpmn:incoming>
       <bpmn:incoming>Flow_0fis1wa</bpmn:incoming>
       <bpmn:outgoing>Flow_1agomwg</bpmn:outgoing>
@@ -53,7 +53,7 @@
     <bpmn:sequenceFlow id="Flow_0fis1wa" sourceRef="Event_1hc6ge1" targetRef="Activity_1nf44zk" />
     <bpmn:sequenceFlow id="Flow_1c2qd6k" sourceRef="Activity_0mktf4x" targetRef="Activity_0rgbrb7" />
     <bpmn:sequenceFlow id="Flow_18rstbu" sourceRef="Activity_0rgbrb7" targetRef="Event_1g3q2qe" />
-    <bpmn:receiveTask id="Activity_0rgbrb7" name="wait for scraper to start/continue">
+    <bpmn:receiveTask id="Activity_0rgbrb7" name="wait for scraper to start/continue" messageRef="Message_3tipjc2">
       <bpmn:incoming>Flow_1c2qd6k</bpmn:incoming>
       <bpmn:outgoing>Flow_18rstbu</bpmn:outgoing>
     </bpmn:receiveTask>
@@ -66,12 +66,9 @@ case: created new job (balance: xxx)</bpmn:text>
   </bpmn:process>
   <bpmn:message id="Message_274lcfh" name="OrderSuccessfulEvent" />
   <bpmn:message id="Message_2tvue0f" name="ScraperResponseEvent" />
+  <bpmn:message id="Message_3tipjc2" name="JobStatusUpdateEvent" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1t8ysrw">
-      <bpmndi:BPMNShape id="TextAnnotation_0ubepvy_di" bpmnElement="TextAnnotation_0ubepvy">
-        <dc:Bounds x="690" y="173" width="250" height="54" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1l7myy0_di" bpmnElement="Event_14evlly">
         <dc:Bounds x="182" y="272" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -82,6 +79,15 @@ case: created new job (balance: xxx)</bpmn:text>
         <dc:Bounds x="602" y="82" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="590" y="125" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0t7kory_di" bpmnElement="Activity_0mktf4x">
+        <dc:Bounds x="550" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0odamvz_di" bpmnElement="Event_1g3q2qe">
+        <dc:Bounds x="872" y="272" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="849" y="315" width="82" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0x3cmc6_di" bpmnElement="Activity_1nf44zk">
@@ -95,23 +101,14 @@ case: created new job (balance: xxx)</bpmn:text>
         <dc:Bounds x="390" y="60" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0t7kory_di" bpmnElement="Activity_0mktf4x">
-        <dc:Bounds x="550" y="250" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0odamvz_di" bpmnElement="Event_1g3q2qe">
-        <dc:Bounds x="872" y="272" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="849" y="315" width="82" height="40" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0yapjhh_di" bpmnElement="Activity_0rgbrb7">
         <dc:Bounds x="710" y="250" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Association_0sjupr0_di" bpmnElement="Association_0sjupr0">
-        <di:waypoint x="790" y="250" />
-        <di:waypoint x="807" y="227" />
-      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_0ubepvy_di" bpmnElement="TextAnnotation_0ubepvy">
+        <dc:Bounds x="690" y="173" width="250" height="54" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1hc6ge1_di" bpmnElement="Event_1hc6ge1">
         <dc:Bounds x="422" y="122" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -160,6 +157,10 @@ case: created new job (balance: xxx)</bpmn:text>
       <bpmndi:BPMNEdge id="Flow_18rstbu_di" bpmnElement="Flow_18rstbu">
         <di:waypoint x="810" y="290" />
         <di:waypoint x="872" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0sjupr0_di" bpmnElement="Association_0sjupr0">
+        <di:waypoint x="790" y="250" />
+        <di:waypoint x="807" y="227" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

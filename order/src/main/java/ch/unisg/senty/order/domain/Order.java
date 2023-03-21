@@ -1,68 +1,31 @@
 package ch.unisg.senty.order.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-@Entity(name="OrderEntity")
+@Data
 public class Order {
+  private String companyName;
+  private String customerId;
+  private String videoId;
+  private String tokens;
+  private String voucher;
+  private String platform;
+  // private String paymentMethod;
 
-  @Id
-//  @GeneratedValue(generator = "uuid2")
-//  @GenericGenerator(name = "uuid2", strategy = "uuid2")
-  protected String id; //= UUID.randomUUID().toString();
-  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER  )
-  protected Customer customer = new Customer();
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER  )
-  protected List<OrderItem> items = new ArrayList<OrderItem>();
+  public Map<String, Object> toMap() {
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("companyName", companyName);
+    variables.put("customerId", customerId);
+    variables.put("videoId", videoId);
+    variables.put("tokens", tokens);
+    variables.put("voucher", voucher);
+    variables.put("platform", platform);
+    return variables;
 
-  public void addItem(OrderItem i) {
-    items.add(i);
-  }
-  
-  public int getTotalSum() {
-    int sum = 0;
-    for (OrderItem orderItem : items) {
-      sum += orderItem.getAmount();
-    }
-    return sum;
-  }
-  
-  public String getId() {
-    return id;
-  }
-
-  @JsonProperty("orderId")
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public List<OrderItem> getItems() {
-    return items;
   }
 
 
- 
-  @Override
-  public String toString() {
-    return "Order [id=" + id + ", items=" + items + "]";
-  }
-
-  public Customer getCustomer() {
-    return customer;
-  }
-
-  public void setCustomer(Customer customer) {
-    this.customer = customer;
-  }
-
-
-  
 }

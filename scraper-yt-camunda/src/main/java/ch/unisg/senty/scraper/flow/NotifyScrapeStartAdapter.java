@@ -1,35 +1,31 @@
-package ch.unisg.senty.order.flow;
+package ch.unisg.senty.scraper.flow;
 
+import ch.unisg.senty.order.messages.Message;
+import ch.unisg.senty.order.messages.MessageSender;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import ch.unisg.senty.order.messages.Message;
-import ch.unisg.senty.order.messages.MessageSender;
-
 @Component
-public class OrderSuccessfulAdapter implements JavaDelegate {
+public class NotifyScrapeStartAdapter implements JavaDelegate {
   
   @Autowired
   private MessageSender messageSender;  
 
   @Override
   public void execute(DelegateExecution context) throws Exception {
+    String orderId = (String)context.getVariable("orderId"); 
     String traceId = context.getProcessBusinessKey();
-
-    String customerId = (String) context.getVariable("customerId");
-    String videoId = (String) context.getVariable("videoId");
-    String token = (String) context.getVariable("tokens");
 
     System.out.println("Order Successful");
 
     messageSender.send( //
-        new Message<OrderSuccessfulEventPayload>( //
+        new Message<ScrapeStartEventPayload>( //
             "OrderSuccessfulEvent", //
             traceId, //
-            new OrderSuccessfulEventPayload() //
-              .setCustomerId(customerId).setVideoId(videoId).setTokens(token)));
+            new ScrapeStartEventPayload() //
+              .setOrderId(orderId)));
   }
 
   

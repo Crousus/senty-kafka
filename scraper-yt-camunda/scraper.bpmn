@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_02u70ah" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.8.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
+  <bpmn:process id="Process_1ngy93f" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1paixxu</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_055jhk5" messageRef="Message_2dfeies" />
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Activity_0l393m3" name="check existing jobs">
+      <bpmn:incoming>Flow_1paixxu</bpmn:incoming>
+      <bpmn:outgoing>Flow_0lj6sar</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_1kzcdcz">
+      <bpmn:incoming>Flow_0lj6sar</bpmn:incoming>
+      <bpmn:outgoing>Flow_1wjrq5k</bpmn:outgoing>
+      <bpmn:outgoing>Flow_121lg4t</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0lj6sar" sourceRef="Activity_0l393m3" targetRef="Gateway_1kzcdcz" />
+    <bpmn:sequenceFlow id="Flow_1paixxu" sourceRef="StartEvent_1" targetRef="Activity_0l393m3" />
+    <bpmn:sequenceFlow id="Flow_1wjrq5k" sourceRef="Gateway_1kzcdcz" targetRef="Activity_187b7dg" />
+    <bpmn:sequenceFlow id="Flow_121lg4t" sourceRef="Gateway_1kzcdcz" targetRef="Activity_0volrca" />
+    <bpmn:startEvent id="Event_0wqr3ux">
+      <bpmn:signalEventDefinition id="SignalEventDefinition_0dxbthk" signalRef="Signal_1heqppt" />
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Activity_0volrca" name="top up task">
+      <bpmn:incoming>Flow_121lg4t</bpmn:incoming>
+      <bpmn:outgoing>Flow_163byz3</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_187b7dg" name="create task">
+      <bpmn:incoming>Flow_1wjrq5k</bpmn:incoming>
+      <bpmn:outgoing>Flow_0jz9tpf</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0jz9tpf" sourceRef="Activity_187b7dg" targetRef="Event_13gruaf" />
+    <bpmn:sequenceFlow id="Flow_163byz3" sourceRef="Activity_0volrca" targetRef="Event_13gruaf" />
+    <bpmn:endEvent id="Event_13gruaf" name="Notify about successful job update">
+      <bpmn:incoming>Flow_0jz9tpf</bpmn:incoming>
+      <bpmn:incoming>Flow_163byz3</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1hmzqv8" camunda:delegateExpression="#{JobStatusUpdateEvent}" />
+    </bpmn:endEvent>
+  </bpmn:process>
+  <bpmn:signal id="Signal_1heqppt" name="Signal_1heqppt" />
+  <bpmn:message id="Message_2dfeies" name="TopUpCommand" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1ngy93f">
+      <bpmndi:BPMNShape id="Event_1lb79cy_di" bpmnElement="Event_0wqr3ux">
+        <dc:Bounds x="182" y="432" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0sn1khh_di" bpmnElement="Event_13gruaf">
+        <dc:Bounds x="1042" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1025" y="225" width="70" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1kzcdcz_di" bpmnElement="Gateway_1kzcdcz" isMarkerVisible="true">
+        <dc:Bounds x="575" y="175" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ggtrbg_di" bpmnElement="Activity_0l393m3">
+        <dc:Bounds x="320" y="160" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0mzp4ez_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="202" y="182" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_06lg2sp_di" bpmnElement="Activity_0volrca">
+        <dc:Bounds x="730" y="240" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0t3evdu_di" bpmnElement="Activity_187b7dg">
+        <dc:Bounds x="730" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0jz9tpf_di" bpmnElement="Flow_0jz9tpf">
+        <di:waypoint x="830" y="120" />
+        <di:waypoint x="951" y="120" />
+        <di:waypoint x="951" y="200" />
+        <di:waypoint x="1042" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_163byz3_di" bpmnElement="Flow_163byz3">
+        <di:waypoint x="830" y="280" />
+        <di:waypoint x="951" y="280" />
+        <di:waypoint x="951" y="200" />
+        <di:waypoint x="1042" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0lj6sar_di" bpmnElement="Flow_0lj6sar">
+        <di:waypoint x="420" y="200" />
+        <di:waypoint x="575" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1wjrq5k_di" bpmnElement="Flow_1wjrq5k">
+        <di:waypoint x="600" y="175" />
+        <di:waypoint x="600" y="120" />
+        <di:waypoint x="730" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_121lg4t_di" bpmnElement="Flow_121lg4t">
+        <di:waypoint x="600" y="225" />
+        <di:waypoint x="600" y="280" />
+        <di:waypoint x="730" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1paixxu_di" bpmnElement="Flow_1paixxu">
+        <di:waypoint x="238" y="200" />
+        <di:waypoint x="320" y="200" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

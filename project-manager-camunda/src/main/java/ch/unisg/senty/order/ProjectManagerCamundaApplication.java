@@ -6,9 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @EnableProcessApplication
-public class OrderApplication {
+public class ProjectManagerCamundaApplication {
 
   public static void main(String[] args) throws Exception {
-    SpringApplication.run(OrderApplication.class, args);
+    SpringApplication.run(ProjectManagerCamundaApplication.class, args);
   }
 }

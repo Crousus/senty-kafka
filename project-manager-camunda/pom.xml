@@ -127,7 +127,11 @@
 			<version>1.3.2</version>
 			<scope>compile</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
 
 	<repositories>
 		<repository>
@@ -150,7 +154,7 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>              
                 <configuration>                         
-    				  <mainClass>ch.unisg.senty.order.OrderApplication</mainClass>
+    				  <mainClass>ch.unisg.senty.order.ProjectManagerCamundaApplication</mainClass>
                 </configuration>
              </plugin>
 			 <plugin>

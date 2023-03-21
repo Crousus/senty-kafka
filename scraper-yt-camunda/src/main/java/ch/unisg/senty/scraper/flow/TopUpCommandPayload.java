@@ -1,10 +1,10 @@
-package ch.unisg.senty.order.flow;
+package ch.unisg.senty.scraper.flow;
 
 public class TopUpCommandPayload {
   
   private String videoId;
   private String customerId;
-  private String tokenAmount;
+  private int tokenAmount;
   
   public String getVideoId() {
     return videoId;
@@ -20,10 +20,10 @@ public class TopUpCommandPayload {
     this.customerId = customerId;
     return this;
   }
-  public String getTokenAmount() {
+  public int getTokenAmount() {
     return tokenAmount;
   }
-  public TopUpCommandPayload setTokenAmount(String tokenAmount) {
+  public TopUpCommandPayload setTokenAmount(int tokenAmount) {
     this.tokenAmount = tokenAmount;
     return this;
   }

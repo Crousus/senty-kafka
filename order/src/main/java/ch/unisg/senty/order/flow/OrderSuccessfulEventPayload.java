@@ -1,15 +1,15 @@
 package ch.unisg.senty.order.flow;
 
+import lombok.Data;
+import lombok.experimental.Accessors;
+
+@Data
+@Accessors(chain = true)
 public class OrderSuccessfulEventPayload {
-  
-  private String orderId;
 
-  public String getOrderId() {
-    return orderId;
-  }
+  private String videoId;
+  private String customerId;
 
-  public OrderSuccessfulEventPayload setOrderId(String orderId) {
-    this.orderId = orderId;
-    return this;
-  }
+  private String tokens;
+
 }

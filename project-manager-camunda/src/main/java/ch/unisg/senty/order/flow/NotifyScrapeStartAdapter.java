@@ -16,17 +16,16 @@ public class NotifyScrapeStartAdapter implements JavaDelegate {
 
   @Override
   public void execute(DelegateExecution context) throws Exception {
-    String orderId = (String)context.getVariable("orderId"); 
     String traceId = context.getProcessBusinessKey();
 
-    System.out.println("Order Successful");
+    System.out.println("Scrape job placed Successful");
 
     messageSender.send( //
         new Message<ScrapeStartEventPayload>( //
-            "OrderSuccessfulEvent", //
+            "ScrapeStartEvent", //
             traceId, //
             new ScrapeStartEventPayload() //
-              .setOrderId(orderId)));
+              .setOrderId("sdsad")));
   }
 
   

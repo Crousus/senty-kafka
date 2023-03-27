@@ -1,11 +1,3 @@
 /.idea/
 .DS_Store
-/project-manager/target/
-/scraper/target/
-/comment-analysis/target/
-/email-notifier/target/
-/scraper/target/
-/order/target/
-/checkout/target/
-/project-manager-camunda/target/
-/scraper-yt-camunda/target/
+**/target/

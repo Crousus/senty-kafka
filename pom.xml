@@ -8,12 +8,13 @@
     <version>0.0.1-SNAPSHOT</version>
 
     <modules>
+        <module>registration</module>
+        <module>checkout</module>
+        <module>order</module>
+        <module>project-manager-camunda</module>
         <module>scraper</module>
         <module>comment-analysis</module>
         <module>email-notifier</module>
-        <module>order</module>
-        <module>checkout</module>
-        <module>project-manager-camunda</module>
         <!--
         <module>zeebe-monitor</module>
         -->

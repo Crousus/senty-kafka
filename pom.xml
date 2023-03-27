@@ -15,7 +15,6 @@
         <module>order</module>
         <module>checkout</module>
         <module>project-manager-camunda</module>
-        <module>scraper-yt-camunda</module>
         <!--
         <module>zeebe-monitor</module>
         -->

@@ -1,6 +1,5 @@
 package ch.unisg.senty.scraper.messages;
 
-import ch.unisg.senty.emailnotifier.application.EmailService;
 import ch.unisg.senty.scraper.application.ScraperService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,15 +20,15 @@ public class MessageListener {
 
     @KafkaListener(id = "scraper-yt", topics = MessageSender.TOPIC_NAME)
     public void goodsFetchedEventReceived(String messageJson, @Header("type") String messageType) throws Exception {
+        System.out.println("Received message: " + messageJson);
+
         if ("TopUpTokensCommand".equals(messageType)) {
 
-            System.out.println(messageJson);
-            Message<JsonNode> message = objectMapper.readValue(messageJson, new TypeReference<Message<JsonNode>>() {
-            });
-            IntNode payload = (IntNode) message.getData();
-            int count = payload.intValue();
-
-            ;
+            System.out.println("TopUpTokensCommand received");
+            // Message<JsonNode> message = objectMapper.readValue(messageJson, new TypeReference<Message<JsonNode>>() {
+            // });
+            // IntNode payload = (IntNode) message.getData();
+            // int count = payload.intValue();
         }
     }
 

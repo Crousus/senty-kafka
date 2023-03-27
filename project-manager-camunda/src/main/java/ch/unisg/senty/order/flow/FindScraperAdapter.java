@@ -17,7 +17,7 @@ public class FindScraperAdapter implements JavaDelegate {
 
     public FindScraperAdapter() {
         //Hard code scraper for now. First field would be type the other the "id" of the specific scraper
-        scraperList.put("YouTube", "yt-scraper1");
+        scraperList.put("YouTube", "scraper-yt");
     }
 
     @Override

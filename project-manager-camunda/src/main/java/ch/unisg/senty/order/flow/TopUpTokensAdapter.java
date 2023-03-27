@@ -23,7 +23,7 @@ public class TopUpTokensAdapter implements JavaDelegate {
     
     messageSender.send( //
         new Message<TopUpCommandPayload>( //
-            "TopUpCommand", //
+            "TopUpTokensCommand", //
             traceId, //
             new TopUpCommandPayload() //
               .setVideoId((String) context.getVariable("videoId")) //

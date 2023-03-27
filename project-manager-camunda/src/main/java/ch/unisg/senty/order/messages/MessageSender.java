@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MessageSender {
 
-  public static final String TOPIC_NAME = "flowing-retail";
+  public static final String TOPIC_NAME = "scraper-yt";
 
   @Autowired
   private KafkaTemplate<String, String> kafkaTemplate;
@@ -35,13 +35,13 @@ public class MessageSender {
       String jsonMessage = objectMapper.writeValueAsString(m);
 
       // wrap into a proper message for Kafka including a header
-      ProducerRecord<String, String> record = new ProducerRecord<String, String>("flowing-retail", jsonMessage);
+      ProducerRecord<String, String> record = new ProducerRecord<String, String>("scraper-yt", jsonMessage);
       record.headers().add("type", m.getType().getBytes());
 
       // and send it
       kafkaTemplate.send(record);
     } catch (Exception e) {
-      throw new RuntimeException("Could not transform and send message: "+ e.getMessage(), e);
+      throw new RuntimeException("Could not transform and send message: " + e.getMessage(), e);
     }
   }
 }

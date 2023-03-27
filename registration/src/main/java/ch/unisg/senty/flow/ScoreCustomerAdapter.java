@@ -15,9 +15,9 @@ public class ScoreCustomerAdapter implements JavaDelegate {
     @Override
     public void execute(DelegateExecution execution) {
 
-        String name = (String) execution.getVariable("customer");
+        String company = (String) execution.getVariable("company");
 
-        if (name.equals("Peter")) {
+        if (company.equals("Porsche")) { // change to find domain substring in email
             execution.setVariable("automaticProcessing", (boolean)true);
             WorkflowLogger.info(logger, "scoreCustomer","Customer is scored automatically");
         }

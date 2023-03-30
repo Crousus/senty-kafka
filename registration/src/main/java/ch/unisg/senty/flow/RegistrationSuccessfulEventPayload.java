@@ -5,11 +5,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class OrderSuccessfulEventPayload {
+public class RegistrationSuccessfulEventPayload {
 
-  private String videoId;
   private String customerId;
-
-  private String tokens;
-
 }

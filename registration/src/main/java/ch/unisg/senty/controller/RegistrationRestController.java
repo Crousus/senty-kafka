@@ -1,6 +1,7 @@
 package ch.unisg.senty.controller;
 
-import ch.unisg.senty.utils.WorkflowLogger;
+import ch.unisg.senty.domain.Customer;
+import ch.unisg.senty.messages.utils.WorkflowLogger;
 import org.camunda.bpm.engine.RuntimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +23,16 @@ public class RegistrationRestController {
     private RuntimeService runtimeService;
 
     @RequestMapping(path = "/registration", method = RequestMethod.POST)
-    public String kickOffRegistration(String cName) throws Exception{
+    public String kickOffRegistration(@RequestBody Customer customer) throws Exception{
 
             String traceId = UUID.randomUUID().toString();
 
-            WorkflowLogger.info(logger, "Payment received", " for customer: " + cName);
+            WorkflowLogger.info(logger, "Payment received",
+                    " for customer: " + customer.getCompany());
 
             HashMap<String, Object> variables = new HashMap<String, Object>();
-            variables.put("customer", cName);
+            variables.put("customer", customer);
+
 
             runtimeService.startProcessInstanceByKey("registration",
                     traceId, variables);

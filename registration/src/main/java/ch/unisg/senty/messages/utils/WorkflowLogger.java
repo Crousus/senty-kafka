@@ -1,4 +1,4 @@
-package ch.unisg.senty.utils;
+package ch.unisg.senty.messages.utils;
 
 import org.slf4j.Logger;
 

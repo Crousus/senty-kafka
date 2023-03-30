@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_00szr9d" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.8.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_00szr9d" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.9.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
   <bpmn:process id="Process_1t8ysrw" isExecutable="true">
     <bpmn:startEvent id="Event_14evlly" name="Order succeeded">
       <bpmn:outgoing>Flow_1jh2gw2</bpmn:outgoing>
@@ -36,6 +36,7 @@
     <bpmn:sequenceFlow id="Flow_0h5jj1z" sourceRef="Activity_1s7oxvj" targetRef="Activity_0ty2oz8" />
     <bpmn:receiveTask id="Activity_0ty2oz8" name="wait for scrapers to answer" messageRef="Message_2tvue0f">
       <bpmn:incoming>Flow_0h5jj1z</bpmn:incoming>
+      <bpmn:multiInstanceLoopCharacteristics camunda:collection="scrapers" camunda:elementVariable="scraper" />
     </bpmn:receiveTask>
     <bpmn:boundaryEvent id="Event_0l6bok0" name="5 min" attachedToRef="Activity_0ty2oz8">
       <bpmn:outgoing>Flow_1emhnzc</bpmn:outgoing>
@@ -109,12 +110,6 @@ case: created new job (balance: xxx)</bpmn:text>
         <dc:Bounds x="690" y="173" width="250" height="54" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1hc6ge1_di" bpmnElement="Event_1hc6ge1">
-        <dc:Bounds x="422" y="122" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="453" y="153" width="34" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0l6bok0_di" bpmnElement="Event_0l6bok0">
         <dc:Bounds x="472" y="82" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -123,6 +118,12 @@ case: created new job (balance: xxx)</bpmn:text>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_11swgpt_di" bpmnElement="Event_11swgpt">
         <dc:Bounds x="372" y="232" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1hc6ge1_di" bpmnElement="Event_1hc6ge1">
+        <dc:Bounds x="402" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="434" y="153" width="33" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1jh2gw2_di" bpmnElement="Flow_1jh2gw2">
         <di:waypoint x="218" y="290" />
@@ -147,7 +148,9 @@ case: created new job (balance: xxx)</bpmn:text>
         <di:waypoint x="602" y="100" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0fis1wa_di" bpmnElement="Flow_0fis1wa">
-        <di:waypoint x="440" y="158" />
+        <di:waypoint x="420" y="158" />
+        <di:waypoint x="420" y="204" />
+        <di:waypoint x="440" y="204" />
         <di:waypoint x="440" y="250" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1c2qd6k_di" bpmnElement="Flow_1c2qd6k">

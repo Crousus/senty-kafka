@@ -1,4 +1,4 @@
-package ch.unisg.senty.order.messages;
+package ch.unisg.senty.messages;
 
 import java.util.Date;
 import java.util.UUID;

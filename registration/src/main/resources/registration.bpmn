@@ -28,6 +28,9 @@
     <bpmn:serviceTask id="Activity_1i1aznj" name="Persist customer in DB" camunda:delegateExpression="#{PersistCustomerAdapter}">
       <bpmn:incoming>Flow_06kju3r</bpmn:incoming>
       <bpmn:outgoing>Flow_0glm5bd</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_0wd522e">
+        <bpmn:targetRef>DataStoreReference_0su2vbh</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="Flow_1jix5ra" sourceRef="Activity_169u9nh" targetRef="Gateway_12kd92b" />
     <bpmn:sequenceFlow id="Flow_0bri803" name="No" sourceRef="Gateway_12kd92b" targetRef="Activity_0cqmxek">
@@ -68,6 +71,7 @@
       <bpmn:outgoing>Flow_14u711k</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_1qrpg1l" messageRef="Message_3f6drvr" />
     </bpmn:startEvent>
+    <bpmn:dataStoreReference id="DataStoreReference_0su2vbh" />
     <bpmn:textAnnotation id="TextAnnotation_0xuhmt7">
       <bpmn:text>For example, we would not do business with unethical companies</bpmn:text>
     </bpmn:textAnnotation>
@@ -76,11 +80,19 @@
       <bpmn:text>Customers registering from a trusted domain (e.g., "unisg.ch") are automatically approved</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Association_08jexi5" sourceRef="Gateway_12kd92b" targetRef="TextAnnotation_0qa5cuq" />
+    <bpmn:textAnnotation id="TextAnnotation_0ss1kk4">
+      <bpmn:text>Human intervention</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0htu5rr" sourceRef="Activity_0cqmxek" targetRef="TextAnnotation_0ss1kk4" />
   </bpmn:process>
   <bpmn:message id="Message_3f6drvr" name="CustomerRegistrationRequestedEvent" />
   <bpmn:message id="Message_17dq459" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="registration">
+      <bpmndi:BPMNShape id="TextAnnotation_0ss1kk4_di" bpmnElement="TextAnnotation_0ss1kk4">
+        <dc:Bounds x="380" y="399" width="100" height="41" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_12kd92b_di" bpmnElement="Gateway_12kd92b" isMarkerVisible="true">
         <dc:Bounds x="455" y="152" width="50" height="50" />
         <bpmndi:BPMNLabel>
@@ -132,6 +144,13 @@
         <dc:Bounds x="270" y="40" width="195" height="63" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataStoreReference_0su2vbh_di" bpmnElement="DataStoreReference_0su2vbh">
+        <dc:Bounds x="785" y="275" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_0htu5rr_di" bpmnElement="Association_0htu5rr">
+        <di:waypoint x="462" y="340" />
+        <di:waypoint x="437" y="399" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_14u711k_di" bpmnElement="Flow_14u711k">
         <di:waypoint x="215" y="177" />
         <di:waypoint x="270" y="177" />
@@ -189,6 +208,10 @@
       <bpmndi:BPMNEdge id="Association_08jexi5_di" bpmnElement="Association_08jexi5">
         <di:waypoint x="466" y="166" />
         <di:waypoint x="381" y="103" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_0wd522e_di" bpmnElement="DataOutputAssociation_0wd522e">
+        <di:waypoint x="810" y="217" />
+        <di:waypoint x="810" y="270" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

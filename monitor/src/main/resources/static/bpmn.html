@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="de" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      
+  <!-- own CCS style for highlight of activity - color can be easily changed here -->
+  <style type="text/css">
+  .djs-container .highlight .djs-outline {
+     stroke-width: 2px important;
+     stroke: #08c !important;
+     fill: rgba(82,180,21,0.35) !important;
+  }
+  .djs-container .highlight .djs-visual>:nth-child(1) {
+     fill: rgba(82,180,21,0.35) !important;
+  }
+  .bpmn-badge {
+      display: inline-block;
+      min-width: 10px;
+      padding: 3px 7px;
+      font-size: 12px;
+      font-weight: bold;
+      color: #fff;
+      line-height: 1;
+      vertical-align: baseline;
+      white-space: nowrap;
+      text-align: center;
+      background-color: #777;
+      border-radius: 10px;
+      border-width: 1px;
+      border-style: solid;
+      background-color: #52b415; // bpmn.io #610000 // camunda
+      border-color: #143d52;
+      color: #143d52;
+    } 
+    .bpmn-badge-error {
+        background-color: #e41717;
+    }
+  </style>
+
+  <link type="text/css" rel="stylesheet" href="webjars/bootstrap/css/bootstrap.css" />
+  
+  <!-- load jquery and bpmn-js dependencies -->
+  <script type="text/javascript" src="webjars/jquery/jquery.js"></script>
+ 
+  <!-- bpmn-js viewer -->
+  <script type="text/javascript" src="webjars/bpmn-js/dist/bpmn-navigated-viewer.js"></script>
+  <link type="text/css" rel="stylesheet" href="webjars/bpmn-js/dist/assets/diagram-js.css" />
+  <link type="text/css" rel="stylesheet" href="webjars/bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css" />
+  <!--
+  <link type="text/css" rel="stylesheet" href="resources/css/modeler.css" />
+  -->
+</head>
+<body>
+  <div id="bpmnViewer">
+      <div class="content" id="js-drop-zone">        
+      </div> 
+   
+  </div>
+</div>
+<script>
+  var BpmnViewer = window.BpmnJS;  
+  var traceId = getUrlParameterByName("traceId");
+  var viewer = new BpmnViewer({container: '#js-drop-zone', width: '100%', height: '500px'});
+    var overlays = viewer.get('overlays');
+    var elementRegistry = viewer.get('elementRegistry');
+
+  $(document).ready(function() {
+    loadModel();
+  });
+
+  function loadModel() {
+    $.get('/order-collaboration.bpmn', function(data) {
+       viewer.importXML(data, function(err) {
+         if (err) {
+           console.log('error rendering', err);
+         } else {
+           // zoom to fit full viewport
+           viewer.get('canvas').zoom('fit-viewport');
+           loadData();
+         }
+       });
+    });             
+  }
+
+  function loadData() {
+        $.ajax({
+          type: "GET",
+          url: "/event/" + traceId,
+          success: function (eventList) {
+           addActivityInstances(eventList);                
+          }
+        });
+  }
+  
+  
+  function addActivityInstances(eventList) {
+
+    console.log(eventList);
+
+    for (index = 0; index < eventList.length; ++index) {
+      var event = eventList[index];
+      console.log(event.name);
+      tryToAddOverlay(event.name);
+      tryToAddOverlay('Send_' + event.name);
+      tryToAddOverlay('Receive_' + event.name);
+      
+    }
+  }
+
+  function tryToAddOverlay(id) {
+    if (elementRegistry.get(id)!=null) {
+          overlays.add(id, {
+            position: {top: 0, right: 0},
+            show: {minZoom: 0, maxZoom: 100.0}, 
+            html: '<div class="bpmn-badge">'+'<span class=" glyphicon glyphicon-ok"></span>'+'</div>'
+          });
+    }    
+  }
+
+  function getUrlParameterByName(name) {
+    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+  }  
+</script>
+      
+  </body>
+</html>

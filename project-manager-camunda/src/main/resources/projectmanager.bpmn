@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_00szr9d" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.9.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
+  <bpmn:message id="Message_274lcfh" name="OrderSuccessfulEvent" />
+  <bpmn:message id="Message_2tvue0f" name="ScraperResponseEvent" />
+  <bpmn:message id="Message_3tipjc2" name="JobStatusUpdateEvent" />
+  <bpmn:process id="Process_1t8ysrw" isExecutable="true">
+    <bpmn:startEvent id="Event_1lqsmcv" name="orderPlaced">
+      <bpmn:outgoing>Flow_1epdl2p</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1isgtcg" />
+    </bpmn:startEvent>
+    <bpmn:sendTask id="Activity_0vce9et" name="send verifyOrder request to scraper(s)">
+      <bpmn:incoming>Flow_0bo8l50</bpmn:incoming>
+      <bpmn:outgoing>Flow_0drojh8</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:receiveTask id="Activity_1yzq435" name="Receive verifyOrder response from scraper(s)">
+      <bpmn:incoming>Flow_0drojh8</bpmn:incoming>
+      <bpmn:outgoing>Flow_106lj0v</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:exclusiveGateway id="Gateway_0wswgf0" name="orderVerified?">
+      <bpmn:incoming>Flow_106lj0v</bpmn:incoming>
+      <bpmn:outgoing>Flow_0vljqvk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1hra5ah</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="Event_11h7uz9" name="orderVerified">
+      <bpmn:incoming>Flow_1hra5ah</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_1uzx74q" name="orderRejected">
+      <bpmn:incoming>Flow_0vljqvk</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:callActivity id="Activity_0u467sl" name="findScrapers" calledElement="findscrapers">
+      <bpmn:incoming>Flow_1epdl2p</bpmn:incoming>
+      <bpmn:outgoing>Flow_0bo8l50</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_1epdl2p" sourceRef="Event_1lqsmcv" targetRef="Activity_0u467sl" />
+    <bpmn:sequenceFlow id="Flow_0bo8l50" sourceRef="Activity_0u467sl" targetRef="Activity_0vce9et" />
+    <bpmn:sequenceFlow id="Flow_0drojh8" sourceRef="Activity_0vce9et" targetRef="Activity_1yzq435" />
+    <bpmn:sequenceFlow id="Flow_106lj0v" sourceRef="Activity_1yzq435" targetRef="Gateway_0wswgf0" />
+    <bpmn:sequenceFlow id="Flow_0vljqvk" name="No" sourceRef="Gateway_0wswgf0" targetRef="Event_1uzx74q" />
+    <bpmn:startEvent id="Event_0xizikb" name="orderPaid">
+      <bpmn:outgoing>Flow_01fd1xl</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_13qxh2h" />
+    </bpmn:startEvent>
+    <bpmn:callActivity id="Activity_0ors03p" name="findScrapers" calledElement="findscrapers">
+      <bpmn:incoming>Flow_01fd1xl</bpmn:incoming>
+      <bpmn:outgoing>Flow_0pj5pxj</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_01fd1xl" sourceRef="Event_0xizikb" targetRef="Activity_0ors03p" />
+    <bpmn:sequenceFlow id="Flow_0pj5pxj" sourceRef="Activity_0ors03p" targetRef="Activity_11xt5ct" />
+    <bpmn:sendTask id="Activity_11xt5ct" name="top up tokens for video id" camunda:delegateExpression="#{topUpTokensAdapter}">
+      <bpmn:incoming>Flow_0pj5pxj</bpmn:incoming>
+      <bpmn:outgoing>Flow_14cqlkj</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:receiveTask id="Activity_0vj7vj7" name="wait for scraper to start/continue" messageRef="Message_3tipjc2">
+      <bpmn:incoming>Flow_14cqlkj</bpmn:incoming>
+      <bpmn:outgoing>Flow_0v07fad</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:endEvent id="Event_0wecofi" name="notify customer about successful start">
+      <bpmn:incoming>Flow_0v07fad</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0bfslxw" camunda:delegateExpression="#{NotifyScrapeStartAdapter}" />
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_14cqlkj" sourceRef="Activity_11xt5ct" targetRef="Activity_0vj7vj7" />
+    <bpmn:sequenceFlow id="Flow_0v07fad" sourceRef="Activity_0vj7vj7" targetRef="Event_0wecofi" />
+    <bpmn:sequenceFlow id="Flow_1hra5ah" sourceRef="Gateway_0wswgf0" targetRef="Event_11h7uz9" />
+    <bpmn:textAnnotation id="TextAnnotation_0u7qhkp">
+      <bpmn:text>case: continuing running job (balance: xxx)
+case: continuing stopped job (balance: xxx)
+case: created new job (balance: xxx)</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0ofvhng" sourceRef="TextAnnotation_0u7qhkp" targetRef="Activity_0vj7vj7" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1t8ysrw">
+      <bpmndi:BPMNShape id="BPMNShape_1sgg45n" bpmnElement="TextAnnotation_0u7qhkp">
+        <dc:Bounds x="515" y="520" width="250" height="54" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_026oj84" bpmnElement="Activity_0vce9et">
+        <dc:Bounds x="430" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1cv2do9" bpmnElement="Activity_1yzq435">
+        <dc:Bounds x="590" y="100" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0wma81s" bpmnElement="Gateway_0wswgf0" isMarkerVisible="true">
+        <dc:Bounds x="745" y="115" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="736" y="85" width="69" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1aq7gnl" bpmnElement="Activity_0u467sl">
+        <dc:Bounds x="270" y="100" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0eqlzmq" bpmnElement="Event_1lqsmcv">
+        <dc:Bounds x="172" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="160" y="165" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0shjn7w" bpmnElement="Event_1uzx74q">
+        <dc:Bounds x="852" y="232" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="835" y="275" width="70" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_10yc4w4" bpmnElement="Event_0xizikb">
+        <dc:Bounds x="172" y="412" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="166" y="455" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1f6p0yd" bpmnElement="Activity_0ors03p">
+        <dc:Bounds x="270" y="390" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0v6ftae" bpmnElement="Activity_11xt5ct">
+        <dc:Bounds x="430" y="390" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1as7zrt" bpmnElement="Activity_0vj7vj7">
+        <dc:Bounds x="590" y="390" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1wheqkz" bpmnElement="Event_0wecofi">
+        <dc:Bounds x="752" y="412" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="729" y="455" width="82" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1ukmik9" bpmnElement="Event_11h7uz9">
+        <dc:Bounds x="852" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="839" y="165" width="63" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_0ofvhng_di" bpmnElement="Association_0ofvhng">
+        <di:waypoint x="640" y="520" />
+        <di:waypoint x="640" y="470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_1b2ooug" bpmnElement="Flow_0bo8l50">
+        <di:waypoint x="370" y="140" />
+        <di:waypoint x="430" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_0i5akv8" bpmnElement="Flow_0drojh8">
+        <di:waypoint x="530" y="140" />
+        <di:waypoint x="590" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_1u45lw7" bpmnElement="Flow_106lj0v">
+        <di:waypoint x="690" y="140" />
+        <di:waypoint x="745" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_02scejq" bpmnElement="Flow_0vljqvk">
+        <di:waypoint x="770" y="165" />
+        <di:waypoint x="770" y="250" />
+        <di:waypoint x="852" y="250" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="778" y="193" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_09pzs12" bpmnElement="Flow_1epdl2p">
+        <di:waypoint x="208" y="140" />
+        <di:waypoint x="270" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_1q1p0rz" bpmnElement="Flow_01fd1xl">
+        <di:waypoint x="208" y="430" />
+        <di:waypoint x="270" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_0x3c8fk" bpmnElement="Flow_0pj5pxj">
+        <di:waypoint x="370" y="430" />
+        <di:waypoint x="430" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_1b9uyyp" bpmnElement="Flow_14cqlkj">
+        <di:waypoint x="530" y="430" />
+        <di:waypoint x="590" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_06kumo4" bpmnElement="Flow_0v07fad">
+        <di:waypoint x="690" y="430" />
+        <di:waypoint x="752" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1hra5ah_di" bpmnElement="Flow_1hra5ah">
+        <di:waypoint x="795" y="140" />
+        <di:waypoint x="852" y="140" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

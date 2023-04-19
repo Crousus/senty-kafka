@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class MessageListener {
 
-  private static final String TOPIC_NAME = "flowing-retail";
+  private static final String TOPIC_NAME = "senty";
 
   @Autowired
   private SimpMessagingTemplate simpMessageTemplate;

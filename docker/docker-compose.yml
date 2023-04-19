@@ -23,19 +23,6 @@ services:
     depends_on:
       - zookeeper
 
-  checkout:
-    build:
-      context: ../checkout
-      dockerfile: Dockerfile
-    networks:
-      - senty
-    ports:
-      - "8091:8091"
-    depends_on:
-      - kafka
-    environment:
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-
 networks:
   senty:
     driver: bridge

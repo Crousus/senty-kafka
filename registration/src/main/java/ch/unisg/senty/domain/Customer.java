@@ -13,6 +13,8 @@ public class Customer implements Serializable {
     private String lastName;
     private String email;
     private String password;
+    private boolean mailVerified;
+    private boolean humanApproved;
 
     public Map<String, Object> toMap() {
         Map<String, Object> variables = new HashMap<>();
@@ -21,6 +23,7 @@ public class Customer implements Serializable {
         variables.put("lastName", lastName);
         variables.put("email", email);
         variables.put("password", password);
+        variables.put("mailVerified", mailVerified);
         return variables;
     }
 }

@@ -1,4 +1,4 @@
-# ADR 0004: Finding Active Scrapers using Event-based Approach
+# ADR 0005: Superseed Orchestration vs Choreography
 
 ## Status
 
@@ -21,6 +21,7 @@ Orchestration (with Camunda):
 Independent / Choreography ??? (without Camuda):
 - `scraper`
 - `email-notifier`
+- `comment-analysis`
 
 ## Consequences
 

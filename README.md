@@ -6,9 +6,11 @@ Senty is a simple and lightweight Kafka client for PHP. It is built on top of [r
 
 # How to Run
 
-First, start docker container from `/docker`:
+First, start docker container from `/docker`: `docker-compose -f 
+docker-compose.yml up --build`
 
-`docker-compose -f docker-compose.yml up --build`
+Add an environment variable to the `ScraperApplication` configuration in 
+IntelliJ: `API-KEY=[YOUR-API-KEY]`
 
 Then, run the following services from IntelliJ:
 

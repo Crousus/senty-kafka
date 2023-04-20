@@ -1,6 +1,5 @@
 package ch.unisg.senty.scraperyoutube.messages;
 
-import ch.unisg.senty.emailnotifier.messages.Message;
 import ch.unisg.senty.scraperyoutube.application.ScraperService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -19,26 +18,36 @@ public class MessageListener {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private MessageSender messageSender;
+
     @KafkaListener(id = "scraper-youtube", topics = MessageSender.TOPIC_NAME)
     public void goodsFetchedEventReceived(String messageJson, @Header("type") String messageType) throws Exception {
         System.out.println("Received message: " + messageJson);
 
         if ("PingYouTubeScraperCommand".equals(messageType)) {
-            System.out.println("PingYouTubeScraperCommand received");
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-//            Message<JsonNode> message = objectMapper.readValue(messageJson,
-//                    new TypeReference<Message<JsonNode>>() {
-//            });
-//            IntNode payload = (IntNode) message.getData();
+            Message message = new Message("YouTubeScraperAvailableEvent");
+            messageSender.send(message);
+        }
+
+        if ("VerifyUrlCommand".equals(messageType)) {
+
+            Message<VerifyUrlCommandPayload> message = objectMapper.readValue(messagePayloadJson, new TypeReference<Message<FetchGoodsCommandPayload>>() {});
+
+            FetchGoodsCommandPayload fetchGoodsCommand = message.getData();
+            String pickId = inventoryService.pickItems( //
+                    fetchGoodsCommand.getItems(), fetchGoodsCommand.getReason(), fetchGoodsCommand.getRefId());
+
         }
 
         if ("TopUpTokensCommand".equals(messageType)) {
-
             System.out.println("TopUpTokensCommand received");
-            // Message<JsonNode> message = objectMapper.readValue(messageJson, new TypeReference<Message<JsonNode>>() {
-            // });
-            // IntNode payload = (IntNode) message.getData();
-            // int count = payload.intValue();
         }
     }
 

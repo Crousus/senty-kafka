@@ -22,7 +22,10 @@ public class Message<T> {
   private String correlationid; // id which can be used for correlation later if required
   private String group = "senty";
 
-  
+  public Message(String type) {
+    this.type = type;
+  }
+
   public Message(String type, T payload) {
     this.type = type;
     this.data = payload;

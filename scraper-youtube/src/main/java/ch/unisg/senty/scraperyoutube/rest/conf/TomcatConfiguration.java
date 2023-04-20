@@ -1,4 +1,4 @@
-package ch.unisg.senty.rest.conf;
+package ch.unisg.senty.scraperyoutube.rest.conf;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;

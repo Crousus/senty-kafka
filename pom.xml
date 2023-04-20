@@ -12,7 +12,7 @@
         <module>checkout</module>
         <module>order</module>
         <module>project-manager-camunda</module>
-        <module>scraper</module>
+        <module>scraper-youtube</module>
         <module>comment-analysis</module>
         <module>email-notifier</module>
         <module>monitor</module>

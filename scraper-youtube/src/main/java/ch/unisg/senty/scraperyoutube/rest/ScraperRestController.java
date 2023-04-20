@@ -7,22 +7,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class ShopRestController {
+public class ScraperRestController {
   
   @Autowired
   private MessageSender messageSender;
   
-  @PostMapping(path = "/api/cart/order", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(path = "/api/scraperyoutube/ping")
   public ResponseEntity<String> placeOrder() {
-    Message<String> message = new Message<String>("OrderPlacedEvent", "moin");
+    Message message = new Message("PingYouTubeScraperCommand");
 
     messageSender.send(message);
-
-    System.out.println("MessageSend");
 
     String responseJson = "{\"traceId\": \"" + message.getTraceid() + "\"}";
     return ResponseEntity.status(HttpStatus.OK).body(responseJson);

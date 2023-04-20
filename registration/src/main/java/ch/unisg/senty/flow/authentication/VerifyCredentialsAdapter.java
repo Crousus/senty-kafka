@@ -16,14 +16,15 @@ public class VerifyCredentialsAdapter implements JavaDelegate {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static final String CHECK_CUSTOMER_SQL = "SELECT * FROM customers WHERE email = ? AND password = ?";
+    private static final String CHECK_CUSTOMER_SQL = "SELECT * FROM customers WHERE email = ? AND password = ? AND verified = true";
 
     @Override
     public void execute(DelegateExecution context) {
 
         WorkflowLogger.info(logger, "persistCustomer", "Check customer credentials");
 
-        Customer customer = (Customer) context.getVariable("customer");
+        String email = (String) context.getVariable("email");
+        String password = (String) context.getVariable("password");
 
         try {
             // Create a database connection
@@ -31,28 +32,31 @@ public class VerifyCredentialsAdapter implements JavaDelegate {
 
             // Prepare the SQL statement
             PreparedStatement stmt = conn.prepareStatement(CHECK_CUSTOMER_SQL);
-            stmt.setString(1, customer.getEmail());
-            stmt.setString(2, customer.getPassword());
+            stmt.setString(1, email);
+            stmt.setString(2, password);
 
             // Execute the SQL statement
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
+                Customer customer = new Customer();
                 customer.setCompany(rs.getString("company"));
-                customer.setFirstName(rs.getString("firstName"));
-                customer.setLastName(rs.getString("lastName"));
+                customer.setFirstName(rs.getString("first_name"));
+                customer.setLastName(rs.getString("last_name"));
                 customer.setEmail(rs.getString("email"));
-                customer.setMailVerified(rs.getBoolean("mailVerified"));
-                customer.setHumanApproved(rs.getBoolean("humanApproved"));
+                customer.setMailVerified(rs.getBoolean("mail_verified"));
+                customer.setHumanApproved(rs.getBoolean("human_approved"));
 
                 context.setVariable("customer", customer);
                 context.setVariable("loginSuccessful", true);
+                WorkflowLogger.info(logger, "Login", "Found " + customer +
+                        " row(s) from the customers table");
             } else {
                 context.setVariable("loginSuccessful", false);
-            }
 
-            WorkflowLogger.info(logger, "Login", "Found " + customer +
-                    " row(s) from the customers table");
+                WorkflowLogger.info(logger, "Login", "failed " + email +
+                        " row(s) from the customers table");
+            }
 
             // Close the database connection
             conn.close();

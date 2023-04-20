@@ -1,4 +1,4 @@
-package ch.unisg.senty.flow.authentication;
+package ch.unisg.senty.flow.registration;
 
 import ch.unisg.senty.domain.Customer;
 import ch.unisg.senty.messages.MessageSender;

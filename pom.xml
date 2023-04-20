@@ -15,6 +15,7 @@
         <module>scraper-youtube</module>
         <module>comment-analysis</module>
         <module>email-notifier</module>
+        <module>payment-camunda</module>
         <module>monitor</module>
         <!--
         <module>zeebe-monitor</module>

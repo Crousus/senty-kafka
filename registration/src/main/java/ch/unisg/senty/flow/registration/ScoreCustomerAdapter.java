@@ -1,4 +1,4 @@
-package ch.unisg.senty.flow;
+package ch.unisg.senty.flow.registration;
 
 import ch.unisg.senty.domain.Customer;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ch.unisg.senty.messages.utils.WorkflowLogger;
 
-@Service("ScoreCustomerAdapter")
+@Service
 public class ScoreCustomerAdapter implements JavaDelegate {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -19,11 +19,11 @@ public class ScoreCustomerAdapter implements JavaDelegate {
         String company = ((Customer) context.getVariable("customer")).getCompany();
 
         if (company.equals("Porsche")) { // change to find domain substring in email
-            context.setVariable("automaticProcessing", (boolean)true);
+            context.setVariable("automaticProcessing", true);
             WorkflowLogger.info(logger, "scoreCustomer","Customer is scored automatically");
         }
         else {
-            context.setVariable("automaticProcessing", (boolean)false);
+            context.setVariable("automaticProcessing", false);
             WorkflowLogger.info(logger, "scoreCustomer","Customer needs approval");
         }
 

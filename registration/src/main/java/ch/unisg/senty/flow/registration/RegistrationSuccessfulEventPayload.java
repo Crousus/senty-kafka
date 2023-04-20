@@ -1,4 +1,4 @@
-package ch.unisg.senty.flow;
+package ch.unisg.senty.flow.registration;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

@@ -1,4 +1,4 @@
-package ch.unisg.senty.flow;
+package ch.unisg.senty.flow.registration;
 
 import ch.unisg.senty.messages.Message;
 import ch.unisg.senty.messages.MessageSender;
@@ -20,7 +20,7 @@ public class RegistrationSuccessfulAdapter implements JavaDelegate {
     String customerId = (String) context.getVariable("customerId");
 
     System.out.println("Order Successful");
-
+    //TODO: Send Command to Email Service
     messageSender.send( //
         new Message<RegistrationSuccessfulEventPayload>( //
             "OrderSuccessfulEvent", //

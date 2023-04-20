@@ -10,6 +10,10 @@ public class Order {
   private String customerId;
   private String videoId;
   private String tokens;
+
+  private String email;
+
+  private String password;
   // private String paymentMethod;
 
   public Map<String, Object> toMap() {
@@ -17,6 +21,8 @@ public class Order {
     variables.put("customerId", customerId);
     variables.put("videoId", videoId);
     variables.put("tokens", tokens);
+    variables.put("email", email);
+    variables.put("password", password);
     return variables;
 
   }

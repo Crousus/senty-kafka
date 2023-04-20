@@ -1,4 +1,4 @@
-package ch.unisg.senty.scraper.messages;
+package ch.unisg.senty.scraperyoutube.messages;
 
 import java.time.Instant;
 import java.util.UUID;

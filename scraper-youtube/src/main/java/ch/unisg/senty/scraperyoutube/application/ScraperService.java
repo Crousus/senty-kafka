@@ -1,9 +1,9 @@
-package ch.unisg.senty.scraper.application;
+package ch.unisg.senty.scraperyoutube.application;
 
-import ch.unisg.senty.scraper.domain.Comment;
-import ch.unisg.senty.scraper.domain.TopUp;
-import ch.unisg.senty.scraper.messages.Message;
-import ch.unisg.senty.scraper.messages.MessageSender;
+import ch.unisg.senty.scraperyoutube.domain.Comment;
+import ch.unisg.senty.scraperyoutube.domain.TopUp;
+import ch.unisg.senty.scraperyoutube.messages.Message;
+import ch.unisg.senty.scraperyoutube.messages.MessageSender;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;

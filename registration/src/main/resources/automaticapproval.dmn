@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_0a3z4mj" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.9.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
+  <decision id="Decision_18cbglf" name="Decide if automatic approval">
+    <decisionTable id="DecisionTable_1rsgjns">
+      <input id="Input_1" label="email" camunda:inputVariable="email">
+        <inputExpression id="InputExpression_1" typeRef="string" expressionLanguage="feel">
+          <text>substring(email, indexOf(email, "@") + 1, lastIndexOf(email, ".", lastIndexOf(email, ".") - 1) - indexOf(email, "@") - 1)</text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" label="automatic approval" name="automaticApproval" typeRef="string" />
+      <rule id="DecisionRule_1c52z5o">
+        <inputEntry id="UnaryTests_0fs8llx">
+          <text>"porsche"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1qkuem9">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_04wvd96">
+        <inputEntry id="UnaryTests_1bmthee">
+          <text>"tesla"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ux125o">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1dn7166">
+        <inputEntry id="UnaryTests_1xkynf4">
+          <text>"unisg"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0jj0fcy">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_141bsvw">
+        <inputEntry id="UnaryTests_06ri6h5">
+          <text>"nsa"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0evzzwe">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram>
+      <dmndi:DMNShape dmnElementRef="Decision_18cbglf">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

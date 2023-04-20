@@ -1,4 +1,4 @@
-package ch.unisg.senty.scraper.domain;
+package ch.unisg.senty.scraperyoutube.domain;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package ch.unisg.senty.scraper.messages;
+package ch.unisg.senty.scraperyoutube.messages;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MessageSender {
 
-  public static final String TOPIC_NAME = "scraper-yt";
+  public static final String TOPIC_NAME = "senty";
 
   @Autowired
   private KafkaTemplate<String, String> kafkaTemplate;

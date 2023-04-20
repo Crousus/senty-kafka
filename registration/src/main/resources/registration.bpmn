@@ -11,7 +11,7 @@
     </bpmn:serviceTask>
     <bpmn:endEvent id="Event_07g6ecc" name="Authenticated Outcome Event">
       <bpmn:incoming>Flow_0piuubq</bpmn:incoming>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_10edgp0" camunda:delegateExpression="#{AuthenticationOutcomeAdapter}" />
+      <bpmn:messageEventDefinition id="MessageEventDefinition_10edgp0" camunda:delegateExpression="#{authenticationOutcomeAdapter}" />
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0piuubq" sourceRef="Activity_0qws4eh" targetRef="Event_07g6ecc" />
     <bpmn:dataStoreReference id="DataStoreReference_02h4npc" />
@@ -182,7 +182,7 @@ replace with decision table</bpmn:text>
   <bpmn:message id="Message_17dq459" />
   <bpmn:escalation id="Escalation_0pqfph4" name="Escalation_0pqfph4" />
   <bpmn:message id="Message_01spgmk" name="EmailVerifiedEvent" />
-  <bpmn:message id="Message_0ekgl7a" name="AuthenticationCommand" />
+  <bpmn:message id="Message_0ekgl7a" name="AuthenticationRequestCommand" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="registration">
       <bpmndi:BPMNShape id="TextAnnotation_0f1dqpl_di" bpmnElement="TextAnnotation_0f1dqpl">
@@ -199,6 +199,14 @@ replace with decision table</bpmn:text>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TextAnnotation_05yir0i_di" bpmnElement="TextAnnotation_05yir0i">
         <dc:Bounds x="1200" y="170" width="100" height="41" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1fbfq3i_di" bpmnElement="TextAnnotation_1fbfq3i">
+        <dc:Bounds x="970" y="150" width="100" height="41" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1gh46sr_di" bpmnElement="TextAnnotation_1gh46sr">
+        <dc:Bounds x="1100" y="80" width="100" height="55" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0pt5ksc_di" bpmnElement="Activity_1cy1noj">
@@ -232,14 +240,6 @@ replace with decision table</bpmn:text>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0m9nyhw_di" bpmnElement="Gateway_0m9nyhw" isMarkerVisible="true">
         <dc:Bounds x="1195" y="485" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_1fbfq3i_di" bpmnElement="TextAnnotation_1fbfq3i">
-        <dc:Bounds x="970" y="150" width="100" height="41" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_1gh46sr_di" bpmnElement="TextAnnotation_1gh46sr">
-        <dc:Bounds x="1100" y="80" width="100" height="55" />
-        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1bu8vbe_di" bpmnElement="Gateway_1bu8vbe" isMarkerVisible="true">
         <dc:Bounds x="1445" y="365" width="50" height="50" />
@@ -307,10 +307,6 @@ replace with decision table</bpmn:text>
         <di:waypoint x="450" y="361" />
         <di:waypoint x="520" y="320" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_1p74vdw_di" bpmnElement="Association_1p74vdw">
-        <di:waypoint x="400" y="332" />
-        <di:waypoint x="400" y="250" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Association_1jdasby_di" bpmnElement="Association_1jdasby">
         <di:waypoint x="1668" y="350" />
         <di:waypoint x="1692" y="325" />
@@ -322,6 +318,18 @@ replace with decision table</bpmn:text>
       <bpmndi:BPMNEdge id="Association_0bkb4vn_di" bpmnElement="Association_0bkb4vn">
         <di:waypoint x="1130" y="245" />
         <di:waypoint x="1200" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1dg12j3_di" bpmnElement="Association_1dg12j3">
+        <di:waypoint x="958" y="230" />
+        <di:waypoint x="995" y="191" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1i12pt3_di" bpmnElement="Association_1i12pt3">
+        <di:waypoint x="1088" y="214" />
+        <di:waypoint x="1129" y="135" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1p74vdw_di" bpmnElement="Association_1p74vdw">
+        <di:waypoint x="400" y="332" />
+        <di:waypoint x="400" y="250" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_1m2g1j8_di" bpmnElement="Event_0j5vzff">
         <dc:Bounds x="1062" y="292" width="36" height="36" />
@@ -338,9 +346,21 @@ replace with decision table</bpmn:text>
       <bpmndi:BPMNShape id="Event_16sely3_di" bpmnElement="Event_16sely3">
         <dc:Bounds x="382" y="332" width="36" height="36" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0dkngq6_di" bpmnElement="Flow_0dkngq6">
+        <di:waypoint x="208" y="390" />
+        <di:waypoint x="350" y="390" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DataOutputAssociation_157jd7i_di" bpmnElement="DataOutputAssociation_157jd7i">
         <di:waypoint x="400" y="430" />
         <di:waypoint x="400" y="485" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1r5uha7_di" bpmnElement="Flow_1r5uha7">
+        <di:waypoint x="450" y="390" />
+        <di:waypoint x="510" y="390" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_042knn9_di" bpmnElement="Flow_042knn9">
+        <di:waypoint x="610" y="390" />
+        <di:waypoint x="665" y="390" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0dglba3_di" bpmnElement="Flow_0dglba3">
         <di:waypoint x="690" y="365" />
@@ -352,9 +372,32 @@ replace with decision table</bpmn:text>
         <di:waypoint x="690" y="510" />
         <di:waypoint x="765" y="510" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10rcwbz_di" bpmnElement="Flow_10rcwbz">
+        <di:waypoint x="1080" y="212" />
+        <di:waypoint x="1080" y="130" />
+        <di:waypoint x="790" y="130" />
+        <di:waypoint x="790" y="245" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_028ns9u_di" bpmnElement="Flow_028ns9u">
         <di:waypoint x="815" y="270" />
         <di:waypoint x="870" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1oh2spr_di" bpmnElement="Flow_1oh2spr">
+        <di:waypoint x="790" y="485" />
+        <di:waypoint x="790" y="430" />
+        <di:waypoint x="1220" y="430" />
+        <di:waypoint x="1220" y="485" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="798" y="443" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1gsc7im_di" bpmnElement="Flow_1gsc7im">
+        <di:waypoint x="790" y="535" />
+        <di:waypoint x="790" y="620" />
+        <di:waypoint x="920" y="620" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="799" y="574" width="13" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_03tsq7z_di" bpmnElement="Flow_03tsq7z">
         <di:waypoint x="970" y="270" />
@@ -375,45 +418,19 @@ replace with decision table</bpmn:text>
         <di:waypoint x="1330" y="270" />
         <di:waypoint x="1330" y="365" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1bpathw_di" bpmnElement="Flow_1bpathw">
-        <di:waypoint x="1355" y="390" />
-        <di:waypoint x="1445" y="390" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0dkngq6_di" bpmnElement="Flow_0dkngq6">
-        <di:waypoint x="208" y="390" />
-        <di:waypoint x="350" y="390" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1r5uha7_di" bpmnElement="Flow_1r5uha7">
-        <di:waypoint x="450" y="390" />
-        <di:waypoint x="510" y="390" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_192tj5q_di" bpmnElement="Flow_192tj5q">
         <di:waypoint x="1245" y="510" />
         <di:waypoint x="1330" y="510" />
         <di:waypoint x="1330" y="415" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1oh2spr_di" bpmnElement="Flow_1oh2spr">
-        <di:waypoint x="790" y="485" />
-        <di:waypoint x="790" y="430" />
-        <di:waypoint x="1220" y="430" />
-        <di:waypoint x="1220" y="485" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="798" y="443" width="17" height="14" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNEdge id="Flow_1bpathw_di" bpmnElement="Flow_1bpathw">
+        <di:waypoint x="1355" y="390" />
+        <di:waypoint x="1445" y="390" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_10rcwbz_di" bpmnElement="Flow_10rcwbz">
-        <di:waypoint x="1080" y="212" />
-        <di:waypoint x="1080" y="130" />
-        <di:waypoint x="790" y="130" />
-        <di:waypoint x="790" y="245" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_1dg12j3_di" bpmnElement="Association_1dg12j3">
-        <di:waypoint x="958" y="230" />
-        <di:waypoint x="995" y="191" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_1i12pt3_di" bpmnElement="Association_1i12pt3">
-        <di:waypoint x="1088" y="214" />
-        <di:waypoint x="1129" y="135" />
+      <bpmndi:BPMNEdge id="Flow_0qfjcbd_di" bpmnElement="Flow_0qfjcbd">
+        <di:waypoint x="1180" y="620" />
+        <di:waypoint x="1220" y="620" />
+        <di:waypoint x="1220" y="535" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0i2epk5_di" bpmnElement="Flow_0i2epk5">
         <di:waypoint x="1495" y="390" />
@@ -434,18 +451,6 @@ replace with decision table</bpmn:text>
         <di:waypoint x="1680" y="390" />
         <di:waypoint x="1782" y="390" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_042knn9_di" bpmnElement="Flow_042knn9">
-        <di:waypoint x="610" y="390" />
-        <di:waypoint x="665" y="390" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1gsc7im_di" bpmnElement="Flow_1gsc7im">
-        <di:waypoint x="790" y="535" />
-        <di:waypoint x="790" y="620" />
-        <di:waypoint x="920" y="620" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="799" y="574" width="13" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_06749wr_di" bpmnElement="Flow_06749wr">
         <di:waypoint x="688" y="790" />
         <di:waypoint x="780" y="790" />
@@ -461,11 +466,6 @@ replace with decision table</bpmn:text>
       <bpmndi:BPMNEdge id="Flow_08nernd_di" bpmnElement="Flow_08nernd">
         <di:waypoint x="1020" y="620" />
         <di:waypoint x="1080" y="620" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0qfjcbd_di" bpmnElement="Flow_0qfjcbd">
-        <di:waypoint x="1180" y="620" />
-        <di:waypoint x="1220" y="620" />
-        <di:waypoint x="1220" y="535" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

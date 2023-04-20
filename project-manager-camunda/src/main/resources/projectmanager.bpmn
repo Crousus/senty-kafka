@@ -3,23 +3,20 @@
   <bpmn:message id="Message_274lcfh" name="OrderSuccessfulEvent" />
   <bpmn:message id="Message_2tvue0f" name="ScraperResponseEvent" />
   <bpmn:message id="Message_3tipjc2" name="JobStatusUpdateEvent" />
-  <bpmn:process id="Process_1t8ysrw" isExecutable="true">
+  <bpmn:process id="Projectmanager" isExecutable="true">
     <bpmn:startEvent id="Event_1lqsmcv" name="orderPlaced">
       <bpmn:outgoing>Flow_1epdl2p</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_1isgtcg" messageRef="Message_04g4oho" />
     </bpmn:startEvent>
-    <bpmn:sendTask id="Activity_0vce9et" name="send verifyOrder request to scraper(s)" camunda:delegateExpression="">
+    <bpmn:sendTask id="Activity_0vce9et" name="send verifyOrder request to scraper(s)" camunda:delegateExpression="#{verifyOrderRequestAdapter}">
       <bpmn:incoming>Flow_0bo8l50</bpmn:incoming>
       <bpmn:outgoing>Flow_0drojh8</bpmn:outgoing>
     </bpmn:sendTask>
     <bpmn:exclusiveGateway id="Gateway_0wswgf0" name="orderVerified?">
-      <bpmn:incoming>Flow_0pder58</bpmn:incoming>
+      <bpmn:incoming>Flow_1xu62fp</bpmn:incoming>
       <bpmn:outgoing>Flow_0vljqvk</bpmn:outgoing>
       <bpmn:outgoing>Flow_1hra5ah</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:endEvent id="Event_11h7uz9" name="orderVerified">
-      <bpmn:incoming>Flow_1hra5ah</bpmn:incoming>
-    </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_1epdl2p" sourceRef="Event_1lqsmcv" targetRef="Activity_1omd64e" />
     <bpmn:sequenceFlow id="Flow_0bo8l50" sourceRef="Activity_0u467sl" targetRef="Activity_0vce9et" />
     <bpmn:sequenceFlow id="Flow_0drojh8" sourceRef="Activity_0vce9et" targetRef="Event_0xocohk" />
@@ -30,7 +27,12 @@
       <bpmn:outgoing>Flow_01fd1xl</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_13qxh2h" messageRef="Message_2mj6qdf" />
     </bpmn:startEvent>
-    <bpmn:callActivity id="Activity_0ors03p" name="findScrapers" calledElement="findscrapers">
+    <bpmn:callActivity id="Activity_0ors03p" name="findScrapers" calledElement="findscrapers7">
+      <bpmn:extensionElements>
+        <camunda:in local="true" variables="all" />
+        <camunda:out local="true" variables="all" />
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_01fd1xl</bpmn:incoming>
       <bpmn:outgoing>Flow_0pj5pxj</bpmn:outgoing>
     </bpmn:callActivity>
@@ -54,7 +56,11 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${orderVerified}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:callActivity id="Activity_0u467sl" name="findScrapers" calledElement="findscrapers7">
-      <bpmn:extensionElements />
+      <bpmn:extensionElements>
+        <camunda:in local="true" variables="all" />
+        <camunda:out local="true" variables="all" />
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_08wlz03</bpmn:incoming>
       <bpmn:outgoing>Flow_0bo8l50</bpmn:outgoing>
     </bpmn:callActivity>
@@ -69,7 +75,7 @@
       <bpmn:outgoing>Flow_1of7bbt</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_08wlz03" name="yes" sourceRef="Gateway_075oz6s" targetRef="Activity_0u467sl">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${loginSuccessful}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${PAYLOAD_AuthenticationOutcomeEvent.prop('loginSuccessful').value()}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:exclusiveGateway id="Gateway_1paw0fq">
       <bpmn:incoming>Flow_0vljqvk</bpmn:incoming>
@@ -77,9 +83,9 @@
       <bpmn:incoming>Flow_0t3nlo1</bpmn:incoming>
       <bpmn:outgoing>Flow_1quv541</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_1quv541" sourceRef="Gateway_1paw0fq" targetRef="Event_1uzx74q" />
+    <bpmn:sequenceFlow id="Flow_1quv541" sourceRef="Gateway_1paw0fq" targetRef="Event_1vmh5a6" />
     <bpmn:sequenceFlow id="Flow_1of7bbt" name="no" sourceRef="Gateway_075oz6s" targetRef="Gateway_1paw0fq">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${loginSuccessful == false}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${PAYLOAD_AuthenticationOutcomeEvent.prop('loginSuccessful').value() == false}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0nfl6pf" sourceRef="Event_0f8u8kr" targetRef="Gateway_075oz6s" />
     <bpmn:intermediateCatchEvent id="Event_0f8u8kr" name="Authenticaion outcome received">
@@ -87,7 +93,7 @@
       <bpmn:outgoing>Flow_0nfl6pf</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_09z1jly" messageRef="Message_113te37" />
     </bpmn:intermediateCatchEvent>
-    <bpmn:sequenceFlow id="Flow_0pder58" sourceRef="Event_0xocohk" targetRef="Gateway_0wswgf0" />
+    <bpmn:sequenceFlow id="Flow_0pder58" sourceRef="Event_0xocohk" targetRef="Activity_1l51cu2" />
     <bpmn:intermediateCatchEvent id="Event_0xocohk" name="Receive verifyOrder response from scraper(s)">
       <bpmn:incoming>Flow_0drojh8</bpmn:incoming>
       <bpmn:outgoing>Flow_0pder58</bpmn:outgoing>
@@ -98,9 +104,27 @@
       <bpmn:errorEventDefinition id="ErrorEventDefinition_1pfxjk4" />
     </bpmn:boundaryEvent>
     <bpmn:sequenceFlow id="Flow_0t3nlo1" sourceRef="Event_1ib6139" targetRef="Gateway_1paw0fq" />
+    <bpmn:sequenceFlow id="Flow_1xu62fp" sourceRef="Activity_1l51cu2" targetRef="Gateway_0wswgf0" />
+    <bpmn:serviceTask id="Activity_1l51cu2" name="Evaluate scraper response" camunda:delegateExpression="#{evaluateScraperResponseAdapter}">
+      <bpmn:incoming>Flow_0pder58</bpmn:incoming>
+      <bpmn:outgoing>Flow_1xu62fp</bpmn:outgoing>
+    </bpmn:serviceTask>
     <bpmn:endEvent id="Event_1uzx74q" name="orderRejected">
-      <bpmn:incoming>Flow_1quv541</bpmn:incoming>
+      <bpmn:incoming>Flow_10gxqv8</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1qshaey" camunda:delegateExpression="#{orderRejectedAdapter}" />
     </bpmn:endEvent>
+    <bpmn:endEvent id="Event_11h7uz9" name="fullfill order &#10;command">
+      <bpmn:incoming>Flow_1hra5ah</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1dyb225" camunda:delegateExpression="#{fullfillOrderAdapter}" />
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_10gxqv8" sourceRef="Event_1vmh5a6" targetRef="Event_1uzx74q" />
+    <bpmn:intermediateCatchEvent id="Event_1vmh5a6">
+      <bpmn:incoming>Flow_1quv541</bpmn:incoming>
+      <bpmn:outgoing>Flow_10gxqv8</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1llizvc">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT20S</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
     <bpmn:textAnnotation id="TextAnnotation_0u7qhkp">
       <bpmn:text>case: continuing running job (balance: xxx)
 case: continuing stopped job (balance: xxx)
@@ -111,28 +135,20 @@ case: created new job (balance: xxx)</bpmn:text>
   <bpmn:message id="Message_113te37" name="AuthenticationOutcomeEvent" />
   <bpmn:message id="Message_01lgtmn" name="OrderVerifiedEvent" />
   <bpmn:message id="Message_04g4oho" name="OrderPlacedEvent" />
-  <bpmn:message id="Message_2mj6qdf" name="orderPaidEvent" />
+  <bpmn:message id="Message_2mj6qdf" name="FullfillOrderCommand" />
+  <bpmn:message id="Message_2fb2qi2" name="OrderRejectedEvent" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1t8ysrw">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Projectmanager">
       <bpmndi:BPMNShape id="BPMNShape_0eqlzmq" bpmnElement="Event_1lqsmcv">
         <dc:Bounds x="172" y="122" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="160" y="165" width="60" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_026oj84" bpmnElement="Activity_0vce9et">
-        <dc:Bounds x="790" y="100" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0wma81s" bpmnElement="Gateway_0wswgf0" isMarkerVisible="true">
         <dc:Bounds x="1105" y="115" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1096" y="85" width="69" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1ukmik9" bpmnElement="Event_11h7uz9">
-        <dc:Bounds x="1212" y="122" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1199" y="165" width="63" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_10yc4w4" bpmnElement="Event_0xizikb">
@@ -181,21 +197,37 @@ case: created new job (balance: xxx)</bpmn:text>
           <dc:Bounds x="406" y="165" width="88" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1a5x45s_di" bpmnElement="Event_0xocohk">
-        <dc:Bounds x="982" y="122" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="965" y="165" width="71" height="53" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1sgg45n" bpmnElement="TextAnnotation_0u7qhkp">
         <dc:Bounds x="875" y="520" width="250" height="54" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1qt0w27_di" bpmnElement="Event_1uzx74q">
-        <dc:Bounds x="1212" y="242" width="36" height="36" />
+      <bpmndi:BPMNShape id="BPMNShape_026oj84" bpmnElement="Activity_0vce9et">
+        <dc:Bounds x="790" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1a5x45s_di" bpmnElement="Event_0xocohk">
+        <dc:Bounds x="922" y="122" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1195" y="285" width="70" height="14" />
+          <dc:Bounds x="905" y="165" width="71" height="53" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1h5adpm_di" bpmnElement="Activity_1l51cu2">
+        <dc:Bounds x="980" y="100" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_07p94o4_di" bpmnElement="Event_11h7uz9">
+        <dc:Bounds x="1262" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1253" y="165" width="56" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0x4fgwf_di" bpmnElement="Event_1uzx74q">
+        <dc:Bounds x="1262" y="242" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1245" y="285" width="70" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0tqyzog_di" bpmnElement="Event_1vmh5a6">
+        <dc:Bounds x="1192" y="242" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_01od9bb_di" bpmnElement="Event_1ib6139">
         <dc:Bounds x="632" y="162" width="36" height="36" />
@@ -210,13 +242,13 @@ case: created new job (balance: xxx)</bpmn:text>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_0i5akv8" bpmnElement="Flow_0drojh8">
         <di:waypoint x="890" y="140" />
-        <di:waypoint x="982" y="140" />
+        <di:waypoint x="922" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_02scejq" bpmnElement="Flow_0vljqvk">
         <di:waypoint x="1130" y="165" />
         <di:waypoint x="1130" y="235" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1157" y="217" width="15" height="14" />
+          <dc:Bounds x="1132" y="185" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_1q1p0rz" bpmnElement="Flow_01fd1xl">
@@ -237,9 +269,9 @@ case: created new job (balance: xxx)</bpmn:text>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1hra5ah_di" bpmnElement="Flow_1hra5ah">
         <di:waypoint x="1155" y="140" />
-        <di:waypoint x="1212" y="140" />
+        <di:waypoint x="1262" y="140" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1175" y="122" width="17" height="14" />
+          <dc:Bounds x="1180" y="122" width="17" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0f22irx_di" bpmnElement="Flow_0f22irx">
@@ -255,7 +287,7 @@ case: created new job (balance: xxx)</bpmn:text>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1quv541_di" bpmnElement="Flow_1quv541">
         <di:waypoint x="1155" y="260" />
-        <di:waypoint x="1212" y="260" />
+        <di:waypoint x="1192" y="260" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1of7bbt_di" bpmnElement="Flow_1of7bbt">
         <di:waypoint x="560" y="165" />
@@ -271,8 +303,8 @@ case: created new job (balance: xxx)</bpmn:text>
         <di:waypoint x="535" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0pder58_di" bpmnElement="Flow_0pder58">
-        <di:waypoint x="1018" y="140" />
-        <di:waypoint x="1105" y="140" />
+        <di:waypoint x="958" y="140" />
+        <di:waypoint x="980" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0t3nlo1_di" bpmnElement="Flow_0t3nlo1">
         <di:waypoint x="650" y="198" />
@@ -282,6 +314,14 @@ case: created new job (balance: xxx)</bpmn:text>
       <bpmndi:BPMNEdge id="Association_0ofvhng_di" bpmnElement="Association_0ofvhng">
         <di:waypoint x="1000" y="520" />
         <di:waypoint x="1000" y="470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1xu62fp_di" bpmnElement="Flow_1xu62fp">
+        <di:waypoint x="1080" y="140" />
+        <di:waypoint x="1105" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10gxqv8_di" bpmnElement="Flow_10gxqv8">
+        <di:waypoint x="1228" y="260" />
+        <di:waypoint x="1262" y="260" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

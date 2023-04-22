@@ -25,7 +25,7 @@ public class NotifyScrapeStartAdapter implements JavaDelegate {
             "ScrapeStartEvent", //
             traceId, //
             new ScrapeStartEventPayload() //
-              .setOrderId("sdsad")));
+              .setOrderId(traceId)));
   }
 
   

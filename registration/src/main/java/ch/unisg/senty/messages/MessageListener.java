@@ -1,8 +1,11 @@
-package ch.unisg.senty.order.messages;
+package ch.unisg.senty.messages;
 
-import java.io.IOException;
-
-import ch.unisg.senty.order.domain.Order;
+import ch.unisg.senty.domain.Customer;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.spin.plugin.variable.SpinValues;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +14,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 
 @Component
 public class MessageListener {
@@ -32,14 +31,14 @@ public class MessageListener {
    *
    */
   @Transactional
-  public void orderPlacedReceived(Message<Order> message) throws JsonParseException, JsonMappingException, IOException {
+  public void orderPlacedReceived(Message<Customer> message) throws JsonParseException, JsonMappingException, IOException {
     // persist domain entit
 
-    Order order = message.getData();
-    System.out.println("New order placed, start flow. " + order);
+    Customer customer = message.getData();
+    System.out.println("New order placed, start flow. " + customer);
 
     camunda.getRuntimeService().createMessageCorrelation(message.getType())
-            .processInstanceBusinessKey(message.getTraceid()).setVariable("order", order)
+            .processInstanceBusinessKey(message.getTraceid()).setVariable("customer", customer)
             .correlateWithResult();
   }
   
@@ -51,10 +50,12 @@ public class MessageListener {
    * It might make more sense to handle each and every message type individually.
    */
   @Transactional
-  @KafkaListener(id = "project-manager", topics = MessageSender.TOPIC_NAME)
+  @KafkaListener(id = "authentication-service", topics = MessageSender.TOPIC_NAME)
   public void messageReceived(String messagePayloadJson, @Header("type") String messageType) throws Exception{
-    if ("OrderPlacedEvent".equals(messageType) || "FullfillOrderCommand".equals(messageType)) {
-      orderPlacedReceived(objectMapper.readValue(messagePayloadJson, new TypeReference<Message<Order>>() {}));
+
+    System.out.println("Message received: " + messageType);
+    if ("AuthenticationRequestCommand".equals(messageType)) {
+      orderPlacedReceived(objectMapper.readValue(messagePayloadJson, new TypeReference<Message<Customer>>() {}));
     }
     Message<JsonNode> message = objectMapper.readValue( //
         messagePayloadJson, //
@@ -67,7 +68,6 @@ public class MessageListener {
     
     if (correlatingInstances==1) {
       System.out.println("Correlating " + message + " to waiting flow instance");
-      System.out.println(message.getData().toString());
       
       camunda.getRuntimeService().createMessageCorrelation(message.getType())
         .processInstanceBusinessKey(message.getTraceid())
@@ -75,13 +75,6 @@ public class MessageListener {
             "PAYLOAD_" + message.getType(), // 
             SpinValues.jsonValue(message.getData().toString()).create())//
         .correlateWithResult();
-
-      camunda.getRuntimeService().createExecutionQuery().processInstanceBusinessKey(message.getTraceid()).list().forEach(e -> {
-        camunda.getRuntimeService().getVariables(e.getId()).forEach((s, o) -> {
-          System.out.println(s + " " + o);
-        });
-
-      });
     }
   }
 

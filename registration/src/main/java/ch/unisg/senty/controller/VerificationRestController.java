@@ -28,7 +28,7 @@ public class VerificationRestController {
         try {
 
             Execution execution = runtimeService.createExecutionQuery()
-                    .messageEventSubscriptionName("EmailVerifiedEvent")
+                    .messageEventSubscriptionName("VerifyEmailEvent")
                     .processInstanceId(traceId)
                     .singleResult();
 
@@ -38,7 +38,7 @@ public class VerificationRestController {
 
             runtimeService.setVariable(execution.getId(), "customer", customer);
 
-            runtimeService.messageEventReceived("EmailVerifiedEvent", execution.getId());
+            runtimeService.messageEventReceived("VerifyEmailEvent", execution.getId());
 
             return "{\"status\":\"completed\", \"traceId\": \"" + execution.getId() + "\"}";
         } catch (Exception e) {

@@ -42,6 +42,10 @@ public class MessageListener {
     public void messageReceived(String messageJson, @Header("type") String messageType) throws Exception {
         System.out.println("Received message: " + messageJson);
 
+        JsonNode jsonNode = objectMapper.readTree(messageJson);
+        System.out.println(jsonNode);
+        String traceId = jsonNode.get("traceid").asText();
+
         if ("PingYouTubeScraperCommand".equals(messageType)) {
             try {
                 Thread.sleep(2000);
@@ -49,12 +53,13 @@ public class MessageListener {
                 e.printStackTrace();
             }
 
-            Message message = new Message("YouTubeScraperAvailableEvent");
+            Message message = new Message("ScraperResponseEvent");
+
+            message.setTraceid(traceId);
             messageSender.send(message);
         }
 
-        if ("VerifyUrlCommand".equals(messageType)) {
-            JsonNode jsonNode = objectMapper.readTree(messageJson);
+        if ("VerifyOrderCommand".equals(messageType)) {
             String url = jsonNode.get("data").asText();
 
             // e.g., https://www.youtube.com/watch?v=s_Nbg1tdDUA
@@ -77,7 +82,8 @@ public class MessageListener {
                 if (items.size() == 0) {
                     // System.out.println("Video ID not found");
                     // send event (without payload)
-                    Message<String> message = new Message<String>("UrlVerifiedEvent");
+                    Message<String> message = new Message<String>("OrderVerifiedEvent");
+                    message.setTraceid(traceId);
                     messageSender.send(message);
                     return;
                 }
@@ -87,19 +93,31 @@ public class MessageListener {
 
                 // TODO: change to "UrlVerificationSucceededEvent" and "UrlVerificationFailedEvent"
                 // send event
-                Message<Map<String, String>> message = new Message<Map<String, String>>("UrlVerifiedEvent", filteredData);
+                Message<Map<String, String>> message = new Message<Map<String, String>>("OrderVerifiedEvent", filteredData);
+                message.setTraceid(traceId);
                 messageSender.send(message);
 
             } else {
                 // System.out.println("Could not parse video ID");
                 // send event (without payload)
-                Message<String> message = new Message<String>("UrlVerifiedEvent");
+                Message<Map<String, String>> message = new Message<Map<String, String>>("OrderVerifiedEvent");
+                message.setTraceid(traceId);
+                Map<String, String> data = new HashMap<>();
+                data.put("title", "false");
+                message.setData(data);
                 messageSender.send(message);
             }
         }
 
         if ("TopUpTokensCommand".equals(messageType)) {
             System.out.println("TopUpTokensCommand received");
+
+            Message<Map<String, String>> message = new Message<Map<String, String>>("JobStatusUpdateEvent");
+            message.setTraceid(traceId);
+            Map<String, String> data = new HashMap<>();
+            data.put("jobstatus", "received");
+            message.setData(data);
+            messageSender.send(message);
         }
     }
 

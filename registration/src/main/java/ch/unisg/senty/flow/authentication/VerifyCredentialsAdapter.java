@@ -23,8 +23,8 @@ public class VerifyCredentialsAdapter implements JavaDelegate {
 
         WorkflowLogger.info(logger, "persistCustomer", "Check customer credentials");
 
-        String email = (String) context.getVariable("email");
-        String password = (String) context.getVariable("password");
+        Customer customer = (Customer) context.getVariable("customer");
+
 
         try {
             // Create a database connection
@@ -32,20 +32,19 @@ public class VerifyCredentialsAdapter implements JavaDelegate {
 
             // Prepare the SQL statement
             PreparedStatement stmt = conn.prepareStatement(CHECK_CUSTOMER_SQL);
-            stmt.setString(1, email);
-            stmt.setString(2, password);
+            stmt.setString(1, customer.getEmail());
+            stmt.setString(2, customer.getPassword());
 
             // Execute the SQL statement
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                Customer customer = new Customer();
                 customer.setCompany(rs.getString("company"));
                 customer.setFirstName(rs.getString("first_name"));
                 customer.setLastName(rs.getString("last_name"));
                 customer.setEmail(rs.getString("email"));
-                customer.setMailVerified(rs.getBoolean("mail_verified"));
-                customer.setHumanApproved(rs.getBoolean("human_approved"));
+                customer.setMailVerified(rs.getBoolean("verified"));
+                customer.setHumanApproved(rs.getBoolean("verified"));
 
                 context.setVariable("customer", customer);
                 context.setVariable("loginSuccessful", true);
@@ -54,7 +53,7 @@ public class VerifyCredentialsAdapter implements JavaDelegate {
             } else {
                 context.setVariable("loginSuccessful", false);
 
-                WorkflowLogger.info(logger, "Login", "failed " + email +
+                WorkflowLogger.info(logger, "Login", "failed " + customer +
                         " row(s) from the customers table");
             }
 

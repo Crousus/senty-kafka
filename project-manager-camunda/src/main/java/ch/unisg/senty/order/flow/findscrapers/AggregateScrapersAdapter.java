@@ -8,6 +8,6 @@ import org.springframework.stereotype.Service;
 public class AggregateScrapersAdapter implements JavaDelegate {
     @Override
     public void execute(DelegateExecution context) throws Exception {
-
+        System.out.println("AggregateScrapersAdapter");
     }
 }

@@ -27,6 +27,6 @@ public class SendMailVerificationCommandAdapter implements JavaDelegate {
                         traceId, //
                         new EmailVerificationCommandPayload() //
                                 .setEmail(customer.getEmail())
-                                .setMailContent("Please verify your email address")));
+                                .setMailContent("email="+customer.getEmail()+"&traceId="+context.getProcessInstanceId())));
     }
 }

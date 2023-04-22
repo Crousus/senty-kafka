@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class CredentialsVerificationOutcomeEventPayload {
+public class AuthenticationOutcomeAdapterEventPayload {
     private Customer customer;
     private boolean loginSuccessful;
 }

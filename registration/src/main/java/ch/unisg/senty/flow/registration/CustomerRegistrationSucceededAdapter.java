@@ -21,12 +21,10 @@ public class CustomerRegistrationSucceededAdapter implements JavaDelegate {
         Customer customer = (Customer) context.getVariable("customer");
 
         messageSender.send( //
-                new Message<CustomerRegistrationSuceededEventPayload>( //
+                new Message<String>( //
                         "CustomerRegistrationSucceededEvent", //
                         traceId, //
-                        new CustomerRegistrationSuceededEventPayload() //
-                                .setCustomer(customer)
-                              ));
+                        customer.getEmail()));
     }
 }
 

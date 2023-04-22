@@ -27,7 +27,7 @@ public class ShopRestController {
   public ResponseEntity<String> placeOrder(@RequestBody Order order) {
     if (order.getCompanyName().isEmpty()) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Company Name is required\"}");
-    } else if (order.getCustomerId().isEmpty()) {
+    } else if (order.getEmail().isEmpty()) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Customer ID is required\"}");
     } else if (order.getVideoId().isEmpty()) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Video ID is required\"}");

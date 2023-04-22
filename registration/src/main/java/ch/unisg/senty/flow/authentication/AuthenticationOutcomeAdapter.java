@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CredentialsVerificationOutcomeAdapter implements JavaDelegate {
+public class AuthenticationOutcomeAdapter implements JavaDelegate {
 
     @Autowired
     private MessageSender messageSender;
@@ -22,10 +22,10 @@ public class CredentialsVerificationOutcomeAdapter implements JavaDelegate {
         boolean loginSuccessful = (boolean) context.getVariable("loginSuccessful");
 
         messageSender.send( //
-                new Message<CredentialsVerificationOutcomeEventPayload>( //
-                        "CredentialsVerificationOutcomeEvent", //
+                new Message<AuthenticationOutcomeAdapterEventPayload>( //
+                        "AuthenticationOutcomeEvent", //
                         traceId, //
-                        new CredentialsVerificationOutcomeEventPayload() //
+                        new AuthenticationOutcomeAdapterEventPayload() //
                                 .setCustomer(customer)
                                 .setLoginSuccessful(loginSuccessful)));
     }

@@ -11,10 +11,12 @@ import java.util.UUID;
 @Data
 public class Order {
   private String companyName;
-  private String customerId;
+  private String email;
   private String videoId;
   private String tokens;
   private String voucher;
   private String platform;
+
+  private String password;
   // private String paymentMethod;
 }

@@ -181,7 +181,7 @@ replace with decision table</bpmn:text>
   <bpmn:message id="Message_3f6drvr" name="CustomerRegistrationRequestedEvent" />
   <bpmn:message id="Message_17dq459" />
   <bpmn:escalation id="Escalation_0pqfph4" name="Escalation_0pqfph4" />
-  <bpmn:message id="Message_01spgmk" name="EmailVerifiedEvent" />
+  <bpmn:message id="Message_01spgmk" name="VerifyEmailEvent" />
   <bpmn:message id="Message_0ekgl7a" name="AuthenticationRequestCommand" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="registration">

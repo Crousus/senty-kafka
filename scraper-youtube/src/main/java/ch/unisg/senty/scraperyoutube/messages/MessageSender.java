@@ -9,6 +9,8 @@ import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import ch.unisg.senty.scraperyoutube.messages.Message;
+
 /**
  * Helper to send messages, currently nailed to Kafka, but could also send via AMQP (e.g. RabbitMQ) or
  * any other transport easily

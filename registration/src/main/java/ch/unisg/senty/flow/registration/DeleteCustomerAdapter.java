@@ -18,7 +18,7 @@ public class DeleteCustomerAdapter implements JavaDelegate {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static final String DELETE_CUSTOMER_SQL = "DELETE FROM customers WHERE email = ? AND approved = false";
+    private static final String DELETE_CUSTOMER_SQL = "DELETE FROM customers WHERE email = ? AND verified = false";
 
     @Override
     public void execute(DelegateExecution execution) {

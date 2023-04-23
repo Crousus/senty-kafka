@@ -1,20 +1,16 @@
 package ch.unisg.senty.messages;
 
-import ch.unisg.senty.scraperyoutube.application.ScraperService;
+import ch.unisg.senty.domain.Order;
+import ch.unisg.senty.domain.OrderStatus;
+import ch.unisg.senty.repositoy.OrderRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Optional;
 
 
 @Component
@@ -26,6 +22,9 @@ public class MessageListener {
     @Autowired
     private MessageSender messageSender;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
     @KafkaListener(id = "scraper-youtube", topics = MessageSender.TOPIC_NAME)
     public void messageReceived(String messageJson, @Header("type") String messageType) throws Exception {
         System.out.println("Received message: " + messageJson);
@@ -33,123 +32,46 @@ public class MessageListener {
         JsonNode jsonNode = objectMapper.readTree(messageJson);
         System.out.println(jsonNode);
         String traceId = jsonNode.get("traceid").asText();
+        OrderStatus status = OrderStatus.CREATED;
 
-        if ("PingYouTubeScraperCommand".equals(messageType)) {
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        switch (messageType) {
+            case "AuthenticationOutcomeEvent":
+                System.out.println(messageJson);
+                boolean auth = jsonNode.get("data").get("loginSuccessful").asBoolean();
 
-            Message message = new Message("ScraperResponseEvent");
+                if (auth)
+                    status = OrderStatus.AUTHENTICATED;
 
-            message.setTraceid(traceId);
-            messageSender.send(message);
+                break;
+            case "OrderVerifiedEvent":
+                String verified = jsonNode.get("data").get("title").asText();
+                if (!verified.equals("false"))
+                    status = OrderStatus.VERIFIED;
+
+                break;
+            case "FullfillOrderCommand":
+                //Currently the happy path. In the future here will be a real order paid event or sth
+                status = OrderStatus.PAID;
+                break;
+            case "ScrapeStartEvent":
+                status = OrderStatus.FULFILLED;
+                break;
+            default:
+                System.out.println("Unknown message type: " + messageType);
+                return;
         }
 
-        if ("VerifyOrderCommand".equals(messageType)) {
-            String url = jsonNode.get("data").asText();
+        System.out.println(messageJson);
 
-            // e.g., https://www.youtube.com/watch?v=s_Nbg1tdDUA
-            // e.g., https://youtu.be/s_Nbg1tdDUA
-            Pattern pattern = Pattern.compile("(?<=v=|/videos/|/embed/|youtu\\.be/|/v/|/e/)[^#&?\\n]*");
-            Matcher matcher = pattern.matcher(url);
+        Optional<Order> order = orderRepository.findById(traceId);
 
-            if (matcher.find()) {
-                // parse video ID
-                String videoId = matcher.group();
-                // System.out.println("Video ID: " + videoId);
-
-                // fetch video data
-                String videoData = fetchVideoData(videoId, apiKey);
-                // System.out.println("Video Data: " + videoData);
-
-                // check if length of "items" is 0
-                JsonNode rootNode = objectMapper.readTree(videoData);
-                JsonNode items = rootNode.get("items");
-                if (items.size() == 0) {
-                    // System.out.println("Video ID not found");
-                    // send event (without payload)
-                    Message<String> message = new Message<String>("OrderVerifiedEvent");
-                    message.setTraceid(traceId);
-                    messageSender.send(message);
-                    return;
-                }
-
-                Map<String, String> filteredData = filterVideoData(videoData);
-                // System.out.println("Filtered Data: " + filteredData);
-
-                // TODO: change to "UrlVerificationSucceededEvent" and "UrlVerificationFailedEvent"
-                // send event
-                Message<Map<String, String>> message = new Message<Map<String, String>>("OrderVerifiedEvent", filteredData);
-                message.setTraceid(traceId);
-                messageSender.send(message);
-
-            } else {
-                // System.out.println("Could not parse video ID");
-                // send event (without payload)
-                Message<Map<String, String>> message = new Message<Map<String, String>>("OrderVerifiedEvent");
-                message.setTraceid(traceId);
-                Map<String, String> data = new HashMap<>();
-                data.put("title", "false");
-                message.setData(data);
-                messageSender.send(message);
-            }
+        if (!order.isPresent()) {
+            System.out.println("Order not found");
+            return;
         }
 
-        if ("TopUpTokensCommand".equals(messageType)) {
-            System.out.println("TopUpTokensCommand received");
-
-            Message<Map<String, String>> message = new Message<Map<String, String>>("JobStatusUpdateEvent");
-            message.setTraceid(traceId);
-            Map<String, String> data = new HashMap<>();
-            data.put("jobstatus", "received");
-            message.setData(data);
-            messageSender.send(message);
-        }
-    }
-
-    private String fetchVideoData(String videoId, String apiKey) {
-        WebClient webClient = WebClient.create();
-        String url = "https://www.googleapis.com/youtube/v3/videos?id=" + videoId + "&part=snippet,statistics&key=" + apiKey;
-
-        Mono<String> response = webClient.get()
-                .uri(url)
-                .header("Accept", "application/json")
-                .retrieve()
-                .bodyToMono(String.class);
-
-        return response.block();
-    }
-
-    private Map<String, String> filterVideoData(String videoData) throws IOException {
-        // Deserialize JSON response
-        JsonNode rootNode = objectMapper.readTree(videoData);
-
-        // Extract desired fields
-        JsonNode videoNode = rootNode.path("items").get(0);
-        JsonNode snippetNode = videoNode.path("snippet");
-        JsonNode statisticsNode = videoNode.path("statistics");
-
-        String publishedAt = snippetNode.path("publishedAt").asText();
-        String title = snippetNode.path("title").asText();
-        String defaultThumbnailUrl = snippetNode.path("thumbnails").path("default").path("url").asText();
-        String channelTitle = snippetNode.path("channelTitle").asText();
-
-        String viewCount = statisticsNode.path("viewCount").asText();
-        String likeCount = statisticsNode.path("likeCount").asText();
-        String commentCount = statisticsNode.path("commentCount").asText();
-
-        // Create a new HashMap and insert extracted fields
-        Map<String, String> filteredData = new HashMap<>();
-        filteredData.put("title", title);
-        filteredData.put("channelTitle", channelTitle);
-        filteredData.put("publishedAt", publishedAt);
-        filteredData.put("defaultThumbnailUrl", defaultThumbnailUrl);
-        filteredData.put("viewCount", viewCount);
-        filteredData.put("likeCount", likeCount);
-        filteredData.put("commentCount", commentCount);
-
-        return filteredData;
+        Order foundOrder = order.get();
+        foundOrder.setStatus(status);
+        orderRepository.save(foundOrder);
     }
 }

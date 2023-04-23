@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0q2vo5y" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.9.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0q2vo5y" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.8.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
   <bpmn:process id="registration" name="Registration" isExecutable="true">
     <bpmn:sequenceFlow id="Flow_06749wr" sourceRef="Event_1evog26" targetRef="Activity_0qws4eh" />
     <bpmn:serviceTask id="Activity_0qws4eh" name="Authenticate Credentials" camunda:delegateExpression="#{verifyCredentialsAdapter}">
@@ -173,10 +173,33 @@
     <bpmn:association id="Association_1i12pt3" sourceRef="Event_17r9u6p" targetRef="TextAnnotation_1gh46sr" />
     <bpmn:association id="Association_1p74vdw" associationDirection="One" sourceRef="Event_16sely3" targetRef="Activity_0226ao0" />
     <bpmn:textAnnotation id="TextAnnotation_1a6a6ks">
-      <bpmn:text>//TODO
-replace with decision table</bpmn:text>
+      <bpmn:text>known companies don't need admin approval</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Association_1mcmpl9" sourceRef="Activity_0hy122b" targetRef="TextAnnotation_1a6a6ks" />
+    <bpmn:textAnnotation id="TextAnnotation_12npyu5">
+      <bpmn:text>In case the registration is not completed</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1avyt0y" sourceRef="Activity_0226ao0" targetRef="TextAnnotation_12npyu5" />
+    <bpmn:textAnnotation id="TextAnnotation_0edyx7d">
+      <bpmn:text>triggered over api endpoint</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_12k5znw" sourceRef="Event_0ovc6fn" targetRef="TextAnnotation_0edyx7d" />
+    <bpmn:textAnnotation id="TextAnnotation_13wij6x">
+      <bpmn:text>extract approval outcome for evaluation</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1y1dlv1" sourceRef="Activity_03mmrrr" targetRef="TextAnnotation_13wij6x" />
+    <bpmn:textAnnotation id="TextAnnotation_0r4duxn">
+      <bpmn:text>compensate if unsuccessful</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0z2ldmz" sourceRef="Event_0suo2q0" targetRef="TextAnnotation_0r4duxn" />
+    <bpmn:textAnnotation id="TextAnnotation_1yzk4rz">
+      <bpmn:text>email and password are checked.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0jz32qi" sourceRef="Activity_0qws4eh" targetRef="TextAnnotation_1yzk4rz" />
+    <bpmn:textAnnotation id="TextAnnotation_11aqhhm">
+      <bpmn:text>event produces a "loginSuccessful" field</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_04n5k7g" sourceRef="Event_07g6ecc" targetRef="TextAnnotation_11aqhhm" />
   </bpmn:process>
   <bpmn:message id="Message_3f6drvr" name="CustomerRegistrationRequestedEvent" />
   <bpmn:message id="Message_17dq459" />
@@ -185,7 +208,35 @@ replace with decision table</bpmn:text>
   <bpmn:message id="Message_0ekgl7a" name="AuthenticationRequestCommand" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="registration">
-      <bpmndi:BPMNShape id="Activity_0akhu8l_di" bpmnElement="Activity_0qws4eh">
+      <bpmndi:BPMNShape id="TextAnnotation_12npyu5_di" bpmnElement="TextAnnotation_12npyu5">
+        <dc:Bounds x="450" y="90" width="100" height="55" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0edyx7d_di" bpmnElement="TextAnnotation_0edyx7d">
+        <dc:Bounds x="210" y="290" width="100" height="41" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1a6a6ks_di" bpmnElement="TextAnnotation_1a6a6ks">
+        <dc:Bounds x="510" y="460" width="100" height="70" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_13wij6x_di" bpmnElement="TextAnnotation_13wij6x">
+        <dc:Bounds x="1220" y="670" width="100" height="55" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0r4duxn_di" bpmnElement="TextAnnotation_0r4duxn">
+        <dc:Bounds x="1750" y="500" width="100" height="41" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1yzk4rz_di" bpmnElement="TextAnnotation_1yzk4rz">
+        <dc:Bounds x="880" y="670" width="100" height="55" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_11aqhhm_di" bpmnElement="TextAnnotation_11aqhhm">
+        <dc:Bounds x="1145" y="810" width="150" height="50" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0akhu8l_di" bpmnElement="Activity_0qws4eh" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
         <dc:Bounds x="780" y="750" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
@@ -195,16 +246,13 @@ replace with decision table</bpmn:text>
           <dc:Bounds x="973" y="815" width="77" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DataStoreReference_02h4npc_di" bpmnElement="DataStoreReference_02h4npc">
-        <dc:Bounds x="805" y="865" width="50" height="50" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0ovc6fn_di" bpmnElement="Event_0ovc6fn">
         <dc:Bounds x="172" y="372" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="161" y="415" width="59" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0pt5ksc_di" bpmnElement="Activity_1cy1noj">
+      <bpmndi:BPMNShape id="Activity_0pt5ksc_di" bpmnElement="Activity_1cy1noj" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
         <dc:Bounds x="350" y="350" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DataStoreReference_0rqcgtm_di" bpmnElement="DataStoreReference_0rqcgtm">
@@ -251,7 +299,7 @@ replace with decision table</bpmn:text>
           <dc:Bounds x="1447" y="341" width="47" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1gkhdso_di" bpmnElement="Activity_1dpsp9n">
+      <bpmndi:BPMNShape id="Activity_1gkhdso_di" bpmnElement="Activity_1dpsp9n" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
         <dc:Bounds x="1580" y="350" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0pmcjgn_di" bpmnElement="Event_0suo2q0" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
@@ -260,13 +308,13 @@ replace with decision table</bpmn:text>
           <dc:Bounds x="1585" y="535" width="90" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_08j5ljl" bpmnElement="Activity_0hy122b">
+      <bpmndi:BPMNShape id="BPMNShape_08j5ljl" bpmnElement="Activity_0hy122b" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
         <dc:Bounds x="510" y="350" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_07mgg9k" bpmnElement="Activity_05t1hql">
         <dc:Bounds x="920" y="580" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1i59gyu_di" bpmnElement="Activity_0226ao0">
+      <bpmndi:BPMNShape id="Activity_1i59gyu_di" bpmnElement="Activity_0226ao0" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
         <dc:Bounds x="350" y="170" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0eamqod_di" bpmnElement="Event_0lx0lv9" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
@@ -275,7 +323,7 @@ replace with decision table</bpmn:text>
           <dc:Bounds x="1762" y="415" width="77" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0g2qfwi_di" bpmnElement="Activity_03mmrrr">
+      <bpmndi:BPMNShape id="Activity_0g2qfwi_di" bpmnElement="Activity_03mmrrr" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
         <dc:Bounds x="1080" y="580" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
@@ -299,11 +347,38 @@ replace with decision table</bpmn:text>
         <dc:Bounds x="1100" y="80" width="100" height="55" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_1a6a6ks_di" bpmnElement="TextAnnotation_1a6a6ks">
-        <dc:Bounds x="500" y="495" width="100" height="55" />
-        <bpmndi:BPMNLabel />
+      <bpmndi:BPMNShape id="DataStoreReference_02h4npc_di" bpmnElement="DataStoreReference_02h4npc">
+        <dc:Bounds x="805" y="955" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_16sely3_di" bpmnElement="Event_16sely3">
+      <bpmndi:BPMNEdge id="Association_1avyt0y_di" bpmnElement="Association_1avyt0y">
+        <di:waypoint x="438" y="170" />
+        <di:waypoint x="462" y="145" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_12k5znw_di" bpmnElement="Association_12k5znw">
+        <di:waypoint x="201" y="376" />
+        <di:waypoint x="239" y="331" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1mcmpl9_di" bpmnElement="Association_1mcmpl9">
+        <di:waypoint x="560" y="430" />
+        <di:waypoint x="559" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1y1dlv1_di" bpmnElement="Association_1y1dlv1">
+        <di:waypoint x="1180" y="643" />
+        <di:waypoint x="1238" y="670" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0z2ldmz_di" bpmnElement="Association_0z2ldmz">
+        <di:waypoint x="1648" y="512" />
+        <di:waypoint x="1750" y="521" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0jz32qi_di" bpmnElement="Association_0jz32qi">
+        <di:waypoint x="868" y="750" />
+        <di:waypoint x="892" y="725" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_04n5k7g_di" bpmnElement="Association_04n5k7g">
+        <di:waypoint x="1028" y="793" />
+        <di:waypoint x="1145" y="816" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_16sely3_di" bpmnElement="Event_16sely3" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
         <dc:Bounds x="382" y="332" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1m2g1j8_di" bpmnElement="Event_0j5vzff" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
@@ -324,7 +399,7 @@ replace with decision table</bpmn:text>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DataOutputAssociation_1tawggx_di" bpmnElement="DataOutputAssociation_1tawggx">
         <di:waypoint x="830" y="830" />
-        <di:waypoint x="830" y="865" />
+        <di:waypoint x="830" y="955" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0piuubq_di" bpmnElement="Flow_0piuubq">
         <di:waypoint x="880" y="790" />
@@ -462,10 +537,6 @@ replace with decision table</bpmn:text>
       <bpmndi:BPMNEdge id="Association_1p74vdw_di" bpmnElement="Association_1p74vdw">
         <di:waypoint x="400" y="332" />
         <di:waypoint x="400" y="250" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_1mcmpl9_di" bpmnElement="Association_1mcmpl9">
-        <di:waypoint x="557" y="430" />
-        <di:waypoint x="551" y="495" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

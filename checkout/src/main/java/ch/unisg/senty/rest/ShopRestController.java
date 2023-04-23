@@ -56,27 +56,15 @@ public class ShopRestController {
     return ResponseEntity.status(HttpStatus.OK).body(responseJson);
   }
 
-  @GetMapping(path = "/api/cart/order/id/{traceId}")
-  public ResponseEntity<String> checkOrderById(@PathVariable String traceId) {
+  @GetMapping(path = "/api/cart/order/id/{traceId}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity checkOrderById(@PathVariable String traceId) {
     Optional<Order> order = orderRepository.findById(traceId);
 
     if (!order.isPresent()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\": \"Order not found\"}");
     }
     Order presentOrder = order.get();
-    String responseJson = "{\"traceId\": \"" + presentOrder.getOrderId() + "\", \"status\": \"" + presentOrder.getStatus() + "\"}";
-    return ResponseEntity.status(HttpStatus.OK).body(responseJson);
+    return ResponseEntity.status(HttpStatus.OK).body(order);
   }
 
-  @GetMapping(path = "/api/cart/order/email/{email}")
-  public ResponseEntity<String> checkOrderByMail(@PathVariable String email) {
-    Order order = orderRepository.findByEmail(email);
-
-    if (order == null) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\": \"Order not found\"}");
-    }
-
-    String responseJson = "{\"traceId\": \"" + order.getOrderId() + "\", \"status\": \"" + order.getStatus() + "\"}";
-    return ResponseEntity.status(HttpStatus.OK).body(responseJson);
-  }
 }

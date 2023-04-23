@@ -11,16 +11,18 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-@Service
+@Configuration
 public class PersistCustomerAdapter implements JavaDelegate {
 
     static final String JDBC_DRIVER = "org.h2.Driver";
 
-    @Autowired
-    private Environment env;
+    @Value("${spring.datasource.url}")
+    private String datasource = "jdbc:h2:file:./test";
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -31,7 +33,7 @@ public class PersistCustomerAdapter implements JavaDelegate {
 
             Class.forName(JDBC_DRIVER);
             // Create a database connection
-            Connection conn = DriverManager.getConnection(env.getProperty("spring.datasource.url"), "sa", "");
+            Connection conn = DriverManager.getConnection(datasource, "sa", "");
 
             // Create a new statement
             PreparedStatement stmt = conn.prepareStatement("""
@@ -66,7 +68,7 @@ public class PersistCustomerAdapter implements JavaDelegate {
 
         try {
             // Create a database connection
-            Connection conn = DriverManager.getConnection(env.getProperty("spring.datasource.url"), "sa", "");
+            Connection conn = DriverManager.getConnection(datasource, "sa", "");
 
             // Prepare the SQL statement
             PreparedStatement stmt = conn.prepareStatement(INSERT_CUSTOMER_SQL);

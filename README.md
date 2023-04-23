@@ -17,15 +17,38 @@ Then, run the following services from IntelliJ:
 - `ProjectManagerCamundaApplication`
 - `CheckoutApplication`
 - `OrderApplication`
+- `RegistrationApplication`'
 - `EmailNotifierApplication`
-- `ScraperApplication`
+- `ScraperApplication` (scraper-youtube)
 
 // TODO: maybe we will put this in a docker script
 
-By heading to [http://localhost:8091/shop.html](http://localhost:8091/shop.html), you now see a checkout form where you can place a new order.
 
 By heading to [http://localhost:8093/camunda/app/welcome/default/#!/login](http://localhost:8093/camunda/app/welcome/default/#!/login), you can then access the Camunda Cockpit.
 
+user/pw: demo
+
+### Register a user:
+
+- [localhost:8096/registration](localhost:8096/registration)
+- Put in the following JSON body with your data
+`{
+  "company": "PORSCHE",
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "your email",
+  "password": "mypassword"
+  }`
+
+- verify your email by clicking on the link in the email you received (email only works if verified on my mailgun account, so you mihgt need to enter your own api key in the email-service)
+- this is an example verification string: `localhost:8096/verify?email=john.doe@example.com&traceId=5bf59967-df3b-11ed-aae2-34298f74d12c`
+- The trace id here is the id of the process instance in Camunda. You can find it in the Camunda Cockpit.
+
+### Place an Order
+
+By heading to http://localhost:8091/shop.html, you now see a checkout form where you can place a new order.
+
+### Other stuff
 
 Assignments covered:
 - Exercise 2: Kafka with Spring
@@ -36,6 +59,8 @@ Assignments covered:
 ![img.png](img.png)
 
 This exercise was inspired by the Flowing retail example especially the creation of producers and consumers and the concepts we had in Lecture 2. Especially the four different patterns of Event-Driven Architectures were kept in mind planning and beginning the senty project. Since the lecture was also about choreography we thought about which different coupling forces will be needed in our project. We decided to go for the Event notification with the mail service as our first EDA Pattern implemented.
+
+
 
 - Exercise 3: Process Orchestration with Camunda 
 

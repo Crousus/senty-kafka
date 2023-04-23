@@ -6,6 +6,7 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
@@ -15,6 +16,9 @@ import java.util.Map;
 public class VerifyCredentialsAdapter implements JavaDelegate {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Value("${spring.datasource.url}")
+    private String datasource;
 
     private static final String CHECK_CUSTOMER_SQL = "SELECT * FROM customers WHERE email = ? AND password = ? AND verified = true";
 
@@ -28,7 +32,7 @@ public class VerifyCredentialsAdapter implements JavaDelegate {
 
         try {
             // Create a database connection
-            Connection conn = DriverManager.getConnection("jdbc:h2:~/test", "sa", "");
+            Connection conn = DriverManager.getConnection(datasource, "sa", "");
 
             // Prepare the SQL statement
             PreparedStatement stmt = conn.prepareStatement(CHECK_CUSTOMER_SQL);
@@ -61,6 +65,7 @@ public class VerifyCredentialsAdapter implements JavaDelegate {
             conn.close();
         } catch (SQLException e) {
             logger.error("Error removing customer from database", e);
+            context.setVariable("loginSuccessful", false);
         }
     }
 }

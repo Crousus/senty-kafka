@@ -25,11 +25,6 @@ the scraper.
 
 ## Consequences
 
-1. Separation of concerns: The scraper service will only be responsible for 
-   processing orders and will not need to be concerned with how the orders are 
-   assigned to it. This separation of concerns will make the system more 
-   modular and easier to maintain.
-2. Fault tolerance: The project-manager service will be more strongly becoming 
-   a single point of failure because of its "orchestrating" role. However, 
-   with the decoupling of services, the system will be more fault-tolerant 
-   as services can continue to operate independently if one service fails.
+1. Centralized control: The orchestration approach provides centralized control over the workflow, which can simplify the management of complex processes.
+2. Performance and scalability: The orchestrated approach may introduce performance bottlenecks and affect scalability, particularly if the project-manager service becomes overwhelmed with tasks. Careful planning and monitoring of the system's performance will be required to mitigate these concerns.
+3. Modularity: The updated project setup with the addition of the checkout service further modularizes the system, making it easier to maintain and evolve individual components.

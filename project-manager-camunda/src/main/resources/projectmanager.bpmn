@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_00szr9d" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.8.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_00szr9d" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.9.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
   <bpmn:message id="Message_274lcfh" name="OrderSuccessfulEvent" />
   <bpmn:message id="Message_2tvue0f" name="ScraperResponseEvent" />
   <bpmn:message id="Message_3tipjc2" name="JobStatusUpdateEvent" />
@@ -131,13 +131,13 @@ case: created new job (balance: xxx)</bpmn:text>
   <bpmn:message id="Message_2fb2qi2" name="OrderRejectedEvent" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Projectmanager">
-      <bpmndi:BPMNShape id="BPMNShape_0eqlzmq" bpmnElement="Event_1lqsmcv">
+      <bpmndi:BPMNShape id="BPMNShape_0eqlzmq" bpmnElement="Event_1lqsmcv" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
         <dc:Bounds x="172" y="122" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="160" y="165" width="60" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_026oj84" bpmnElement="Activity_0vce9et">
+      <bpmndi:BPMNShape id="BPMNShape_026oj84" bpmnElement="Activity_0vce9et" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
         <dc:Bounds x="790" y="100" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0wma81s" bpmnElement="Gateway_0wswgf0" isMarkerVisible="true">
@@ -146,7 +146,7 @@ case: created new job (balance: xxx)</bpmn:text>
           <dc:Bounds x="1096" y="85" width="69" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_10yc4w4" bpmnElement="Event_0xizikb">
+      <bpmndi:BPMNShape id="BPMNShape_10yc4w4" bpmnElement="Event_0xizikb" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
         <dc:Bounds x="532" y="412" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="526" y="455" width="48" height="14" />
@@ -156,14 +156,14 @@ case: created new job (balance: xxx)</bpmn:text>
         <dc:Bounds x="630" y="390" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_0v6ftae" bpmnElement="Activity_11xt5ct">
+      <bpmndi:BPMNShape id="BPMNShape_0v6ftae" bpmnElement="Activity_11xt5ct" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
         <dc:Bounds x="790" y="390" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1as7zrt" bpmnElement="Activity_0vj7vj7">
+      <bpmndi:BPMNShape id="BPMNShape_1as7zrt" bpmnElement="Activity_0vj7vj7" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
         <dc:Bounds x="950" y="390" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1wheqkz" bpmnElement="Event_0wecofi">
+      <bpmndi:BPMNShape id="BPMNShape_1wheqkz" bpmnElement="Event_0wecofi" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
         <dc:Bounds x="1112" y="412" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1089" y="455" width="82" height="40" />
@@ -173,7 +173,7 @@ case: created new job (balance: xxx)</bpmn:text>
         <dc:Bounds x="630" y="100" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_13x4tmf_di" bpmnElement="Activity_1omd64e">
+      <bpmndi:BPMNShape id="Activity_13x4tmf_di" bpmnElement="Activity_1omd64e" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
         <dc:Bounds x="270" y="100" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
@@ -186,13 +186,13 @@ case: created new job (balance: xxx)</bpmn:text>
       <bpmndi:BPMNShape id="Gateway_1paw0fq_di" bpmnElement="Gateway_1paw0fq" isMarkerVisible="true">
         <dc:Bounds x="1105" y="235" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0r1y9fw_di" bpmnElement="Event_0f8u8kr">
+      <bpmndi:BPMNShape id="Event_0r1y9fw_di" bpmnElement="Event_0f8u8kr" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
         <dc:Bounds x="432" y="122" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="406" y="165" width="88" height="27" />
+          <dc:Bounds x="407" y="165" width="87" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1a5x45s_di" bpmnElement="Event_0xocohk">
+      <bpmndi:BPMNShape id="Event_1a5x45s_di" bpmnElement="Event_0xocohk" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
         <dc:Bounds x="922" y="122" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="905" y="165" width="71" height="53" />
@@ -202,13 +202,13 @@ case: created new job (balance: xxx)</bpmn:text>
         <dc:Bounds x="980" y="100" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0x4fgwf_di" bpmnElement="Event_1uzx74q">
+      <bpmndi:BPMNShape id="Event_0x4fgwf_di" bpmnElement="Event_1uzx74q" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
         <dc:Bounds x="1262" y="242" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1245" y="285" width="70" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_07p94o4_di" bpmnElement="Event_11h7uz9">
+      <bpmndi:BPMNShape id="Event_07p94o4_di" bpmnElement="Event_11h7uz9" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
         <dc:Bounds x="1262" y="122" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1253" y="165" width="56" height="27" />
@@ -218,7 +218,7 @@ case: created new job (balance: xxx)</bpmn:text>
         <dc:Bounds x="875" y="520" width="250" height="54" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_01od9bb_di" bpmnElement="Event_1ib6139">
+      <bpmndi:BPMNShape id="Event_01od9bb_di" bpmnElement="Event_1ib6139" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
         <dc:Bounds x="632" y="162" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_09pzs12" bpmnElement="Flow_1epdl2p">

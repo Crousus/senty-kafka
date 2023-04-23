@@ -8,6 +8,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
@@ -20,6 +21,9 @@ import java.sql.SQLException;
 public class VerifyCustomerMailAdapter implements JavaDelegate {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private Environment env;
 
     @Autowired
     private MessageSender messageSender;
@@ -35,7 +39,7 @@ public class VerifyCustomerMailAdapter implements JavaDelegate {
 
         try {
             // Create a database connection
-            Connection conn = DriverManager.getConnection("jdbc:h2:~/test", "sa", "");
+            Connection conn = DriverManager.getConnection(env.getProperty("spring.datasource.url"), "sa", "");
 
             // Prepare the SQL statement
             PreparedStatement stmt = conn.prepareStatement(UPDATE_CUSTOMER_SQL);

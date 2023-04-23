@@ -64,7 +64,7 @@ public class ShopRestController {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\": \"Order not found\"}");
     }
     Order presentOrder = order.get();
-    return ResponseEntity.status(HttpStatus.OK).body(order);
+    return ResponseEntity.status(HttpStatus.OK).body(presentOrder);
   }
 
 }

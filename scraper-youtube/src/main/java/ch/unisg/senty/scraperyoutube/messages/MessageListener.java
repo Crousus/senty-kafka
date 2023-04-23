@@ -47,6 +47,7 @@ public class MessageListener {
         String traceId = jsonNode.get("traceid").asText();
 
         if ("PingYouTubeScraperCommand".equals(messageType)) {
+            //Delay so we can see it work a bit :)
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {

@@ -18,8 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MessageSender {
 
-  @Value("senty")
-  public String topicName;
+  public static final String TOPIC_NAME = "senty";
 
   @Autowired
   private KafkaTemplate<String, String> kafkaTemplate;
@@ -29,7 +28,7 @@ public class MessageSender {
 
   @Bean
   public NewTopic autoCreateTopicOnStartupIfNotExistant() {
-    return TopicBuilder.name(topicName).partitions(1).replicas(1).build();
+    return TopicBuilder.name(TOPIC_NAME).partitions(1).replicas(1).build();
   }
 
   public void send(Message<?> m) {

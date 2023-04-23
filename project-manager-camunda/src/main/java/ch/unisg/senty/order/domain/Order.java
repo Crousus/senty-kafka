@@ -16,7 +16,8 @@ public class Order {
   private String email;
 
   private String password;
-  // private String paymentMethod;
+
+  private OrderStatus status;
 
   public Map<String, Object> toMap() {
     Map<String, Object> variables = new HashMap<>();
@@ -24,6 +25,10 @@ public class Order {
     variables.put("tokens", tokens);
     variables.put("email", email);
     variables.put("password", password);
+    variables.put("voucher", voucher);
+    variables.put("platform", platform);
+    variables.put("companyName", companyName);
+    variables.put("status", status);
     return variables;
 
   }

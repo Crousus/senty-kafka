@@ -13,19 +13,21 @@ As we advanced our project setup, we need to reconsider how to handle communicat
 In our updated project, we will adopt a hybrid approach that leverages both orchestration and choreography, as well as events and commands:
 
 Orchestration (via Camunda):
-- `project-manager-camunda`: Retrieves events from other services and sends commands
+- `project-manager-camunda`: Receives events from other services and sends commands
 - `payment`: Receives command and sends event
-- `registration`: Retrieves command and sends event
+- `registration`: Receives command and sends event
 
 Choreography:
-- `scraper`: Retrieves commands and sends events
-- `email-notifier`: Retrieves event
-- `comment-analysis`: Retrieves event and sends event
+- `scraper`: Receives commands and sends events
+- `email-notifier`: Receives event
+- `comment-analysis`: Receives event and sends event
 - `checkout`: Sends event
 
 The following diagram illustrates our Event Chain, which reflects the changes in terms of orchestration vs. choreography as well as events vs. commands:
 
 ![0005-event-chain.png](imgs/0005-event-chain.png)
+
+As shown in the event chain, the project manager has a sequence of actions to fulfill an order. Hence, our business logic already implements a process that reduces errors as much as possible. For example, we first verify the user's inputs before retrieving any payment. This reduces unnecessary complexity as we can be sure that an order is processed in the most proficient way for both the user and our system.
 
 ## Consequences
 

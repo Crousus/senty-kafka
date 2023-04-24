@@ -38,7 +38,7 @@ public class MessageListener {
     @Autowired
     private MessageSender messageSender;
 
-    @KafkaListener(id = "scraper-youtube", topics = MessageSender.TOPIC_NAME)
+    @KafkaListener(id = "scraper-youtubee", topics = MessageSender.TOPIC_NAME)
     public void messageReceived(String messageJson, @Header("type") String messageType) throws Exception {
         System.out.println("Received message: " + messageJson);
 

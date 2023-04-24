@@ -1,11 +1,11 @@
-version: "3"
+version: "4"
 
 services:
   zookeeper:
-    image: "bitnami/zookeeper:latest"
+    image: "bitnami/zookeeper:3.7.1-debian-11-r98"
     hostname: zookeeper
     networks:
-      - flowing
+      - senty
     ports:
       - 2181:2181
     environment:
@@ -13,57 +13,23 @@ services:
       ALLOW_ANONYMOUS_LOGIN: 'yes'
 
   kafka:
-    image: "bitnami/kafka:latest"
+    image: "bitnami/kafka:3.2.3-debian-11-r58"
     hostname: kafka
     networks:
-      - flowing
+      - senty
     ports:
       - 9092:9092
       - 29092:29092
     environment:
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_PORT: 9092
       KAFKA_ADVERTISED_HOST_NAME: localhost
-      ALLOW_PLAINTEXT_LISTENER: 'yes'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_LISTENERS: PLAINTEXT://:9092,PLAINTEXT_HOST://:29092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_ADVERTISED_PORT: 9092
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     depends_on:
       - zookeeper
 
-  mongodb:
-    image: mongo
-    container_name: mongodb
-    restart: unless-stopped
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: 8nP7s0a    # Can not be changed again later on
-    volumes:
-      - database:/data/db
-    networks:
-      - senty
-
-  dbadmin:
-    image: mongo-express
-    container_name: dbadmin
-    restart: unless-stopped
-    ports:
-      - "8089:8081"
-    environment:
-      ME_CONFIG_BASICAUTH_USERNAME: admin    # Access to web interface: username
-      ME_CONFIG_BASICAUTH_PASSWORD: admin   # Access to web interface: password
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: 8nP7s0a  # must correspond to the db
-      ME_CONFIG_MONGODB_PORT: 27017 # Default 27017
-      ME_CONFIG_MONGODB_SERVER: mongodb
-    networks:
-      - senty
 networks:
   senty:
     driver: bridge
-
-volumes:
-  database:

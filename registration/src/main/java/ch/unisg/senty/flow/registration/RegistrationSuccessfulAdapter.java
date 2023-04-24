@@ -1,5 +1,6 @@
 package ch.unisg.senty.flow.registration;
 
+import ch.unisg.senty.domain.Customer;
 import ch.unisg.senty.messages.Message;
 import ch.unisg.senty.messages.MessageSender;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -17,16 +18,15 @@ public class RegistrationSuccessfulAdapter implements JavaDelegate {
   public void execute(DelegateExecution context) throws Exception {
     String traceId = context.getProcessBusinessKey();
 
-    String customerId = (String) context.getVariable("customerId");
+    Customer customer = (Customer) context.getVariable("customer");
 
     System.out.println("Order Successful");
     //TODO: Send Command to Email Service
     messageSender.send( //
-        new Message<RegistrationSuccessfulEventPayload>( //
+        new Message<Customer>( //
             "OrderSuccessfulEvent", //
             traceId, //
-            new RegistrationSuccessfulEventPayload() //
-              .setCustomerId(customerId)));
+            customer));
   }
 
   

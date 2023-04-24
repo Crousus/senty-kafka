@@ -12,8 +12,8 @@ import java.util.UUID;
 @Component
 public class EmailService {
 
-  public String sendEmail(String content) {
-    System.out.println("Sending Mail");
+  public String sendEmail(String content, String recipient) {
+    System.out.println("Sending Mail: " + content);
 
     Mailer mailer = MailerBuilder
             .withSMTPServerHost("smtp.mailgun.org")
@@ -24,7 +24,7 @@ public class EmailService {
 
     Email email = EmailBuilder.startingBlank()
             .from("postmaster@sandbox40cfeb661b37499fb93ad47f53c543a4.mailgun.org")
-            .to("Johannes Wenz", "johannesandreas.wenz@student.unisg.ch")
+            .to("Our valuable Customer", recipient)
             .withSubject("Senty System Notification")
             .withPlainText(content)
             .buildEmail();

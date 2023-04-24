@@ -23,8 +23,6 @@ public class AuthenticationRequestCommandAdapter implements JavaDelegate {
         String email = order.getEmail();
         String password = order.getPassword();
 
-        System.out.println("Email: " + email);
-
         messageSender.send( //
                 new Message<AuthenticationRequestCommandPayload>( //
                         "AuthenticationRequestCommand", //

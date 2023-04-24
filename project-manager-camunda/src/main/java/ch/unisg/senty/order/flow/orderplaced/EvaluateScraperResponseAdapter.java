@@ -13,6 +13,8 @@ public class EvaluateScraperResponseAdapter implements JavaDelegate {
         JacksonJsonNode response = (JacksonJsonNode) context.getVariable("PAYLOAD_OrderVerifiedEvent");
         System.out.println(response);
 
+
+        //when the field is set to "title" = false then the order is not verified
         String title = response.prop("title").stringValue();
 
         context.setVariable("orderVerified", !title.equals("false"));

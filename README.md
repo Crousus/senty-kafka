@@ -6,29 +6,32 @@ First, start docker container from `/docker`: `docker-compose -f
 docker-compose.yml up --build`
 
 Add an environment variable to the `ScraperApplication` configuration in 
-IntelliJ: `API-KEY=[YOUR-API-KEY]`. Further instructions on how to obtain an 
+IntelliJ: `API-KEY=[YOUR-API-KEY]` to make it work. Further instructions on how to obtain the 
 API key can be found in our submitted report.
 
 Then, run the following services from IntelliJ:
 
 - `ProjectManagerCamundaApplication`
 - `CheckoutApplication`
-- `OrderApplication`
-- `RegistrationApplication`'
+- `RegistrationApplication`
 - `EmailNotifierApplication`
 - `ScraperApplication` (scraper-youtube)
+- `MonitorApplication`
+
+The other services are irrelevant for now!
 
 By heading to [http://localhost:8091/shop.html](http://localhost:8091/shop.html), you now see a checkout form where you can place a new order.
 
 By heading to [http://localhost:8093/camunda/app/welcome/default/#!/login](http://localhost:8093/camunda/app/welcome/default/#!/login), you can then access the Camunda Cockpit.
-
-Thank you!
 user/pw: demo
+
+
+
 
 ### Register a user:
 
 - [localhost:8096/registration](localhost:8096/registration)
-- Put in the following JSON body with your data
+- POST the following JSON body with your data
 `{
   "company": "PORSCHE",
   "firstName": "John",
@@ -45,3 +48,4 @@ user/pw: demo
 
 By heading to http://localhost:8091/shop.html, you now see a checkout form where you can place a new order.
 
+Thank you!

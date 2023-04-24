@@ -30,13 +30,11 @@ public class MessageListener {
         System.out.println("Received message: " + messageJson);
 
         JsonNode jsonNode = objectMapper.readTree(messageJson);
-        System.out.println(jsonNode);
         String traceId = jsonNode.get("traceid").asText();
         OrderStatus status = OrderStatus.CREATED;
 
         switch (messageType) {
             case "AuthenticationOutcomeEvent":
-                System.out.println(messageJson);
                 boolean auth = jsonNode.get("data").get("loginSuccessful").asBoolean();
 
                 if (auth)
@@ -44,8 +42,11 @@ public class MessageListener {
 
                 break;
             case "OrderVerifiedEvent":
-                String verified = jsonNode.get("data").get("title").asText();
-                if (!verified.equals("false"))
+                JsonNode verified = jsonNode.get("data");
+                if (verified == null)
+                    break;
+                String outcome = verified.get("title").asText();
+                if (!outcome.equals("false"))
                     status = OrderStatus.VERIFIED;
 
                 break;
@@ -56,12 +57,13 @@ public class MessageListener {
             case "ScrapeStartEvent":
                 status = OrderStatus.FULFILLED;
                 break;
+            case "OrderRejectedEvent":
+                status = OrderStatus.REJECTED;
+                break;
             default:
                 System.out.println("Unknown message type: " + messageType);
                 return;
         }
-
-        System.out.println(messageJson);
 
         Optional<Order> order = orderRepository.findById(traceId);
 

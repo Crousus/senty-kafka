@@ -29,7 +29,7 @@
       <label for="password">Password</label>
       <input type="password" id="password" name="password" required />
 
-      <label for="video-id">Video ID</label>
+      <label for="video-id">URL</label>
       <input type="text" id="video-id" name="video-id" required />
 
       <label for="tokens">Tokens</label>
@@ -74,7 +74,22 @@
     <br />
 
     <table id="order-status-table" border="1" cellpadding="10" cellspacing="0">
-      <!-- ... -->
+      <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Company Name</th>
+        <th>Email</th>
+        <th>Video ID</th>
+        <th>Tokens</th>
+        <th>Voucher</th>
+        <th>Platform</th>
+        <th>Password</th>
+        <th>Status</th>
+      </tr>
+      </thead>
+      <tbody>
+      <!-- Rows will be added dynamically here -->
+      </tbody>
     </table>
 
     <br /><br /><br />
@@ -137,7 +152,7 @@
           return;
         }
 
-        var url = 'http://localhost:8091/api/cart/order/id/72025b05-05e8-4872-889c-075b5fc63343';
+        var url = 'http://localhost:8091/api/cart/order/id/' + currentTraceId;
 
         $.ajax({
           url: url,
@@ -146,8 +161,9 @@
             var table = document.getElementById('order-status-table');
             var tbody = table.querySelector('tbody');
 
-            var newRow = '<tr>' +
-                    '<td>' + response.orderId + '</td>' +
+            var newRow = document.createElement('tr');
+
+            newRow.innerHTML = '<td>' + response.orderId + '</td>' +
                     '<td>' + response.companyName + '</td>' +
                     '<td>' + response.email + '</td>' +
                     '<td>' + response.videoId + '</td>' +
@@ -155,17 +171,15 @@
                     '<td>' + (response.voucher || '') + '</td>' +
                     '<td>' + response.platform + '</td>' +
                     '<td>' + response.password + '</td>' +
-                    '<td>' + response.status + '</td>' +
-                    '</tr>';
+                    '<td>' + response.status + '</td>';
 
-            tbody.innerHTML = newRow;
+            tbody.appendChild(newRow);
           },
           error: function() {
             alert('Error retrieving order status');
           }
         });
       }
-
       function toggleVoucherField() {
         var voucherField = document.getElementById("voucher-code-field");
         var tokensSelect = document.getElementById("tokens");

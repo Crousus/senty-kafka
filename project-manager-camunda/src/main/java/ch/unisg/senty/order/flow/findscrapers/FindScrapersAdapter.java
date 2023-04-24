@@ -17,7 +17,6 @@ public class FindScrapersAdapter implements JavaDelegate {
     public void execute(DelegateExecution context) throws Exception {
         String traceId = context.getProcessBusinessKey();
 
-        System.out.println(traceId);
         messageSender.send( //
                 new Message<>( //
                         "PingYouTubeScraperCommand", //

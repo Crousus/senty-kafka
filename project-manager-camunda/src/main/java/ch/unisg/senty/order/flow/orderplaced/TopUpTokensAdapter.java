@@ -1,4 +1,4 @@
-package ch.unisg.senty.order.flow;
+package ch.unisg.senty.order.flow.orderplaced;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;

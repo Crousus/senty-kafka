@@ -46,8 +46,11 @@ public class ShopRestController {
 
     Message<Order> message = new Message<Order>("OrderPlacedEvent", order);
     order.setOrderId(message.getTraceid());
+
+    //save the order into db
     orderRepository.save(order);
 
+    //kickoff workflow
     messageSender.send(message);
 
     System.out.println("MessageSend");
@@ -56,6 +59,11 @@ public class ShopRestController {
     return ResponseEntity.status(HttpStatus.OK).body(responseJson);
   }
 
+  /*
+    * This method is used to check the status of the order
+    * @param traceId takes in the traceid as input
+    * @return returns the status of the order
+    */
   @GetMapping(path = "/api/cart/order/id/{traceId}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity checkOrderById(@PathVariable String traceId) {
     Optional<Order> order = orderRepository.findById(traceId);

@@ -1,5 +1,6 @@
-package ch.unisg.senty.order.flow;
+package ch.unisg.senty.order.flow.orderplaced;
 
+import ch.unisg.senty.order.domain.Order;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +21,13 @@ public class NotifyScrapeStartAdapter implements JavaDelegate {
 
     System.out.println("Scrape job placed Successful");
 
+    Order order = (Order) context.getVariable("order");
+
     messageSender.send( //
-        new Message<ScrapeStartEventPayload>( //
+        new Message<Order>( //
             "ScrapeStartEvent", //
             traceId, //
-            new ScrapeStartEventPayload() //
-              .setOrderId(traceId)));
+            order));
   }
 
   

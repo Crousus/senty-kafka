@@ -1,4 +1,4 @@
-package ch.unisg.senty.order.flow;
+package ch.unisg.senty.order.flow.orderplaced;
 
 public class TopUpCommandPayload {
   

@@ -22,18 +22,9 @@ public class MessageListener {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private HashSet<String> eventsAndCommands = new HashSet<>();
-
-    public MessageListener() {
-        Collections.addAll(eventsAndCommands,
-                "CommentCountMilestoneEvent",
-                "OrderRejectedEvent",
-                "VerifyEmailCommand",
-                "OrderSuccessfulEvent",
-                "CustomerRegistrationSucceededEvent");
-    }
     @KafkaListener(id = "email-notifier", topics = MessageSender.TOPIC_NAME)
-    public void goodsFetchedEventReceived(String messageJson, @Header("type") String messageType) throws Exception {
+    public void eventReceived(String messageJson, @Header("type") String messageType) throws Exception {
+        System.out.println(messageJson);
         switch (messageType) {
             case "CommentCountMilestoneEvent":
                 commentMileStoneHandler(messageJson);
@@ -54,46 +45,45 @@ public class MessageListener {
     }
 
     private void commentMileStoneHandler(String messageJson) throws JsonProcessingException {
-        System.out.println(messageJson);
         Message<JsonNode> message = objectMapper.readValue(messageJson, new TypeReference<Message<JsonNode>>() {
         });
         IntNode payload = (IntNode) message.getData();
         int count = payload.intValue();
 
-        emailService.sendEmail("Comment Milestone reached! You now have " + count + " comments on your video!");
+        //This is old and will play a part in the second part of the project
+
+        emailService.sendEmail("Comment Milestone reached! You now have " + count + " comments on your video!", "johannesandreas.wenz@student.unisg.ch");
     }
 
     private void registrationSucceededHandler(String messageJson) throws JsonProcessingException {
-        System.out.println(messageJson);
         Message<JsonNode> message = objectMapper.readValue(messageJson, new TypeReference<Message<JsonNode>>() {
         });
 
-        System.out.println(messageJson);
-        String payload = message.getData().asText();
+        String payload = message.getData().get("email").asText();
 
-        emailService.sendEmail("Congrats your account " + payload + " is verified!");
+        //payload is also recepient
+        emailService.sendEmail("Congrats your account " + payload + " is verified!", payload);
     }
 
     private void verifyEmailHandler(String messageJson) throws JsonProcessingException {
-        System.out.println(messageJson);
         Message<JsonNode> message = objectMapper.readValue(messageJson, new TypeReference<Message<JsonNode>>() {
         });
 
         System.out.println(messageJson);
         String payload = message.getData().get("mailContent").asText();
+        String recepient = message.getData().get("email").asText();
 
-        emailService.sendEmail("Please verify at http://localhost:8096/verify?" + payload);
+        emailService.sendEmail("Please verify at http://localhost:8096/verify?" + payload, recepient);
     }
 
     private void handleTopUpEvent(String messageJson) throws JsonProcessingException {
-        System.out.println(messageJson);
         Message<JsonNode> message = objectMapper.readValue(messageJson, new TypeReference<Message<JsonNode>>() {
         });
 
-        System.out.println(messageJson);
-        String payload = message.getData().get("orderId").asText();
+        String payload = message.getTraceid();
+        String recipient = message.getData().get("email").asText();
 
-        emailService.sendEmail("Your TopUp order was fullfilled: " + payload);
+        emailService.sendEmail("Your TopUp order was fulfilled: " + payload, recipient);
     }
 
 }

@@ -36,4 +36,26 @@ public class ScraperRestController {
     String responseJson = "{\"traceId\": \"" + message.getTraceid() + "\"}";
     return ResponseEntity.status(HttpStatus.OK).body(responseJson);
   }
+
+  @GetMapping(path = "/api/scraperyoutube/fetch")
+  public ResponseEntity<String> fetch(@RequestParam String videoId) {
+    Message<String> message = new Message<String>("FetchCommentsCommand",
+            videoId);
+
+    messageSender.send(message);
+
+    String responseJson = "{\"traceId\": \"" + message.getTraceid() + "\"}";
+    return ResponseEntity.status(HttpStatus.OK).body(responseJson);
+  }
+
+  @GetMapping(path = "/api/scraperyoutube/remove")
+  public ResponseEntity<String> remove(@RequestParam String videoId) {
+    Message<String> message = new Message<String>("RemoveVideoIdCommand",
+            videoId);
+
+    messageSender.send(message);
+
+    String responseJson = "{\"traceId\": \"" + message.getTraceid() + "\"}";
+    return ResponseEntity.status(HttpStatus.OK).body(responseJson);
+  }
 }

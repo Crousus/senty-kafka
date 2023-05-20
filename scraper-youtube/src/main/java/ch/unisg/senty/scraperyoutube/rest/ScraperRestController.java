@@ -4,10 +4,8 @@ import ch.unisg.senty.scraperyoutube.messages.Message;
 import ch.unisg.senty.scraperyoutube.messages.MessageSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,7 +27,7 @@ public class ScraperRestController {
 
   @GetMapping(path = "/api/scraperyoutube/verify")
   public ResponseEntity<String> verify(@RequestParam String url) {
-    Message<String> message = new Message<String>("VerifyUrlCommand", url);
+    Message<String> message = new Message<String>("VerifyOrderCommand", url);
 
     messageSender.send(message);
     

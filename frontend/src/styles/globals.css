@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* change body to black */
+body, footer {
+  background-color: black;
+}
+
+/* change text color to white */
+p, h1, h2, h3, h4, h5, h6, a, span, div, li, button, input, label, select, textarea {
+  color: white;
+}
+
+/* change input background color to black */
+input, select, textarea {
+  /* background-color: #1F2937; */
+  background-color: black;
+  border-style: #1F2937;
+}

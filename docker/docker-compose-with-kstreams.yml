@@ -41,16 +41,20 @@ services:
     image: confluentinc/cp-enterprise-kafka:6.0.0
     depends_on:
       - kafka
+    networks:
+      - senty
     hostname: kafka-create-topics
     command: ["bash", "./create-topics.sh"]
     working_dir: /scripts
     volumes:
-      - ./scripts:/scripts
+      - ../scripts:/scripts
 
   schema-registry:
     image: confluentinc/cp-schema-registry:7.3.0
     hostname: schema-registry
     container_name: schema-registry
+    networks:
+      - senty
     depends_on:
       - zookeeper
       - kafka

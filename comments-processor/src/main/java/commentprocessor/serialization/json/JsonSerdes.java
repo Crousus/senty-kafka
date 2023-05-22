@@ -1,20 +1,11 @@
 package commentprocessor.serialization.json;
 
-import commentprocessor.HighScores;
-import commentprocessor.model.Player;
-import commentprocessor.model.Product;
-import commentprocessor.model.ScoreEvent;
+import commentprocessor.model.*;
 import commentprocessor.model.join.Enriched;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 
 public class JsonSerdes {
-
-  public static Serde<HighScores> HighScores() {
-    JsonSerializer<HighScores> serializer = new JsonSerializer<>();
-    JsonDeserializer<HighScores> deserializer = new JsonDeserializer<>(HighScores.class);
-    return Serdes.serdeFrom(serializer, deserializer);
-  }
 
   public static Serde<Enriched> Enriched() {
     JsonSerializer<Enriched> serializer = new JsonSerializer<>();
@@ -22,9 +13,9 @@ public class JsonSerdes {
     return Serdes.serdeFrom(serializer, deserializer);
   }
 
-  public static Serde<ScoreEvent> ScoreEvent() {
-    JsonSerializer<ScoreEvent> serializer = new JsonSerializer<>();
-    JsonDeserializer<ScoreEvent> deserializer = new JsonDeserializer<>(ScoreEvent.class);
+  public static Serde<CommentBatchEvent> CommentBatch() {
+    JsonSerializer<CommentBatchEvent> serializer = new JsonSerializer<>();
+    JsonDeserializer<CommentBatchEvent> deserializer = new JsonDeserializer<>(CommentBatchEvent.class);
     return Serdes.serdeFrom(serializer, deserializer);
   }
 

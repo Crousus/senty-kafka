@@ -8,7 +8,7 @@ import org.apache.kafka.streams.state.HostInfo;
 
 public class App {
   public static void main(String[] args) {
-    Topology topology = LeaderboardTopology.build();
+    Topology topology = CommentProcessingTopology.build();
 
     // we allow the following system properties to be overridden,
     // which allows us to run multiple instances of our app.
@@ -34,10 +34,5 @@ public class App {
     Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
     // start streaming!
     streams.start();
-
-    // start the REST service
-    HostInfo hostInfo = new HostInfo(host, port);
-    LeaderboardService service = new LeaderboardService(hostInfo, streams);
-    service.start();
   }
 }

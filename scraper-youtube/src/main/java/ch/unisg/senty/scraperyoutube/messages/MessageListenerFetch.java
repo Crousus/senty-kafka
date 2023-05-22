@@ -1,5 +1,6 @@
 package ch.unisg.senty.scraperyoutube.messages;
 
+import ch.unisg.senty.scraperyoutube.domain.CommentBatchEvent;
 import ch.unisg.senty.scraperyoutube.domain.CommentFetched;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +35,29 @@ public class MessageListenerFetch {
 
     public Map<String, String> newestComments = new HashMap<>();
 
+    private CommentBatchEvent buildBatch(String videoId) {
+        // fetch comments
+        List<CommentFetched> comments = fetchComments(videoId, apiKey, null);
+
+        // create CommentBatchEvent
+        CommentBatchEvent batchEvent = new CommentBatchEvent();
+        batchEvent.setVideoId(videoId);
+        batchEvent.setTimestamp(newestComments.get(videoId));
+        batchEvent.setComments(comments);
+
+        return batchEvent;
+    }
+
+    private void sendBatch(CommentBatchEvent batchEvent, String traceId) {
+        // create message and set traceId
+        Message<CommentBatchEvent> message = new Message<>("CommentBatchEvent", batchEvent);
+        message.setTraceid(traceId);
+
+        // send the message
+        messageSender.send(message);
+    }
+
+
     @KafkaListener(id = "scraper-youtube-fetch", topics = MessageSender.TOPIC_NAME)
     public void messageReceived(String messageJson, @Header("type") String messageType) throws Exception {
         if ("FetchCommentsCommand".equals(messageType)) {
@@ -61,16 +85,8 @@ public class MessageListenerFetch {
 
             // fetch comments for each video ID
             // in the future we would thread this...
-            List<CommentFetched> comments = fetchComments(videoId, apiKey, null);
-
-            // JOHANNES CHANGE THIS IF YOU ONLY WANT ONE BIG BLOCK, AMD NOT
-            // FOR EACH
-            for (CommentFetched commentFetched : comments) {
-                Message<String> message = new Message<String>(
-                        "CommentFetchedEvent", commentFetched.getText());
-                message.setTraceid(traceId);
-                messageSender.send(message);
-            }
+            CommentBatchEvent batchEvent = buildBatch(videoId);
+            sendBatch(batchEvent, traceId);
         }
 
         if ("RemoveVideoIdCommand".equals(messageType)) {
@@ -96,28 +112,18 @@ public class MessageListenerFetch {
     @Scheduled(fixedRate = 20000)
     public void fetchCommentsPeriodically() {
         if (!videoIds.isEmpty()) {
-            System.out.println("\nAutomatically fetching comments for video " +
-                    "IDs: " + videoIds);
-            // We use CopyOnWriteArrayList to avoid ConcurrentModificationException
-            for (String videoId : videoIds) {
-                List<CommentFetched> comments = fetchComments(videoId, apiKey, null);
+            System.out.println("\nSCHEDULED comment fetch for video IDs: " + videoIds);
 
-                for (CommentFetched commentFetched : comments) {
-                    Message<String> message = new Message<String>(
-                            "CommentFetchedEvent", commentFetched.getText());
-                    // We generate a new traceid for each fetch
-                    String traceId = UUID.randomUUID().toString();
-                    message.setTraceid(traceId);
-                    messageSender.send(message);
-                }
+            for (String videoId : videoIds) {
+                CommentBatchEvent batchEvent = buildBatch(videoId);
+                sendBatch(batchEvent, UUID.randomUUID().toString());
             }
         } else {
             System.out.println("\nNo video IDs to be scraped");
         }
     }
 
-    private List<CommentFetched> fetchComments(String videoId, String apiKey,
-                                  String pageToken) {
+    private List<CommentFetched> fetchComments(String videoId, String apiKey, String pageToken) {
         System.out.println("Fetching comments for video ID: " + videoId);
         List<CommentFetched> comments = new ArrayList<>();
 
@@ -150,49 +156,58 @@ public class MessageListenerFetch {
 
         // get comments
         for (JsonNode itemNode : rootNode.path("items")) {
-            String commentText = itemNode.path("snippet").path("topLevelComment").path("snippet").path("textDisplay").asText();
-            comments.add(new CommentFetched(commentText));
+            String id = itemNode.path("id").asText();
+            String textDisplay = itemNode.path("snippet").path("topLevelComment").path("snippet").path("textDisplay").asText();
+            String textOriginal = itemNode.path("snippet").path("topLevelComment").path("snippet").path("textOriginal").asText();
+            String authorDisplayName = itemNode.path("snippet").path("topLevelComment").path("snippet").path("authorDisplayName").asText();
+            String authorProfileImageUrl = itemNode.path("snippet").path("topLevelComment").path("snippet").path("authorProfileImageUrl").asText();
+            String authorChannelUrl = itemNode.path("snippet").path("topLevelComment").path("snippet").path("authorChannelUrl").asText();
+            String authorChannelId = itemNode.path("snippet").path("topLevelComment").path("snippet").path("authorChannelId").path("value").asText();
+            int likeCount = itemNode.path("snippet").path("topLevelComment").path("snippet").path("likeCount").asInt();
+            String publishedAt = itemNode.path("snippet").path("topLevelComment").path("snippet").path("publishedAt").asText();
+            String updatedAt = itemNode.path("snippet").path("topLevelComment").path("snippet").path("updatedAt").asText();
+
+            comments.add(new CommentFetched(id, textDisplay, textOriginal, authorDisplayName, authorProfileImageUrl, authorChannelUrl, authorChannelId, likeCount, publishedAt, updatedAt));
         }
 
         // get timestamps
         String newestCommentTimestamp = rootNode.path("items").get(0).path("snippet").path("topLevelComment").path("snippet").path("publishedAt").asText();
         System.out.println("Newest comment timestamp (api): " + newestCommentTimestamp);
 
-        String oldestCommentTimestamp = rootNode.path("items").get(rootNode.path("items").size() - 1).path("snippet").path("topLevelComment").path("snippet").path("publishedAt").asText();
-        System.out.println("Oldest comment timestamp (api): " + oldestCommentTimestamp);
+        ZonedDateTime newestCommentApiTimestamp = ZonedDateTime.parse(newestCommentTimestamp);
+        String newestCommentListTimestampStr = newestComments.get(videoId);
 
-        // Initial fetch should get all comments, otherwise fetch until newest
-        if (newestComments.get(videoId).equals("")) {
+        // Check if we have a timestamp for this videoId
+        if (newestCommentListTimestampStr == null || newestCommentListTimestampStr.isEmpty()) {
+            // This is the first fetch for this videoId, update newestComments and continue fetching
             newestComments.put(videoId, newestCommentTimestamp);
             if (rootNode.has("nextPageToken")) {
                 String nextPageToken = rootNode.get("nextPageToken").asText();
                 comments.addAll(fetchComments(videoId, apiKey, nextPageToken));
             }
         } else {
-            ZonedDateTime newestCommentApiTimestamp = ZonedDateTime.parse(newestCommentTimestamp);
-            ZonedDateTime oldestCommentApiTimestamp = ZonedDateTime.parse(oldestCommentTimestamp);
-            ZonedDateTime newestCommentListTimestamp = ZonedDateTime.parse(newestComments.get(videoId));
+            ZonedDateTime newestCommentListTimestamp = ZonedDateTime.parse(newestCommentListTimestampStr);
 
             // Update newest comment timestamp if new comment is newer
             if (newestCommentApiTimestamp.isAfter(newestCommentListTimestamp)) {
                 newestComments.put(videoId, newestCommentTimestamp);
             }
 
-            // Return empty list if timestamp did not change
-            if (newestCommentApiTimestamp.isEqual(newestCommentListTimestamp)) {
-                return new ArrayList<>(); // Return empty list
-            }
-
-            // Fetch more comments if oldestCommentApiTimestamp of new fetch is
-            // still newer than newestCommentListTimestamp
-            if (oldestCommentApiTimestamp.isAfter(newestCommentListTimestamp)) {
+            // if this is the first fetch or if the newest comment timestamp from the api is after the newest comment from the list, fetch the next page
+            if (newestCommentApiTimestamp.isAfter(newestCommentListTimestamp)) {
                 if (rootNode.has("nextPageToken")) {
                     String nextPageToken = rootNode.get("nextPageToken").asText();
                     comments.addAll(fetchComments(videoId, apiKey, nextPageToken));
                 }
             }
+            // else if the timestamps are equal, return an empty list
+            else if (newestCommentApiTimestamp.isEqual(newestCommentListTimestamp)) {
+                return new ArrayList<>();
+            }
         }
+
         System.out.println("Newest comment timestamp (list): " + newestComments.get(videoId));
+
         return comments;
     }
 }

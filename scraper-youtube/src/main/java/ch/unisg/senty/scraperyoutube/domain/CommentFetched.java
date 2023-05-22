@@ -1,20 +1,21 @@
 package ch.unisg.senty.scraperyoutube.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.ToString;
 
 @ToString
+@AllArgsConstructor
+@Data
 public class CommentFetched {
-    private String text;
-
-    public CommentFetched(String text) {
-        this.text = text;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
+    private String id;
+    private String textDisplay;
+    private String textOriginal;
+    private String authorDisplayName;
+    private String authorProfileImageUrl;
+    private String authorChannelUrl;
+    private String authorChannelId;
+    private int likeCount;
+    private String publishedAt;
+    private String updatedAt;
 }

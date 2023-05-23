@@ -26,6 +26,8 @@ public class CommentProcessingTopology {
 
     private static final String API_TOKEN = "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";
 
+    private static final List<String> FILTERED_WORDS = Arrays.asList("spam", "ad", "junk");
+
     private static Cache<Comment, String> cache = new LRUCache<>(1000);
 
     public static Topology build() {
@@ -71,11 +73,13 @@ public class CommentProcessingTopology {
         KStream<byte[], Comment> english_stream = branches[0];
         KStream<byte[], Comment> non_english_stream = branches[1];
 
+        KStream<byte[], Comment> filteredEnglishStream = filterComments(english_stream);
         KStream<byte[], Comment> translated_stream = non_english_stream.transform(() -> new CommentTranslator());
 
         KStream<byte[], Comment> merged_stream = english_stream.merge(translated_stream);
 
         KStream<byte[], Comment> sentiment_classified_stream = merged_stream.transform(() -> new SentimentAnalyzer());
+
 
         //english_stream.foreach((key, value) -> System.out.println("Key: " + Arrays.toString(key) + ", Value: " + value));
         //translated_stream.foreach((key, value) -> System.out.println("Key: " + Arrays.toString(key) + ", Value: " + value));
@@ -110,4 +114,16 @@ public class CommentProcessingTopology {
         return label;
 
     }
+
+    private static KStream<byte[], Comment> filterComments(KStream<byte[], Comment> comments) {
+        return comments.filter((key, comment) -> {
+            for (String word : FILTERED_WORDS) {
+                if (comment.getComment().contains(word)) {
+                    return false;
+                }
+            }
+            return true;
+        });
+    }
 }
+

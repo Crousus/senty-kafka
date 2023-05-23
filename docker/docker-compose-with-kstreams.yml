@@ -136,6 +136,26 @@ services:
     networks:
       - senty
 
+
+  libretranslate:
+    container_name: libretranslate
+    image: libretranslate/libretranslate
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    networks:
+        - senty
+
+
+  sentiment-classifier:
+    container_name: sentiment-classifier
+    image: codait/max-text-sentiment-classifier
+    restart: unless-stopped
+    ports:
+      - "5001:5000"
+    networks:
+      - senty
+
 networks:
   senty:
     driver: bridge

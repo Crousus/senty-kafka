@@ -61,7 +61,11 @@ const Track = () => {
       {videos.map((video, index) => (
         <div
           key={index}
-          className="mb-4 rounded-md border border-slate-700 p-4"
+          className={`mb-4 rounded-md border p-4 ${
+            checkedVideos.includes(video.videoId)
+              ? "border-emerald-700 bg-[#022c22]"
+              : "border-slate-700"
+          }`}
         >
           <div className="mb-4 grid grid-cols-12 gap-4">
             <Image
@@ -73,14 +77,14 @@ const Track = () => {
             />
             <div className="col-span-4">
               <p className="font-bold">{video.title}</p>
-              <p className="">{video.channelTitle}</p>
+              <p className="text-slate-400">{video.channelTitle}</p>
               {/* <p className="text-sm">{video.publishedAt.split("T")[0]}</p> */}
             </div>
             <div className="col-span-3">
               <p className="text-xl font-bold">{(1000).toLocaleString()}</p>
-              <p className="mb-4 text-sm">comments</p>
+              <p className="mb-4 text-sm text-slate-400">comments</p>
               <p className="text-xl font-bold">{4.5}/5</p>
-              <p className="text-sm">sentiment</p>
+              <p className="text-sm text-slate-400">sentiment</p>
             </div>
             <div className="col-span-1 grid items-center justify-center rounded-md p-2 ">
               <input

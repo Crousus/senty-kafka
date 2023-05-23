@@ -14,8 +14,8 @@ p, h1, h2, h3, h4, h5, h6, a, span, div, li, button, input, label, select, texta
 
 /* change input background color to black */
 input, select, textarea {
-  /* background-color: #1F2937; */
-  background-color: #1e293b;
+  background-color: #0f172a;
+  /* background-color: #1e293b; */
   border: 1px solid #334155;
   border-radius: 0.3rem;
 }

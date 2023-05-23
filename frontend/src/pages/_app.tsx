@@ -6,13 +6,22 @@ import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
 
+import { useState } from "react";
+import { CheckedVideosContext } from "~/contexts/checkedVideosContext";
+
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  const [checkedVideos, setCheckedVideos] = useState<string[]>([]);
+
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} />
+      <CheckedVideosContext.Provider
+        value={{ checkedVideos, setCheckedVideos }}
+      >
+        <Component {...pageProps} />
+      </CheckedVideosContext.Provider>
     </SessionProvider>
   );
 };

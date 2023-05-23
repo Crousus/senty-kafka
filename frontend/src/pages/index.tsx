@@ -7,7 +7,7 @@ import Track from "~/components/Track";
 import { FaExpandArrowsAlt, FaRedo } from "react-icons/fa";
 
 const Home: NextPage = () => {
-  const DEBUG = true;
+  const DEBUG = false;
   const [isLargerView, setIsLargerView] = useState(true);
 
   const toggleLargerView = () => {
@@ -22,7 +22,7 @@ const Home: NextPage = () => {
   return (
     <>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-6">
+        <div className="grid grid-cols-1 gap-10 border-x border-slate-700 bg-slate-900 p-8 md:grid-cols-2 lg:grid-cols-6">
           {/* 1st column */}
           <div className={`${DEBUG ? "border-x" : ""} col-span-1`}>
             <Title title="Order" />
@@ -54,16 +54,18 @@ const Home: NextPage = () => {
         </div>
 
         {/* Footer */}
-        <footer className="border-grey fixed inset-x-0 bottom-0 w-full border-t py-3 text-center">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-            <p className="text-4xl font-thin">Senty</p>
-            <div className="space-x-4">
-              <button onClick={toggleLargerView} className="text-4xl">
-                <FaExpandArrowsAlt />
-              </button>
-              <button onClick={refreshPage} className="text-4xl">
-                <FaRedo />
-              </button>
+        <footer className="grey fixed inset-x-0 bottom-0 mx-auto max-w-7xl pl-8 pr-8 text-center">
+          <div className="border-x border-t border-slate-700 bg-slate-900 py-3">
+            <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+              <p className="text-4xl font-thin">Senty</p>
+              <div className="space-x-4">
+                <button onClick={toggleLargerView} className="text-4xl">
+                  <FaExpandArrowsAlt />
+                </button>
+                <button onClick={refreshPage} className="text-4xl">
+                  <FaRedo />
+                </button>
+              </div>
             </div>
           </div>
         </footer>

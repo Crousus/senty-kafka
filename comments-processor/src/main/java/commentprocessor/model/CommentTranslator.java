@@ -1,24 +1,18 @@
 package commentprocessor.model;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import commentprocessor.TranslateRequest;
 import kong.unirest.ContentType;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
-import reactor.core.publisher.Mono;
-import reactor.netty.ByteBufFlux;
 import reactor.netty.http.client.HttpClient;
 
-import javax.management.ObjectName;
 import java.util.*;
 
-public class CommentTranslator implements Transformer<byte[], Comment, KeyValue<byte[], Comment>> {
+public class CommentTranslator implements Transformer<String, Comment, KeyValue<String, Comment>> {
     private ProcessorContext context;
     private static final String TRANSLATE_URI = "http://localhost:5000/translate";
     private HttpClient httpClient;
@@ -33,7 +27,7 @@ public class CommentTranslator implements Transformer<byte[], Comment, KeyValue<
     }
 
     @Override
-    public KeyValue<byte[], Comment> transform(byte[] key, Comment value) {
+    public KeyValue<String, Comment> transform(String key, Comment value) {
         try {
 
             Map<String, String> translateRequestBody = new HashMap<>();

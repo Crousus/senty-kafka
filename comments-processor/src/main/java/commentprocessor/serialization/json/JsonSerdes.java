@@ -1,5 +1,6 @@
 package commentprocessor.serialization.json;
 
+import commentprocessor.VideoLanguageKey;
 import commentprocessor.model.*;
 import commentprocessor.model.join.Enriched;
 import org.apache.kafka.common.serialization.Serde;
@@ -22,6 +23,12 @@ public class JsonSerdes {
   public static Serde<Comment> Comment() {
     JsonSerializer<Comment> serializer = new JsonSerializer<>();
     JsonDeserializer<Comment> deserializer = new JsonDeserializer<>(Comment.class);
+    return Serdes.serdeFrom(serializer, deserializer);
+  }
+
+  public static Serde<VideoLanguageKey> VideoLanguageKey() {
+    JsonSerializer<VideoLanguageKey> serializer = new JsonSerializer<>();
+    JsonDeserializer<VideoLanguageKey> deserializer = new JsonDeserializer<>(VideoLanguageKey.class);
     return Serdes.serdeFrom(serializer, deserializer);
   }
 

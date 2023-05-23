@@ -1,10 +1,12 @@
 package commentprocessor;
 
 import java.util.Properties;
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.Topology;
+
+import org.apache.kafka.streams.*;
 import org.apache.kafka.streams.state.HostInfo;
+import org.apache.kafka.streams.state.KeyValueIterator;
+import org.apache.kafka.streams.state.QueryableStoreTypes;
+import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 
 public class App {
   public static void main(String[] args) {
@@ -30,9 +32,14 @@ public class App {
     // build the topology
     System.out.println("Starting Videogame Leaderboard");
     KafkaStreams streams = new KafkaStreams(topology, props);
+
     // close Kafka Streams when the JVM shuts down (e.g. SIGTERM)
     Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
     // start streaming!
     streams.start();
+
+    HostInfo hostInfo =  new HostInfo("localhost", 7000);
+    CommentService service = new CommentService(hostInfo, streams);
+    service.start();
   }
 }

@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SentimentAnalyzer implements Transformer<byte[], Comment, KeyValue<byte[], Comment>> {
+public class SentimentAnalyzer implements Transformer<String, Comment, KeyValue<String, Comment>> {
 
     private ProcessorContext context;
     private static final String SENTIMENT_URI = "http://localhost:5001/model/predict";
@@ -31,7 +31,7 @@ public class SentimentAnalyzer implements Transformer<byte[], Comment, KeyValue<
     }
 
     @Override
-    public KeyValue<byte[], Comment> transform(byte[] key, Comment value) {
+    public KeyValue<String, Comment> transform(String key, Comment value) {
         try {
             ObjectMapper mapper = new ObjectMapper();
 

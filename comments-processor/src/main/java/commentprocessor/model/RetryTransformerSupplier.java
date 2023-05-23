@@ -1,4 +1,4 @@
-package commentprocessor;
+package commentprocessor.model;
 
 import commentprocessor.model.Comment;
 import org.apache.kafka.streams.KeyValue;
@@ -14,14 +14,14 @@ import java.util.UUID;
 
 import static commentprocessor.CommentProcessingTopology.predictLanguage;
 
-public class RetryTransformerSupplier implements TransformerSupplier<byte[], Comment, KeyValue<byte[], Comment>> {
-    private static final long RETRY_DELAY_MS = 20000; // 20 seconds
+public class RetryTransformerSupplier implements TransformerSupplier<String, Comment, KeyValue<String, Comment>> {
+    private static final long RETRY_DELAY_MS = 10000; // 20 seconds
 
     private KeyValueStore<String, Comment> kvStore;
 
     @Override
-    public Transformer<byte[], Comment, KeyValue<byte[], Comment>> get() {
-        return new Transformer<byte[], Comment, KeyValue<byte[], Comment>>() {
+    public Transformer<String, Comment, KeyValue<String, Comment>> get() {
+        return new Transformer<String, Comment, KeyValue<String, Comment>>() {
             @Override
             public void init(ProcessorContext context) {
                 kvStore = (KeyValueStore) context.getStateStore("inmemory-order-create-retry");
@@ -34,6 +34,7 @@ public class RetryTransformerSupplier implements TransformerSupplier<byte[], Com
                             String language = predictLanguage(entry.value);
                             if (language != null) {
                                 entry.value.setLanguage(language);
+                                System.out.println(entry.key);
                                 context.forward(entry.key, entry.value);
                                 kvStore.delete(entry.key);
                             }
@@ -41,19 +42,19 @@ public class RetryTransformerSupplier implements TransformerSupplier<byte[], Com
                         iter.close();
                         context.commit();
                     } catch (Exception e) {
-                        System.out.println("Exception: " + e.getMessage());
+                        e.printStackTrace();
                     }
                 });
             }
 
             @Override
-            public KeyValue<byte[], Comment> transform(byte[] key, Comment comment) {
+            public KeyValue<String, Comment> transform(String key, Comment comment) {
                 try {
                     String language = predictLanguage(comment);
                     comment.setLanguage(language);
                     return KeyValue.pair(key, comment);
                 } catch (Exception e) {
-                    String storeKey = System.currentTimeMillis() + "-" + UUID.randomUUID();
+                    String storeKey = key;
                     kvStore.put(storeKey, comment);
                     return null;
                 }

@@ -48,7 +48,8 @@
 			<artifactId>spring-boot-starter-webflux</artifactId>
 			<version>${spring.boot.version}</version>
 		</dependency>
-    </dependencies>
+
+	</dependencies>
 	<build>
 		<plugins>
 			<plugin>

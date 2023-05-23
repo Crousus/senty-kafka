@@ -41,7 +41,7 @@ public class ScraperRestController {
             videoId);
 
     messageSender.send(message);
-
+    System.out.println(message);
     String responseJson = "{\"traceId\": \"" + message.getTraceid() + "\"}";
     return ResponseEntity.status(HttpStatus.OK).body(responseJson);
   }

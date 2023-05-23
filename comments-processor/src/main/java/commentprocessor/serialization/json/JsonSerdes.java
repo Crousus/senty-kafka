@@ -19,6 +19,12 @@ public class JsonSerdes {
     return Serdes.serdeFrom(serializer, deserializer);
   }
 
+  public static Serde<Comment> Comment() {
+    JsonSerializer<Comment> serializer = new JsonSerializer<>();
+    JsonDeserializer<Comment> deserializer = new JsonDeserializer<>(Comment.class);
+    return Serdes.serdeFrom(serializer, deserializer);
+  }
+
   public static Serde<Player> Player() {
     JsonSerializer<Player> serializer = new JsonSerializer<>();
     JsonDeserializer<Player> deserializer = new JsonDeserializer<>(Player.class);

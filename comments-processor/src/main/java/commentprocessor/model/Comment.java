@@ -12,5 +12,8 @@ public class Comment {
     private String commentId;
     private String timestamp;
     private String comment;
+
+    private double sentimentScore;
+    private String language;
     private List<String> subComments;
 }

@@ -156,6 +156,20 @@ services:
     networks:
       - senty
 
+
+  language-classifier:
+    build:
+      context: ../language-classifier
+      dockerfile: Dockerfile
+    container_name: language-classifier
+    ports:
+      - "2000:2000"
+    volumes:
+      - ../language-classifier:/app
+
+    networks:
+      - senty
+
 networks:
   senty:
     driver: bridge

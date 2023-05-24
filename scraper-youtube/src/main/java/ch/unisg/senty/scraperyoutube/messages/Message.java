@@ -20,7 +20,7 @@ public class Message<T> {
   // Extension attributes
   private String traceid = UUID.randomUUID().toString(); // trace id, default: new unique
   private String correlationid; // id which can be used for correlation later if required
-  private String group = "new-comment-batches";
+  private String group = "senty";
 
   public Message(String type) {
     this.type = type;

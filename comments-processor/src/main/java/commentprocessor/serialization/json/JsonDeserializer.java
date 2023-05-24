@@ -35,7 +35,6 @@ public class JsonDeserializer<T> implements Deserializer<T> {
       return null;
     }
     Type type = destinationClass != null ? destinationClass : reflectionTypeToken;
-    System.out.println("JsonDeserializer.deserialize: " + new String(bytes, StandardCharsets.UTF_8));
 
     return gson.fromJson(new String(bytes, StandardCharsets.UTF_8), type);
   }

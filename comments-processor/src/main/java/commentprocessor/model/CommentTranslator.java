@@ -17,6 +17,37 @@ public class CommentTranslator implements Transformer<String, Comment, KeyValue<
     private static final String TRANSLATE_URI = "http://localhost:5000/translate";
     private HttpClient httpClient;
 
+    public static Set<String> availableLanguages = Set.of(
+            "ar",
+            "az",
+            "cs",
+            "da",
+            "de",
+            "el",
+            "en",
+            "eo",
+            "es",
+            "fa",
+            "fi",
+            "fr",
+            "ga",
+            "he",
+            "hi",
+            "hu",
+            "id",
+            "it",
+            "ja",
+            "ko",
+            "nl",
+            "pl",
+            "pt",
+            "ru",
+            "sk",
+            "sv",
+            "tr",
+            "uk",
+            "zh");
+
     public CommentTranslator() {
         this.httpClient = HttpClient.create();
     }

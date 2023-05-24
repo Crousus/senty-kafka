@@ -2,6 +2,7 @@ package commentprocessor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import commentprocessor.model.*;
 import commentprocessor.Languages;
@@ -24,7 +25,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class CommentProcessingTopology {
-    private static final String LANGUAGE_DETECTION_URL = "https://api-inference.huggingface.co/models/papluca/xlm-roberta-base-language-detection";
+    private static final String LANGUAGE_DETECTION_URL = "http://localhost:2000/predict";
 
     private static final String API_TOKEN = "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";
 
@@ -65,6 +66,10 @@ public class CommentProcessingTopology {
         KStream<String, Comment> english_stream = branches[0];
         KStream<String, Comment> non_english_stream = branches[1];
 
+        KStream<String, Comment> translatable_comments_stream = non_english_stream.filter((key, comment) -> CommentTranslator.availableLanguages.contains(comment.getLanguage()));
+
+        translatable_comments_stream.filter((s, comment) -> !CommentTranslator.availableLanguages.contains(comment.getLanguage())).to("untranslatable-comments");
+
         KStream<String, Comment> translated_stream = non_english_stream.transform(() -> new CommentTranslator());
 
         KStream<String, Comment> merged_stream = english_stream.merge(translated_stream);
@@ -104,32 +109,33 @@ public class CommentProcessingTopology {
     }
 
     public static String predictLanguage(Comment comment) throws JsonProcessingException, UnirestException {
-        String jsonData = String.format("{\"inputs\": \"%s\"}", comment.getComment());
-
         if (cache.get(comment) != null) {
             return cache.get(comment);
         }
         ObjectMapper objectMapper = new ObjectMapper();
-        List<List<Map<String, Object>>> data;
+        String commentText = comment.getComment();
+        if (commentText.length() > 512)
+            commentText = commentText.substring(0, 512);
+
+
+        String jsonData = objectMapper.writeValueAsString(Collections.singletonMap("text",commentText));
+
+        System.out.println("Calling language detection API " + jsonData);
         String result = Unirest.post(LANGUAGE_DETECTION_URL)
-                .header("Authorization", "Bearer " + API_TOKEN)
+                .contentType("application/json")
                 .body(jsonData)
                 .asString()
                 .getBody();
-        data = objectMapper.readValue(result, new TypeReference<List<List<Map<String, Object>>>>() {
-        });
 
 
-        Optional<Map<String, Object>> highestScoreLabel = data.get(0).stream()
-                .max(Comparator.comparing(m -> (Double) m.get("score")));
+        JsonNode languageNode = objectMapper.readTree(result);
+        String language = languageNode.get("language").asText();
 
-        String label = highestScoreLabel.get().get("label").toString();
+        cache.put(comment,language);
 
-        cache.put(comment, label);
+        return language;
 
-        return label;
-
-    }
+        }
 
     private static KStream<String, Comment> filterComments(KStream<String, Comment> comments) {
         return comments.filter((key, comment) -> {

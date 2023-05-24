@@ -174,7 +174,7 @@ public class MessageListenerFetch {
             String publishedAt = itemNode.path("snippet").path("topLevelComment").path("snippet").path("publishedAt").asText();
             String updatedAt = itemNode.path("snippet").path("topLevelComment").path("snippet").path("updatedAt").asText();
 
-            comments.add(new CommentFetched(id, textDisplay, textOriginal, authorDisplayName, authorProfileImageUrl, authorChannelUrl, authorChannelId, likeCount, publishedAt, updatedAt));
+            comments.add(new CommentFetched(id, videoId, textDisplay, likeCount, publishedAt, null));
         }
 
         // get timestamps

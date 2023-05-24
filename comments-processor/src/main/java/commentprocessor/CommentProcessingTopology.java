@@ -182,6 +182,9 @@ public class CommentProcessingTopology {
 
     private static KStream<String, Comment> filterComments(KStream<String, Comment> comments) {
         return comments.filter((key, comment) -> {
+            if (comment.getComment() == null || comment.getComment().trim().isEmpty()) {
+                return false;
+            }
             for (String word : FILTERED_WORDS) {
                 if (comment.getComment().contains(word)) {
                     return false;
@@ -190,6 +193,7 @@ public class CommentProcessingTopology {
             return true;
         });
     }
+
     private static KStream<String, Comment> removeEmojisFromComments(KStream<String, Comment> comments) {
         return comments.mapValues(comment -> {
             String commentText = comment.getComment();

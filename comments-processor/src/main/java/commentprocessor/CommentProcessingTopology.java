@@ -1,40 +1,36 @@
 package commentprocessor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import commentprocessor.model.*;
-import commentprocessor.Languages;
 import commentprocessor.serialization.json.JsonSerdes;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
 import org.apache.kafka.common.cache.Cache;
 import org.apache.kafka.common.cache.LRUCache;
-import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
-import org.apache.kafka.streams.StoreQueryParameters;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.state.*;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
 
 public class CommentProcessingTopology {
     private static final String LANGUAGE_DETECTION_URL = "http://localhost:2000/predict";
-
-    private static final String API_TOKEN = "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";
-
     private static final List<String> FILTERED_WORDS = Arrays.asList("spam", "ad", "junk");
     private static final Pattern EMOJI_PATTERN = Pattern.compile("[\\uD83C-\\uDBFF\\uDC00-\\uDFFF]+");
 
     private static Cache<Comment, String> cache = new LRUCache<>(1000);
 
     public static String languageStore;
+    public static String lastCommentsStore;
+    public static String commentCountStore;
+
+    public static String totalSentimentStore;
 
     public static Topology build() {
 
@@ -71,7 +67,7 @@ public class CommentProcessingTopology {
 
         translatable_comments_stream.filter((s, comment) -> !CommentTranslator.availableLanguages.contains(comment.getLanguage())).to("untranslatable-comments");
 
-        KStream<String, Comment> translated_stream = non_english_stream.transform(() -> new CommentTranslator());
+        KStream<String, Comment> translated_stream = translatable_comments_stream.transform(() -> new CommentTranslator());
 
         KStream<String, Comment> merged_stream = english_stream.merge(translated_stream);
 
@@ -95,15 +91,50 @@ public class CommentProcessingTopology {
                         languagesInitializer,
                         languagesAdder,
                         Materialized.<String, Languages, KeyValueStore<Bytes, byte[]>>
-                                        as("comment-counts")
+                                        as("comment-count-languages-store")
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(JsonSerdes.Languages()));
+        languageStore = languagesKTable.queryableStoreName();
+
+        KTable<String, Long> comment_count = groupedStream.count(
+                Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as("comment-total-count-store")
+                        .withKeySerde(Serdes.String())
+                        .withValueSerde(Serdes.Long())
+        );
+        commentCountStore = comment_count.queryableStoreName();
+
+        Initializer<RecentComments> recentCommentsInitializer = RecentComments::new;
+        Aggregator<String, Comment, RecentComments> recentCommentsAdder = (key, comment, recentComments) -> recentComments.add(comment);
+        KTable<String, RecentComments> recentCommentsKtable =
+                groupedStream.aggregate(
+                        recentCommentsInitializer,
+                        recentCommentsAdder,
+                        Materialized.<String, RecentComments, KeyValueStore<Bytes, byte[]>>
+                                        as("last-5-comment-store")
+                                .withKeySerde(Serdes.String())
+                                .withValueSerde(JsonSerdes.RecentComments()));
+
+        lastCommentsStore = recentCommentsKtable.queryableStoreName();
+
+        // Initializer for the sentiment score
+        Initializer<Double> sentimentInitializer = () -> 0.0;
+
+        // Aggregator for the sentiment score
+        Aggregator<String, Comment, Double> sentimentAggregator = (key, comment, aggregate) -> aggregate + comment.getSentimentScore();
+
+        KTable<String, Double> totalSentimentKTable = groupedStream.aggregate(sentimentInitializer, sentimentAggregator,
+                                Materialized.<String, Double, KeyValueStore<Bytes, byte[]>>as("total-sentiment-store")
+                                        .withKeySerde(Serdes.String())
+                                        .withValueSerde(Serdes.Double()));
+
+        totalSentimentStore = totalSentimentKTable.queryableStoreName();
+
 
         languagesKTable.toStream().peek((key, value) -> System.out.println("Key: " + key + ", Value: " + value));
         //Counting the comments grouped by videoId and language
 
         System.out.println(languagesKTable.queryableStoreName());
-        languageStore = languagesKTable.queryableStoreName();
+
 
         //sentiment_classified_stream.foreach((key, value) -> System.out.println("Key: " + key + ", Value: " + value));
         return builder.build();

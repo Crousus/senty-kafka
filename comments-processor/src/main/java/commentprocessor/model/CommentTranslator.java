@@ -59,6 +59,7 @@ public class CommentTranslator implements Transformer<String, Comment, KeyValue<
 
     @Override
     public KeyValue<String, Comment> transform(String key, Comment value) {
+        JsonNode rootNode = null;
         try {
 
             Map<String, String> translateRequestBody = new HashMap<>();
@@ -75,12 +76,13 @@ public class CommentTranslator implements Transformer<String, Comment, KeyValue<
                     .body(requestBody)
                     .asString();
 
-            JsonNode rootNode = mapper.readTree(response.getBody().toString());
+            rootNode = mapper.readTree(response.getBody().toString());
             String translatedText = rootNode.get("translatedText").asText();
             value.setComment(translatedText);
 
             return KeyValue.pair(key, value);
         } catch (Exception e) {
+            System.out.println(rootNode.asText());
             e.printStackTrace();
             return KeyValue.pair(key, value);  // return original value on failure
         }

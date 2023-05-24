@@ -33,6 +33,12 @@ public class JsonSerdes {
     return Serdes.serdeFrom(serializer, deserializer);
   }
 
+  public static Serde<RecentComments> RecentComments() {
+    JsonSerializer<RecentComments> serializer = new JsonSerializer<>();
+    JsonDeserializer<RecentComments> deserializer = new JsonDeserializer<>(RecentComments.class);
+    return Serdes.serdeFrom(serializer, deserializer);
+  }
+
   public static Serde<Player> Player() {
     JsonSerializer<Player> serializer = new JsonSerializer<>();
     JsonDeserializer<Player> deserializer = new JsonDeserializer<>(Player.class);

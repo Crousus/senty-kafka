@@ -2,11 +2,14 @@ package ch.unisg.senty.scraperyoutube.messages;
 
 import ch.unisg.senty.scraperyoutube.domain.CommentBatchEvent;
 import ch.unisg.senty.scraperyoutube.domain.CommentFetched;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -31,6 +34,9 @@ public class MessageListenerFetch {
     @Autowired
     private MessageSender messageSender;
 
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
     public CopyOnWriteArrayList<String> videoIds = new CopyOnWriteArrayList<>();
 
     public Map<String, String> newestComments = new HashMap<>();
@@ -48,13 +54,14 @@ public class MessageListenerFetch {
         return batchEvent;
     }
 
-    private void sendBatch(CommentBatchEvent batchEvent, String traceId) {
-        // create message and set traceId
-        Message<CommentBatchEvent> message = new Message<>("CommentBatchEvent", batchEvent);
-        message.setTraceid(traceId);
-
-        // send the message
-        messageSender.send(message);
+    private void sendBatch(CommentBatchEvent batchEvent) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            ProducerRecord<String, String> record = new ProducerRecord<String, String>("new-comment-batches",  objectMapper.writeValueAsString(batchEvent));
+            kafkaTemplate.send(record);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -86,7 +93,7 @@ public class MessageListenerFetch {
             // fetch comments for each video ID
             // in the future we would thread this...
             CommentBatchEvent batchEvent = buildBatch(videoId);
-            sendBatch(batchEvent, traceId);
+            sendBatch(batchEvent);
         }
 
         if ("RemoveVideoIdCommand".equals(messageType)) {
@@ -116,7 +123,7 @@ public class MessageListenerFetch {
 
             for (String videoId : videoIds) {
                 CommentBatchEvent batchEvent = buildBatch(videoId);
-                sendBatch(batchEvent, UUID.randomUUID().toString());
+                sendBatch(batchEvent);
             }
         } else {
             System.out.println("\nNo video IDs to be scraped");

@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 
 public class CommentProcessingTopology {
     private static final String LANGUAGE_DETECTION_URL = "http://localhost:2000/predict";
-    private static final List<String> FILTERED_WORDS = Arrays.asList("spam", "ad", "junk");
+    private static final List<String> FILTERED_WORDS = Arrays.asList("in_shit", "Christ_on_a_cracker", "Christ_on_a_bike", "sweet_Jesus", "shit_ass", "damn_it", "Jesus_fuck", "godsdamn", "child-fucker", "arsehead", "dyke", "son_of_a_whore", "frigger", "fatherfucker", "brotherfucker", "Jesus_Mary_and_Joseph", "Jesus_wept", "arse", "arsehole", "ass", "asshole", "bastard", "bitch", "bloody", "bollocks", "bugger", "bullshit", "cock", "cocksucker", "crap", "cunt", "damn", "dick", "dickhead", "fatherfucker", "goddamn", "hell", "holy_shit", "horseshit", "Jesus_Christ", "Jesus_H_Christ", "Jesus_Harold_Christ", "kike", "motherfucker", "nigga", "nigra", "piss", "prick", "pussy", "shit", "shite", "sisterfucker", "slut", "son_of_a_bitch", "spastic", "turd", "twat", "wanker","EDPO");
     private static final Pattern EMOJI_PATTERN = Pattern.compile("[\\uD83C-\\uDBFF\\uDC00-\\uDFFF]+");
 
     private static Cache<Comment, String> cache = new LRUCache<>(1000);

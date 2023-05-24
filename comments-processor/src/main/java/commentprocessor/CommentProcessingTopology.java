@@ -51,8 +51,20 @@ public class CommentProcessingTopology {
         // Add the state store to the topology.
         builder.addStateStore(retryBuilder);
 
+        StoreBuilder<KeyValueStore<String, Boolean>> deduplicationStoreBuilder =
+                Stores.keyValueStoreBuilder(
+                        Stores.inMemoryKeyValueStore("deduplication-store"),
+                        Serdes.String(),
+                        JsonSerdes.Boolean()
+                );
+
+        builder.addStateStore(deduplicationStoreBuilder);
+
+
         KStream<String, Comment> comments = commentBatchStream.flatMapValues(batch -> batch.getComments()).selectKey((key, comment) -> comment.getCommentId());
         comments = removeEmojisFromComments(comments);
+
+        comments = comments.transform(() -> new DeduplicationTransformer(), "deduplication-store");
 
         KStream<String, Comment> commentsWithLanguage = comments.transform(new RetryTransformerSupplier(), "inmemory-order-create-retry");
 
@@ -134,7 +146,6 @@ public class CommentProcessingTopology {
         //Counting the comments grouped by videoId and language
 
         System.out.println(languagesKTable.queryableStoreName());
-
 
         //sentiment_classified_stream.foreach((key, value) -> System.out.println("Key: " + key + ", Value: " + value));
         return builder.build();

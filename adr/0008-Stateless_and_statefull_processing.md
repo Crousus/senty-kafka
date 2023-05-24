@@ -1,4 +1,4 @@
-# ADR 0007: Stateless and statefull processing
+# ADR 0008: Stateless and statefull processing
 
 ## Status
 

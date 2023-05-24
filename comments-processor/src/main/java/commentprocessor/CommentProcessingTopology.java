@@ -21,6 +21,7 @@ import org.apache.kafka.streams.state.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class CommentProcessingTopology {
     private static final String LANGUAGE_DETECTION_URL = "https://api-inference.huggingface.co/models/papluca/xlm-roberta-base-language-detection";
@@ -28,6 +29,7 @@ public class CommentProcessingTopology {
     private static final String API_TOKEN = "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";
 
     private static final List<String> FILTERED_WORDS = Arrays.asList("spam", "ad", "junk");
+    private static final Pattern EMOJI_PATTERN = Pattern.compile("[\\uD83C-\\uDBFF\\uDC00-\\uDFFF]+");
 
     private static Cache<Comment, String> cache = new LRUCache<>(1000);
 
@@ -135,6 +137,10 @@ public class CommentProcessingTopology {
                 if (comment.getComment().contains(word)) {
                     return false;
                 }
+            }
+            // Check if the comment contains any emojis
+            if (EMOJI_PATTERN.matcher(comment.getComment()).find()) {
+                return false;
             }
             return true;
         });

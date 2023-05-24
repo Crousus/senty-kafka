@@ -38,7 +38,7 @@ public class App {
     // start streaming!
     streams.start();
 
-    HostInfo hostInfo =  new HostInfo("localhost", 7000);
+    HostInfo hostInfo =  new HostInfo("0.0.0.0", 7000);
     CommentService service = new CommentService(hostInfo, streams);
     service.start();
   }

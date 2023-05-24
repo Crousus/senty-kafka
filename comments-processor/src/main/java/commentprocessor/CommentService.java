@@ -122,7 +122,10 @@ public class CommentService {
         // For each videoId, get the recent comments from the store and add them to the map
         videoIds.forEach(s -> {
             RecentComments recentComments = getLast5CommentStore().get(s);
-            counts.put(s, recentComments != null ? new ArrayList<>(recentComments.getComments()) : new ArrayList<>());
+            if (recentComments == null)
+                counts.put(s, new ArrayList<>());
+            else
+                counts.put(s, recentComments != null ? new ArrayList<>(recentComments.getComments()) : new ArrayList<>());
         });
         // Return the map of comments
         return counts;
@@ -136,7 +139,13 @@ public class CommentService {
         videoIds.forEach(s -> {
             long count = getCommentCountStore().get(s);
             double totalSentiment = getTotalSentiment().get(s);
-            counts.put(s, totalSentiment / count);
+
+            if (totalSentiment == 0 || count == 0)
+                counts.put(s, 0.0);
+            else
+                // Calculate the average sentiment
+                // (total sentiment score) / (number of comments
+                counts.put(s, totalSentiment / count);
         });
         // Return the map of total sentiments
         return counts;

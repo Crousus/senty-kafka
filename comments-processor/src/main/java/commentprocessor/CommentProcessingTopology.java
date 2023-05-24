@@ -56,6 +56,7 @@ public class CommentProcessingTopology {
         builder.addStateStore(retryBuilder);
 
         KStream<String, Comment> comments = commentBatchStream.flatMapValues(batch -> batch.getComments()).selectKey((key, comment) -> comment.getCommentId());
+        comments = removeEmojisFromComments(comments);
 
         KStream<String, Comment> commentsWithLanguage = comments.transform(new RetryTransformerSupplier(), "inmemory-order-create-retry");
 
@@ -144,11 +145,16 @@ public class CommentProcessingTopology {
                     return false;
                 }
             }
-            // Check if the comment contains any emojis
-            if (EMOJI_PATTERN.matcher(comment.getComment()).find()) {
-                return false;
-            }
             return true;
+        });
+    }
+    private static KStream<String, Comment> removeEmojisFromComments(KStream<String, Comment> comments) {
+        return comments.mapValues(comment -> {
+            String commentText = comment.getComment();
+            // Remove any emojis from the comment
+            String filteredComment = EMOJI_PATTERN.matcher(commentText).replaceAll("");
+            comment.setComment(filteredComment);
+            return comment;
         });
     }
 }

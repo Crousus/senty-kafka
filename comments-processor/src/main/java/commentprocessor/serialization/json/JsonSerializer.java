@@ -21,6 +21,7 @@ class JsonSerializer<T> implements Serializer<T> {
 
   @Override
   public byte[] serialize(String topic, T type) {
+    System.out.println("JsonSerializer.serialize: " + gson.toJson(type));
     return gson.toJson(type).getBytes(StandardCharsets.UTF_8);
   }
 

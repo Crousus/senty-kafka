@@ -1,5 +1,6 @@
 package commentprocessor.serialization.json;
 
+import commentprocessor.Languages;
 import commentprocessor.VideoLanguageKey;
 import commentprocessor.model.*;
 import commentprocessor.model.join.Enriched;
@@ -26,9 +27,9 @@ public class JsonSerdes {
     return Serdes.serdeFrom(serializer, deserializer);
   }
 
-  public static Serde<VideoLanguageKey> VideoLanguageKey() {
-    JsonSerializer<VideoLanguageKey> serializer = new JsonSerializer<>();
-    JsonDeserializer<VideoLanguageKey> deserializer = new JsonDeserializer<>(VideoLanguageKey.class);
+  public static Serde<Languages> Languages() {
+    JsonSerializer<Languages> serializer = new JsonSerializer<>();
+    JsonDeserializer<Languages> deserializer = new JsonDeserializer<>(Languages.class);
     return Serdes.serdeFrom(serializer, deserializer);
   }
 

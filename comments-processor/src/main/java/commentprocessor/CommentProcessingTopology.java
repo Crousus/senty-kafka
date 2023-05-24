@@ -4,11 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import commentprocessor.model.*;
+import commentprocessor.Languages;
 import commentprocessor.serialization.json.JsonSerdes;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
 import org.apache.kafka.common.cache.Cache;
 import org.apache.kafka.common.cache.LRUCache;
+import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StoreQueryParameters;
@@ -71,19 +73,31 @@ public class CommentProcessingTopology {
 
         //sentiment_classified_stream.to("comment-classified");
 
+        sentiment_classified_stream.peek((key, value) -> System.out.println("Key: " + key + ", Value: " + value));
+
         KGroupedStream<String, Comment> groupedStream = sentiment_classified_stream.groupBy(
                 (key, comment) -> comment.getVideoId(), Grouped.with(Serdes.String(), JsonSerdes.Comment()));
-// Counting the comments grouped by videoId and language
 
-        KTable<String, Long> commentCounts = groupedStream
-                .count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as("comment-counts-store")
-                        .withKeySerde(Serdes.String())
-                        .withValueSerde(Serdes.Long()));
+        Initializer<Languages> languagesInitializer = Languages::new;
 
-        System.out.println(commentCounts.queryableStoreName());
-        languageStore = commentCounts.queryableStoreName();
+        Aggregator<String, Comment, Languages> languagesAdder = (key, comment, languages) -> languages.add(comment);
 
-        sentiment_classified_stream.foreach((key, value) -> System.out.println("Key: " + key + ", Value: " + value));
+        KTable<String, Languages> languagesKTable =
+                groupedStream.aggregate(
+                        languagesInitializer,
+                        languagesAdder,
+                        Materialized.<String, Languages, KeyValueStore<Bytes, byte[]>>
+                                        as("comment-counts")
+                                .withKeySerde(Serdes.String())
+                                .withValueSerde(JsonSerdes.Languages()));
+
+        languagesKTable.toStream().peek((key, value) -> System.out.println("Key: " + key + ", Value: " + value));
+        //Counting the comments grouped by videoId and language
+
+        System.out.println(languagesKTable.queryableStoreName());
+        languageStore = languagesKTable.queryableStoreName();
+
+        //sentiment_classified_stream.foreach((key, value) -> System.out.println("Key: " + key + ", Value: " + value));
         return builder.build();
     }
 

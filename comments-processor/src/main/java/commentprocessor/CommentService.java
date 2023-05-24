@@ -24,7 +24,7 @@ public class CommentService {
         this.streams = streams;
     }
 
-    ReadOnlyKeyValueStore<String, Long> getStore() {
+    ReadOnlyKeyValueStore<String, Languages> getStore() {
         return streams.store(
                 StoreQueryParameters.fromNameAndType(
                         // state store name
@@ -54,36 +54,18 @@ public class CommentService {
 
         List<String> videoIds = body.get("videoIds");
 
-        Map<String, Long> counts = new HashMap<>();
-        for (String videoId : videoIds) {
-            System.out.println("videoId: " + videoId);
-            Long count = getStore().get(videoId);
-            if (count != null) {
-                counts.put(videoId, count);
-            }
-        }
+        HashMap<String, HashMap<String, Integer>> counts = new HashMap<>();
+        System.out.println(getStore().get(videoIds.get(0)));
 
+        videoIds.stream().forEach(s -> {
+            Languages languages = getStore().get(s);
+            if (languages != null) {
+                counts.put(s, languages.getLanguages());
+            } else {
+                counts.put(s, new HashMap<>());
+            }
+        });
         ctx.json(counts);
     }
-
-    public List<VideoLanguageKey> getLanguageCounts(String videoId, KafkaStreams streams) {
-        ReadOnlyKeyValueStore<VideoLanguageKey, Long> store =
-                streams.store("comments-by-language-store", QueryableStoreTypes.keyValueStore());
-
-        List<LanguageCount> counts = new ArrayList<>();
-
-        List<String> allPossibleLanguages = Arrays.asList("ar", "bg", "de", "el", "en", "es", "fr", "hi", "it", "ja", "nl", "pl", "pt", "ru", "sw", "th", "tr", "ur", "vi", "zh");
-
-        for (String language : allPossibleLanguages) {
-            VideoLanguageKey key = new VideoLanguageKey(videoId, language);
-            Long count = store.get(key);
-            if (count != null) {
-                counts.add(new LanguageCount(language, count));
-            }
-        }
-
-        return counts;
-    }
-
 
 }

@@ -1,10 +1,11 @@
-import { type NextPage } from "next";
-import React, { ChangeEvent, FormEvent, useState } from "react";
-import axios from "axios";
-import Image from "next/image";
+import { useContext, useState, FormEvent } from "react";
+import { OrderedVideosContext } from "~/contexts/orderedVideosContext";
+import { api } from "~/utils/api";
+import type { NextPage } from "next";
 
 const Order: NextPage = () => {
-  const [count, setCount] = useState(0);
+  const { orderedVideos, setOrderedVideos } = useContext(OrderedVideosContext);
+
   const [formData, setFormData] = useState({
     companyName: "",
     email: "",
@@ -23,21 +24,37 @@ const Order: NextPage = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const videoIdResponse = api.videoIds.checkVideoId.useQuery({
+    videoId: formData.videoId,
+  });
+
+  const fetchVideoIdResponse = api.videoIds.fetchVideoId.useQuery({
+    videoId: formData.videoId,
+  });
+
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const response = await axios.post("./api/cart/order", formData, {
-        headers: { "Content-Type": "application/json" },
+
+    videoIdResponse
+      .refetch()
+      .then((res) => {
+        console.log("videoIdResponse res", res);
+      })
+      .catch((err) => {
+        console.log("videoIdResponse err", err);
       });
 
-      setCount(count + 1);
-      setThanksMessage(
-        `Thank you for order #${count}<br>Trace id: <b>${response.data.traceId}</b>`
-      );
-    } catch (error) {
-      setThanksMessage(
-        `Error placing order<br>Error: <b>${error.response.data.error}</b>`
-      );
+    if (!videoIdResponse.data.isValid) {
+      setThanksMessage(`Error: ${videoIdResponse.error}`);
+    } else {
+      // If not already in orderedVideos, add it
+      if (!orderedVideos.includes(formData.videoId)) {
+        setOrderedVideos([...orderedVideos, formData.videoId]);
+        fetchVideoIdResponse.refetch().catch((err) => {
+          console.log("fetchVideoIdResponse err", err);
+        });
+      }
+      setThanksMessage("Thank you for your order!");
     }
   };
 
@@ -53,11 +70,11 @@ const Order: NextPage = () => {
 
   return (
     <div>
-      <div className="flex justify-center">
+      <div className="flex justify-center bg-slate-900">
         <form
           id="order-form"
           onSubmit={handleFormSubmit}
-          className="w-full space-y-4 rounded-md border border-slate-700 p-4 md:max-w-2xl"
+          className="w-full space-y-4 rounded-md border border-slate-700 pt-4 pl-4 pr-4 md:max-w-2xl"
         >
           {/* <label htmlFor="company-name" className="block">
             Company Name
@@ -77,7 +94,7 @@ const Order: NextPage = () => {
             Email
           </label> */}
           <input
-            type="email"
+            type="text"
             id="email"
             name="email"
             placeholder="Email"
@@ -135,10 +152,7 @@ const Order: NextPage = () => {
             <option value="100">100</option>
             <option value="1000">1000</option>
             <option value="pay-as-you-go">Pay as you go</option>
-            <option value="unlimited">
-              Unlimited (
-              <i>Hey Siri, play Never Gonna Give You Up by Rick Astley</i>)
-            </option>
+            <option value="unlimited">Unlimited</option>
             <option value="voucher">Voucher</option>
           </select>
 
@@ -172,11 +186,11 @@ const Order: NextPage = () => {
           </select>
           <button
             type="submit"
-            className="mt-4 w-full rounded-md border border-slate-700 bg-slate-800 py-2 text-white hover:border-slate-600 hover:bg-slate-700"
+            className="mt-4 w-full rounded-md border border-slate-700 py-2 text-white hover:border-slate-600 hover:bg-slate-800"
           >
             Order
           </button>
-          <div id="thanks" className="mt-4">
+          <div id="thanks" className="pb-4">
             {thanksMessage}
           </div>
         </form>

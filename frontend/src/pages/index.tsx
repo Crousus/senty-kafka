@@ -4,28 +4,32 @@ import Order from "~/components/Order";
 import Summarize from "~/components/Summarize";
 import Title from "~/components/Title";
 import Track from "~/components/Track";
-import { FaExpandArrowsAlt, FaRedo } from "react-icons/fa";
+import { FaExpandArrowsAlt } from "react-icons/fa";
 
 const Home: NextPage = () => {
   const DEBUG = false;
-  const [isLargerView, setIsLargerView] = useState(true);
+  const [viewMode, setViewMode] = useState(0);
 
-  const toggleLargerView = () => {
-    setIsLargerView(!isLargerView);
-  };
-
-  const refreshPage = () => {
-    // TODO: change this to not reload but just refresh states
-    window.location.reload();
+  const toggleView = () => {
+    setViewMode((prevMode) => (prevMode + 1) % 3);
   };
 
   return (
-    <div className="mx-auto max-w-7xl pl-8 pr-8">
-      <div className="min-h-screen border-x border-slate-700 bg-slate-900">
+    <div className="max-w-8xl mx-auto pl-8 pr-8">
+      <div className="min-h-screen border-slate-700">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-10 bg-slate-900 pt-4 pb-24 md:grid-cols-2 lg:grid-cols-6">
+          <header className="grey fixed inset-x-0 top-0 z-10 mx-auto border-b border-slate-700 bg-slate-900 py-3 pl-8 pr-8 text-center">
+            <div className="mx-auto flex max-w-7xl items-center justify-center px-4 sm:px-6 lg:px-8">
+              <p className="text-4xl font-thin">Senty</p>
+            </div>
+          </header>
+          <div className="grid grid-cols-1 gap-10  pt-24 pb-24 md:grid-cols-2 lg:grid-cols-6">
             {/* 1st column */}
-            <div className={`${DEBUG ? "border-x" : ""} col-span-1`}>
+            <div
+              className={`${DEBUG ? "border-x" : ""} ${
+                viewMode === 2 ? "hidden" : "col-span-1"
+              }`}
+            >
               <Title title="Order" />
               <br />
               <Order />
@@ -33,9 +37,13 @@ const Home: NextPage = () => {
 
             {/* 2nd column */}
             <div
-              className={`${isLargerView ? "col-span-3" : "col-span-2"} ${
-                DEBUG ? "border-x" : ""
-              }`}
+              className={`${
+                viewMode === 0
+                  ? "col-span-3"
+                  : viewMode === 1
+                  ? "col-span-2"
+                  : "col-span-3"
+              } ${DEBUG ? "border-x" : ""}`}
             >
               <Title title="Track" />
               <br />
@@ -44,29 +52,28 @@ const Home: NextPage = () => {
 
             {/* 3rd column */}
             <div
-              className={`${isLargerView ? "col-span-2" : "col-span-3"} ${
-                DEBUG ? "border-x" : ""
-              }`}
+              className={`${
+                viewMode === 0
+                  ? "col-span-2"
+                  : viewMode === 1
+                  ? "col-span-3"
+                  : "col-span-3"
+              } ${DEBUG ? "border-x" : ""}`}
             >
               <Title title="Summarize" />
               <br />
               <Summarize />
             </div>
           </div>
-
-          {/* Footer */}
-          <footer className="grey fixed inset-x-0 bottom-0 mx-auto max-w-7xl pl-8 pr-8 text-center">
-            <div className="border-x border-t border-slate-700 bg-slate-900 py-3">
-              <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-                <p className="text-4xl font-thin">Senty</p>
-                <div className="space-x-4">
-                  <button onClick={toggleLargerView} className="text-4xl">
-                    <FaExpandArrowsAlt />
-                  </button>
-                  <button onClick={refreshPage} className="text-4xl">
-                    <FaRedo />
-                  </button>
-                </div>
+          <footer className="fixed inset-x-0 bottom-0 z-10 mx-auto py-4 pl-8 pr-8 text-center">
+            <div className="mx-auto flex max-w-7xl items-center justify-center px-4 sm:px-6 lg:px-8">
+              <div className="space-x-4">
+                <button
+                  onClick={toggleView}
+                  className="transform rounded-full border border-slate-600 bg-slate-900 p-3 text-3xl shadow-md shadow-slate-500 transition duration-500 ease-in-out hover:rotate-180 hover:bg-slate-800"
+                >
+                  <FaExpandArrowsAlt />
+                </button>
               </div>
             </div>
           </footer>

@@ -8,20 +8,26 @@ import "~/styles/globals.css";
 
 import { useState } from "react";
 import { CheckedVideosContext } from "~/contexts/checkedVideosContext";
+import { OrderedVideosContext } from "~/contexts/orderedVideosContext";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
   const [checkedVideos, setCheckedVideos] = useState<string[]>([]);
+  const [orderedVideos, setOrderedVideos] = useState<string[]>([]);
 
   return (
     <SessionProvider session={session}>
-      <CheckedVideosContext.Provider
-        value={{ checkedVideos, setCheckedVideos }}
+      <OrderedVideosContext.Provider
+        value={{ orderedVideos, setOrderedVideos }}
       >
-        <Component {...pageProps} />
-      </CheckedVideosContext.Provider>
+        <CheckedVideosContext.Provider
+          value={{ checkedVideos, setCheckedVideos }}
+        >
+          <Component {...pageProps} />
+        </CheckedVideosContext.Provider>
+      </OrderedVideosContext.Provider>
     </SessionProvider>
   );
 };

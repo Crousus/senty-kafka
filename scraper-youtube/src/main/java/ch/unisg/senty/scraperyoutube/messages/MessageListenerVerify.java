@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 @Component
 public class MessageListenerVerify {
     @Value("${API-KEY}")
@@ -30,7 +29,7 @@ public class MessageListenerVerify {
 
     @KafkaListener(id = "scraper-youtube-verify", topics = MessageSender.TOPIC_NAME)
     public void messageReceived(String messageJson, @Header("type") String messageType) throws Exception {
-        if ("\nVerifyOrderCommand".equals(messageType)) {
+        if ("VerifyOrderCommand".equals(messageType)) {
             System.out.println("Received message: " + messageJson);
             JsonNode jsonNode = objectMapper.readTree(messageJson);
             System.out.println(jsonNode);
@@ -38,7 +37,7 @@ public class MessageListenerVerify {
 
             String url = jsonNode.get("data").asText();
 
-            System.out.println("VerifyOrderCommand received: " + url);
+            System.out.println("\nVerifyOrderCommand received: " + url);
 
             // e.g., https://www.youtube.com/watch?v=s_Nbg1tdDUA
             // e.g., https://youtu.be/s_Nbg1tdDUA
@@ -58,7 +57,7 @@ public class MessageListenerVerify {
                 JsonNode rootNode = objectMapper.readTree(videoData);
                 JsonNode items = rootNode.get("items");
                 if (items.size() == 0) {
-                     System.out.println("Video ID not found");
+                    System.out.println("Video ID not found");
                     // send event (without payload)
                     Message<String> message = new Message<String>("OrderVerifiedEvent");
                     message.setTraceid(traceId);
@@ -69,16 +68,18 @@ public class MessageListenerVerify {
                 System.out.println("Video ID found");
 
                 Map<String, String> filteredData = filterVideoData(videoData);
-                // System.out.println("Filtered Data: " + filteredData);
+                System.out.println("Filtered Data: " + filteredData);
 
-                // TODO: change to "UrlVerificationSucceededEvent" and "UrlVerificationFailedEvent"
+                // TODO: change to "UrlVerificationSucceededEvent" and
+                // "UrlVerificationFailedEvent"
                 // send event
-                Message<Map<String, String>> message = new Message<Map<String, String>>("OrderVerifiedEvent", filteredData);
+                Message<Map<String, String>> message = new Message<Map<String, String>>("OrderVerifiedEvent",
+                        filteredData);
                 message.setTraceid(traceId);
                 messageSender.send(message);
 
             } else {
-                 System.out.println("Could not parse video ID");
+                System.out.println("Could not parse video ID");
                 // send event (without payload)
                 Message<Map<String, String>> message = new Message<Map<String, String>>("OrderVerifiedEvent");
                 message.setTraceid(traceId);
@@ -90,10 +91,10 @@ public class MessageListenerVerify {
         }
     }
 
-
     private String fetchVideoData(String videoId, String apiKey) {
         WebClient webClient = WebClient.create();
-        String url = "https://www.googleapis.com/youtube/v3/videos?id=" + videoId + "&part=snippet,statistics&key=" + apiKey;
+        String url = "https://www.googleapis.com/youtube/v3/videos?id=" + videoId + "&part=snippet,statistics&key="
+                + apiKey;
 
         Mono<String> response = webClient.get()
                 .uri(url)
@@ -115,23 +116,35 @@ public class MessageListenerVerify {
 
         String publishedAt = snippetNode.path("publishedAt").asText();
         String title = snippetNode.path("title").asText();
-        String defaultThumbnailUrl = snippetNode.path("thumbnails").path("default").path("url").asText();
+        String description = snippetNode.path("description").asText();
+        String channelId = snippetNode.path("channelId").asText();
         String channelTitle = snippetNode.path("channelTitle").asText();
+        String standardThumbnailUrl = snippetNode.path("thumbnails").path("standard").path("url").asText();
 
         String viewCount = statisticsNode.path("viewCount").asText();
         String likeCount = statisticsNode.path("likeCount").asText();
+        String dislikeCount = statisticsNode.path("dislikeCount").asText();
+        String favoriteCount = statisticsNode.path("favoriteCount").asText();
         String commentCount = statisticsNode.path("commentCount").asText();
 
         // Create a new HashMap and insert extracted fields
         Map<String, String> filteredData = new HashMap<>();
+        // ###########################
+        // TODO: Add videoId!!! filteredData.put("videoId", videoId);
+        // ###########################
         filteredData.put("title", title);
+        // filteredData.put("description", description);
+        filteredData.put("channelId", channelId);
         filteredData.put("channelTitle", channelTitle);
         filteredData.put("publishedAt", publishedAt);
-        filteredData.put("defaultThumbnailUrl", defaultThumbnailUrl);
+        filteredData.put("standardThumbnailUrl", standardThumbnailUrl);
         filteredData.put("viewCount", viewCount);
         filteredData.put("likeCount", likeCount);
+        filteredData.put("dislikeCount", dislikeCount);
+        filteredData.put("favoriteCount", favoriteCount);
         filteredData.put("commentCount", commentCount);
 
         return filteredData;
     }
+
 }

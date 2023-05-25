@@ -12,6 +12,10 @@ const Track = () => {
   const { orderedVideos, setOrderedVideos } = useContext(OrderedVideosContext);
   const { checkedVideos, setCheckedVideos } = useContext(CheckedVideosContext);
 
+  console.log("orderedVideos", orderedVideos);
+  console.log("checkedVideos", checkedVideos);
+  console.log("\n");
+
   const [videos, setVideos] = useState([]);
   const [commentsData, setCommentsData] = useState({});
   const [sentimentData, setSentimentData] = useState({});
@@ -47,15 +51,15 @@ const Track = () => {
   useEffect(() => {
     if (videosResponse.data) {
       setVideos(videosResponse.data);
-      console.log("videos", videosResponse.data);
+      // console.log("videos", videosResponse.data);
     }
     if (commentsDataResponse.data) {
       setCommentsData(commentsDataResponse.data);
-      console.log("commentsData", commentsDataResponse.data);
+      // console.log("commentsData", commentsDataResponse.data);
     }
     if (sentimentDataResponse.data) {
       setSentimentData(sentimentDataResponse.data);
-      console.log("sentimentData", sentimentDataResponse.data);
+      // console.log("sentimentData", sentimentDataResponse.data);
     }
   }, [
     videosResponse.data,

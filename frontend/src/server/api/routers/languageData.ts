@@ -83,8 +83,9 @@ export const languageDataRouter = createTRPCRouter({
         };
       } else {
         // Fetch data from the provided URL
+        console.log("getLanguageData called with", input);
         const response = await fetch(
-          "http://10.0.72.186:7000/comments/count/lang",
+          "http://130.82.245.25:7000/comments/count/lang",
           {
             method: "POST",
             headers: {
@@ -103,6 +104,9 @@ export const languageDataRouter = createTRPCRouter({
           obj[key] = languageData[key];
           return obj;
         }, {});
+
+      console.log("getLanguageData response", filteredData);
+      console.log("\n");
 
       return filteredData;
     }),

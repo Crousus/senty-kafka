@@ -25,7 +25,8 @@ export const commentsRouter = createTRPCRouter({
   getCommentsCount: publicProcedure
     .input(z.object({ videoIds: z.array(z.string()) }))
     .query(async ({ input }) => {
-      const response = await fetch("http://10.0.72.186:7000/comments/count", {
+      console.log("getCommentsCount called with", input);
+      const response = await fetch("http://130.82.245.25:7000/comments/count", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,27 +35,35 @@ export const commentsRouter = createTRPCRouter({
       });
 
       const data = (await response.json()) as CommentsResponse;
+      console.log("getCommentsCount response", data);
+      console.log("\n");
       return data;
     }),
 
   getSentimentAvg: publicProcedure
     .input(z.object({ videoIds: z.array(z.string()) }))
     .query(async ({ input }) => {
-      const response = await fetch("http://10.0.72.186:7000/sentiment/total", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ videoIds: input.videoIds }),
-      });
+      console.log("getSentimentAvg called with", input);
+      const response = await fetch(
+        "http://130.82.245.25:7000/sentiment/total",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ videoIds: input.videoIds }),
+        }
+      );
 
       const data = (await response.json()) as CommentsResponse;
+      console.log("getSentimentAvg response", data);
+      console.log("\n");
       return data;
     }),
   getLatestComments: publicProcedure
     .input(z.object({ videoIds: z.array(z.string()) }))
     .query(async ({ input }) => {
-      const response = await fetch("http://10.0.72.186:7000/comments/last5", {
+      const response = await fetch("http://130.82.245.25:7000/comments/last5", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

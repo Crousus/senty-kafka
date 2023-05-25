@@ -35,14 +35,9 @@ const Order: NextPage = () => {
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    videoIdResponse
-      .refetch()
-      .then((res) => {
-        console.log("videoIdResponse res", res);
-      })
-      .catch((err) => {
-        console.log("videoIdResponse err", err);
-      });
+    videoIdResponse.refetch().catch((err) => {
+      console.log("videoIdResponse err", err);
+    });
 
     if (!videoIdResponse.data.isValid) {
       setThanksMessage(`Error: ${videoIdResponse.error}`);

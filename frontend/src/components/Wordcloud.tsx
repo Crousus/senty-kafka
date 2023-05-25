@@ -8,8 +8,6 @@ import { fillerWords } from "~/utils/fillerWords";
 const remapComments = (data) => {
   if (Object.keys(data).length === 0 || data.data === undefined) return {};
 
-  console.log("data", data.data);
-
   const result = {};
 
   for (const videoId in data.data) {
@@ -77,8 +75,6 @@ function Wordcloud() {
     });
     // setCheckedWordcloudData(newCheckedWordcloudData);
   }, [checkedVideos]);
-
-  // console.log("checkedWordcloudData", checkedWordcloudData);
 
   const getFontSize = (length) => {
     if (length <= 10) return 40;

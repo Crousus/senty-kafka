@@ -11,6 +11,7 @@ const Summarize = () => {
   const { checkedVideos } = useContext(CheckedVideosContext);
 
   console.log("checkedVideos", checkedVideos);
+  console.log("\n");
 
   if (checkedVideos.length === 0) {
     return (

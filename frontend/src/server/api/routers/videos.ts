@@ -30,10 +30,14 @@ export const videosRouter = createTRPCRouter({
 
       const videos: Video[] = await Promise.all(
         videoIds.map(async (videoId) => {
+          console.log("getVideos called with", videoId);
           const response = await axios.get(
-            `http://10.0.72.186:7001/api/scraperyoutube/verify?url=https://www.youtube.com/watch?v=${videoId}`
+            `http://130.82.245.25:7001/api/scraperyoutube/verify?url=https://www.youtube.com/watch?v=${videoId}`
           );
           const data = response.data.data;
+
+          console.log("getVideos response", data);
+          console.log("\n");
 
           return {
             videoId: videoId,

@@ -9,7 +9,7 @@ export const videoIdsRouter = createTRPCRouter({
     .query(async ({ input }) => {
       console.log("checkVideoId called with", input);
       const response = await fetch(
-        `http://130.82.245.25:7001/api/scraperyoutube/verify?url=https://www.youtube.com/watch?v=${input.videoId}`
+        `${process.env.BASE_URL_SCRAPER}/api/scraperyoutube/verify?url=https://www.youtube.com/watch?v=${input.videoId}`
       );
       console.log("checkVideoId response", response);
       console.log("\n");
@@ -24,7 +24,7 @@ export const videoIdsRouter = createTRPCRouter({
     .query(async ({ input }) => {
       console.log("fetchVideoId called with", input);
       const response = await fetch(
-        `http://130.82.245.25:7001/api/scraperyoutube/fetch?videoId=${input.videoId}`
+        `${process.env.BASE_URL_SCRAPER}/api/scraperyoutube/fetch?videoId=${input.videoId}`
       );
       console.log("fetchVideoId response", response);
       console.log("\n");

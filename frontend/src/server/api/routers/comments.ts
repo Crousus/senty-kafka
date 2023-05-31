@@ -26,13 +26,16 @@ export const commentsRouter = createTRPCRouter({
     .input(z.object({ videoIds: z.array(z.string()) }))
     .query(async ({ input }) => {
       console.log("getCommentsCount called with", input);
-      const response = await fetch("http://130.82.245.25:7000/comments/count", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ videoIds: input.videoIds }),
-      });
+      const response = await fetch(
+        `${process.env.BASE_URL_STREAM}/comments/count`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ videoIds: input.videoIds }),
+        }
+      );
 
       const data = (await response.json()) as CommentsResponse;
       console.log("getCommentsCount response", data);

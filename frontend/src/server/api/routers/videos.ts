@@ -2,7 +2,6 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import axios from "axios";
-import { on } from "events";
 
 interface Video {
   videoId: string;
@@ -32,7 +31,7 @@ export const videosRouter = createTRPCRouter({
         videoIds.map(async (videoId) => {
           console.log("getVideos called with", videoId);
           const response = await axios.get(
-            `http://130.82.245.25:7001/api/scraperyoutube/verify?url=https://www.youtube.com/watch?v=${videoId}`
+            `${process.env.BASE_URL_SCRAPER}/api/scraperyoutube/verify?url=https://www.youtube.com/watch?v=${videoId}`
           );
           const data = response.data.data;
 

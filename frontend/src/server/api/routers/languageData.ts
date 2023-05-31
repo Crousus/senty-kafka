@@ -85,7 +85,7 @@ export const languageDataRouter = createTRPCRouter({
         // Fetch data from the provided URL
         console.log("getLanguageData called with", input);
         const response = await fetch(
-          "http://130.82.245.25:7000/comments/count/lang",
+          `${process.env.BASE_URL_STREAM}/comments/count/lang`,
           {
             method: "POST",
             headers: {

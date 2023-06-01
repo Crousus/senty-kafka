@@ -2,6 +2,7 @@ package ch.unisg.senty.scraperyoutube.rest;
 
 import ch.unisg.senty.scraperyoutube.messages.Message;
 import ch.unisg.senty.scraperyoutube.messages.MessageSender;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ public class ScraperRestController {
     // e.g., https://youtu.be/s_Nbg1tdDUA
     Pattern pattern = Pattern.compile("(?<=v=|/videos/|/embed/|youtu\\.be/|/v/|/e/)[^#&?\\n]*");
     Matcher matcher = pattern.matcher(url);
-
+    Map<String, String> filteredData = null;
     if (matcher.find()) {
       // parse video ID
       String videoId = matcher.group();
@@ -65,26 +66,42 @@ public class ScraperRestController {
       // System.out.println("Video Data: " + videoData);
 
       // check if length of "items" is 0
-      JsonNode rootNode = objectMapper.readTree(videoData);
+      JsonNode rootNode = null;
+      try {
+        rootNode = objectMapper.readTree(videoData);
+      } catch (JsonProcessingException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid video ID");
+      }
       JsonNode items = rootNode.get("items");
       if (items.size() == 0) {
         System.out.println("Video ID not found");
         // send event (without payload)
-        return;
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid video ID");
       }
 
       System.out.println("Video ID found");
 
-      Map<String, String> filteredData = filterVideoData(videoData);
+
+      try {
+        filteredData = filterVideoData(videoData);
+      } catch (IOException e) {
+        System.out.println(e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid video ID");
+      }
       System.out.println("Filtered Data: " + filteredData);
 
     } else {
       System.out.println("Could not parse video ID");
       // send event (without payload)
-        return;
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid video ID");
     }
-
-    String responseJson = "{\"traceId\": \"" + message.getTraceid() + "\"}";
+    ObjectMapper objectMapper = new ObjectMapper();
+    String responseJson = null;
+    try {
+      responseJson = "{\"traceId\": \"" + message.getTraceid() + "\", \"data\": " + objectMapper.writeValueAsString(filteredData) + "}";
+    } catch (JsonProcessingException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid video ID");
+    }
     return ResponseEntity.status(HttpStatus.OK).body(responseJson);
   }
 

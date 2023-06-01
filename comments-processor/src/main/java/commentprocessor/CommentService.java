@@ -3,13 +3,12 @@ package commentprocessor;
 import commentprocessor.model.Comment;
 import commentprocessor.model.RecentComments;
 import io.javalin.http.Context;
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.StoreQueryParameters;
-import org.apache.kafka.streams.state.HostInfo;
-import org.apache.kafka.streams.state.QueryableStoreTypes;
-import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
+import org.apache.kafka.streams.*;
+import org.apache.kafka.streams.state.*;
 import io.javalin.Javalin;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +61,16 @@ public class CommentService {
                         QueryableStoreTypes.keyValueStore()));
     }
 
+    ReadOnlyWindowStore<String, Double> getTotalSentimentLast24hStore() {
+        return streams.store(
+                StoreQueryParameters.fromNameAndType(
+                        // state store name
+                        CommentProcessingTopology.windowedSentimentStore,
+                        // state store type
+                        QueryableStoreTypes.windowStore()));
+    }
+
+
     // This function starts a Javalin server with the given host and port.
     void start() {
         Javalin app = Javalin.create().start(hostInfo.port());
@@ -70,6 +79,8 @@ public class CommentService {
         app.post("/comments/count", ctx -> processRequest(ctx, this::getCommentCount));
         app.post("/comments/last5", ctx -> processRequest(ctx, this::getLast5Comment));
         app.post("/sentiment/total", ctx -> processRequest(ctx, this::getTotalSentiment));
+        app.post("/sentiment/total/24h", ctx -> processRequest(ctx, this::getSentimentLast24Hours));
+
     }
 
     /** This function processes the incoming requests.
@@ -78,7 +89,7 @@ public class CommentService {
      **/
     private <T> void processRequest(Context ctx, Function<List<String>, Map<String, T>> processor) {
         // Print the request body
-        System.out.println("body: " + ctx.body());
+        System.out.println("New request: " + ctx.body() +" "+ ctx.ip());
         // Parse the request body as JSON into a map
         Map<String, List<String>> body = ctx.bodyAsClass(Map.class);
         // Retrieve the videoIds from the parsed request body
@@ -108,8 +119,11 @@ public class CommentService {
         HashMap<String, Long> counts = new HashMap<>();
         // For each videoId, get the comment count from the store and add it to the map
         videoIds.forEach(s -> {
-            long count = getCommentCountStore().get(s);
-            counts.put(s, count);
+            Long count = getCommentCountStore().get(s);
+            if (count == null)
+                counts.put(s, 0L);
+            else
+                counts.put(s, count);
         });
         // Return the map of counts
         return counts;
@@ -137,10 +151,10 @@ public class CommentService {
         HashMap<String, Double> counts = new HashMap<>();
         // For each videoId, get the total sentiment and the comment count from the store, calculate the average sentiment, and add it to the map
         videoIds.forEach(s -> {
-            long count = getCommentCountStore().get(s);
-            double totalSentiment = getTotalSentiment().get(s);
+            Long count = getCommentCountStore().get(s);
+            Double totalSentiment = getTotalSentiment().get(s);
 
-            if (totalSentiment == 0 || count == 0)
+            if (totalSentiment == null || count == null)
                 counts.put(s, 0.0);
             else
                 // Calculate the average sentiment
@@ -150,6 +164,33 @@ public class CommentService {
         // Return the map of total sentiments
         return counts;
     }
+
+    private Map<String, Double> getSentimentLast24Hours(List<String> videoIds) {
+        // Initialize an empty map to store the total sentiments
+        HashMap<String, Double> counts = new HashMap<>();
+
+        // For each videoId, get the total sentiment from the store and add it to the map
+        videoIds.forEach(s -> {
+            WindowStoreIterator<Double> sentimentIterator = getTotalSentimentLast24hStore().fetch(s, Instant.now().minus(24, ChronoUnit.HOURS), Instant.now());
+            double totalSentimentLast24h = 0;
+            long count = 0;
+
+            while (sentimentIterator.hasNext()) {
+                totalSentimentLast24h += sentimentIterator.next().value;
+                count++;
+            }
+            sentimentIterator.close();
+
+            if (count == 0) {
+                counts.put(s, 0.0);
+            } else {
+                counts.put(s, totalSentimentLast24h / count);
+            }
+        });
+        // Return the map of total sentiments
+        return counts;
+    }
+
 
 
 }

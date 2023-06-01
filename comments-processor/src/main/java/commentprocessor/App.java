@@ -28,6 +28,8 @@ public class App {
     props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 0);
     props.put(StreamsConfig.APPLICATION_SERVER_CONFIG, endpoint);
     props.put(StreamsConfig.STATE_DIR_CONFIG, stateDir);
+    props.put(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, CommentProcessingTopology.CommentTimestampExtractor.class.getName());
+
 
     // build the topology
     System.out.println("Starting Videogame Leaderboard");

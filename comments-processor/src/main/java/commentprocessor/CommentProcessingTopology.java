@@ -7,6 +7,7 @@ import commentprocessor.model.*;
 import commentprocessor.serialization.json.JsonSerdes;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.cache.Cache;
 import org.apache.kafka.common.cache.LRUCache;
 import org.apache.kafka.common.serialization.Serdes;
@@ -14,8 +15,14 @@ import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.processor.TimestampExtractor;
 import org.apache.kafka.streams.state.*;
 
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -30,6 +37,10 @@ public class CommentProcessingTopology {
     public static String lastCommentsStore;
     public static String commentCountStore;
 
+    public static String windowedSentimentStore;
+
+    public static String windowedCountStore;
+
     public static String totalSentimentStore;
 
     public static Topology build() {
@@ -42,14 +53,6 @@ public class CommentProcessingTopology {
 
         commentBatchStream.foreach((key, value) -> System.out.println("Key: " + key + ", Value: " + value));
         // Define the state store.
-        StoreBuilder<KeyValueStore<String, Comment>> retryBuilder =
-                Stores.keyValueStoreBuilder(
-                        Stores.inMemoryKeyValueStore("inmemory-order-create-retry"),
-                        Serdes.String(),
-                        JsonSerdes.Comment());  // Assuming you have a Serde for your Comment type.
-
-        // Add the state store to the topology.
-        builder.addStateStore(retryBuilder);
 
         StoreBuilder<KeyValueStore<String, Boolean>> deduplicationStoreBuilder =
                 Stores.keyValueStoreBuilder(
@@ -66,7 +69,7 @@ public class CommentProcessingTopology {
 
         comments = comments.transform(() -> new DeduplicationTransformer(), "deduplication-store");
 
-        KStream<String, Comment> commentsWithLanguage = comments.transform(new RetryTransformerSupplier(), "inmemory-order-create-retry");
+        KStream<String, Comment> commentsWithLanguage = comments.transform(new RetryTransformerSupplier());
 
         Predicate<String, Comment> isEnglish = (key, comment) -> "en".equalsIgnoreCase(comment.getLanguage());
 
@@ -141,6 +144,37 @@ public class CommentProcessingTopology {
 
         totalSentimentStore = totalSentimentKTable.queryableStoreName();
 
+        Duration windowSize = Duration.ofHours(24);
+        Duration advanceInterval = Duration.ofMinutes(1); // This is how often the window should "slide". Adjust according to your needs.
+        /**
+        KTable<Windowed<String>, Long> windowedCommentCountKTable = groupedStream
+                .windowedBy(TimeWindows.of(windowSize).grace(advanceInterval))
+                .count(Materialized.<String, Long, WindowStore<Bytes, byte[]>>as("windowed-total-count-store")
+                        .withKeySerde(Serdes.String())
+                        .withValueSerde(Serdes.Long())
+                );
+         windowedCountStore = windowedCommentCountKTable.queryableStoreName();
+         **/
+
+        final Duration retentionPeriod = windowSize.plus(advanceInterval);
+
+        KTable<Windowed<String>, Double> windowedSentiment =
+                groupedStream
+                        .windowedBy(TimeWindows.of(windowSize).grace(advanceInterval))
+                        .aggregate(
+                                // Initialize the aggregate value
+                                () -> 0.0,
+                                // Adder (aggregator function)
+                                (k, newComment, aggSentiment) -> aggSentiment + newComment.getSentimentScore(),
+                                // Materialize the state store
+                                Materialized.<String, Double, WindowStore<Bytes, byte[]>>as("windowed-sentiment-store")
+                                        .withKeySerde(Serdes.String())
+                                        .withValueSerde(Serdes.Double())
+                                        .withRetention(retentionPeriod)  // Set the retention period
+                        );
+
+        windowedSentimentStore = windowedSentiment.queryableStoreName();
+
 
         languagesKTable.toStream().peek((key, value) -> System.out.println("Key: " + key + ", Value: " + value));
         //Counting the comments grouped by videoId and language
@@ -174,7 +208,7 @@ public class CommentProcessingTopology {
         JsonNode languageNode = objectMapper.readTree(result);
         String language = languageNode.get("language").asText();
 
-        cache.put(comment,language);
+        cache.put(comment, language);
 
         return language;
 
@@ -202,6 +236,25 @@ public class CommentProcessingTopology {
             comment.setComment(filteredComment);
             return comment;
         });
+    }
+
+    public static class CommentTimestampExtractor implements TimestampExtractor {
+
+        public CommentTimestampExtractor() {
+        }
+        @Override
+        public long extract(ConsumerRecord<Object, Object> record, long previousTimestamp) {
+            if (record.value() instanceof CommentBatchEvent) {
+                CommentBatchEvent commentBatchEvent = (CommentBatchEvent) record.value();
+                return Instant.parse(commentBatchEvent.getTimestamp()).toEpochMilli();
+            }
+            else if (record.value() instanceof Comment) {
+                Comment comment = (Comment) record.value();
+                return Instant.parse(comment.getTimestamp()).toEpochMilli();
+            }
+
+            return System.currentTimeMillis();
+        }
     }
 }
 

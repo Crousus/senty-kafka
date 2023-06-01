@@ -123,14 +123,7 @@ public class MessageListenerFetch {
 
             for (String videoId : videoIds) {
                 CommentBatchEvent batchEvent = buildBatch(videoId);
-                batchEvent.getComments().forEach(comment -> {
-                    CommentBatchEvent batch = new CommentBatchEvent();
-                    batch.setVideoId(videoId);
-                    batch.setTimestamp(comment.getTimestamp());
-                    batch.setComments(Arrays.asList(comment));
-                    sendBatch(batch);
-                });
-                //sendBatch(batchEvent);
+                sendBatch(batchEvent);
             }
         } else {
             System.out.println("\nNo video IDs to be scraped");

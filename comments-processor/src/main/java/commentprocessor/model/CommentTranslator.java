@@ -14,7 +14,8 @@ import java.util.*;
 
 public class CommentTranslator implements Transformer<String, Comment, KeyValue<String, Comment>> {
     private ProcessorContext context;
-    private static final String TRANSLATE_URI = "http://localhost:5000/translate";
+    private static final String TRANSLATE_URI = "http://localhost:5002" +
+            "/translate";
     private HttpClient httpClient;
 
     public static Set<String> availableLanguages = Set.of(

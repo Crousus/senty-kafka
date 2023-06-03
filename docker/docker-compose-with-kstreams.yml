@@ -191,10 +191,12 @@ services:
     container_name: scraper
     networks:
       - senty
+    depends_on:
+      - kafka
     ports:
       - "7001:7001"
     environment:
-      - API-KEY=AIzaSyDtuq5QvhIxQFpZTSqYIQ7Hs2bSWhNyW0Y
+      - API-KEY=XXX
 
 networks:
   senty:

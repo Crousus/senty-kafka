@@ -176,12 +176,13 @@ services:
       context: ../frontend
       dockerfile: Dockerfile
     container_name: frontend
-    network_mode: host
     ports:
       - "3000:3000"
+    networks:
+      - senty
     environment:
-      - BASE_URL_SCRAPER=http://localhost:7001
-      - BASE_URL_STREAM=http://localhost:5000
+      - BASE_URL_SCRAPER=http://scraper:7001
+      - BASE_URL_STREAM=http://comment-processor:5000
 
 
   scraper:
@@ -196,8 +197,20 @@ services:
     ports:
       - "7001:7001"
     environment:
-      - API-KEY=XXX
+      - API-KEY=AIzaSyA2DbBX746709VDuBfiSJkGouIE_DHilbg
 
+
+  comment-processor:
+    build:
+      context: ../comments-processor
+      dockerfile: Dockerfile
+    container_name: comment-processor
+    networks:
+      - senty
+    depends_on:
+      - kafka
+    ports:
+      - "7000:7000"
 networks:
   senty:
     driver: bridge

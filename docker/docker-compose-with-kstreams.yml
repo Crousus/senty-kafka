@@ -170,6 +170,20 @@ services:
     networks:
       - senty
 
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3001:3000"
+    environment:
+      - BASE_URL_SCRAPER=localhost:7001
+      - BASE_URL_STREAM=localhost:5000
+    networks:
+      - senty
+
 networks:
   senty:
     driver: bridge

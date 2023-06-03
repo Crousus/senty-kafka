@@ -5,7 +5,7 @@ FROM python:3.10-slim-buster
 WORKDIR /app
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir torch torchvision torchaudio -f https://download.pytorch.org/whl/cpu/torch_stable.html
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
 RUN pip install --no-cache-dir fastapi uvicorn transformers
 
 # Download the model from Hugging Face Model Hub

@@ -20,7 +20,9 @@ import java.util.Map;
 public class SentimentAnalyzer implements Transformer<String, Comment, KeyValue<String, Comment>> {
 
     private ProcessorContext context;
-    private static final String SENTIMENT_URI = "http://localhost:5001/model/predict";
+
+
+    private static final String SENTIMENT_URI = "http://" + System.getProperty("sentiment.base", "localhost:5001") + "/model/predict";
     private HttpClient httpClient;
 
     public SentimentAnalyzer() {

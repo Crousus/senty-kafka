@@ -29,7 +29,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class CommentProcessingTopology {
-    private static final String LANGUAGE_DETECTION_URL = "http://localhost:2000/predict";
+    private static final String LANGUAGE_DETECTION_URL = "http://" + System.getProperty("language_detection.base", "localhost:2000") + "/predict";
     private static final List<String> FILTERED_WORDS = Arrays.asList("in_shit", "Christ_on_a_cracker", "Christ_on_a_bike", "sweet_Jesus", "shit_ass", "damn_it", "Jesus_fuck", "godsdamn", "child-fucker", "arsehead", "dyke", "son_of_a_whore", "frigger", "fatherfucker", "brotherfucker", "Jesus_Mary_and_Joseph", "Jesus_wept", "arse", "arsehole", "ass", "asshole", "bastard", "bitch", "bloody", "bollocks", "bugger", "bullshit", "cock", "cocksucker", "crap", "cunt", "damn", "dick", "dickhead", "fatherfucker", "goddamn", "hell", "holy_shit", "horseshit", "Jesus_Christ", "Jesus_H_Christ", "Jesus_Harold_Christ", "kike", "motherfucker", "nigga", "nigra", "piss", "prick", "pussy", "shit", "shite", "sisterfucker", "slut", "son_of_a_bitch", "spastic", "turd", "twat", "wanker","EDPO");
     private static final Pattern EMOJI_PATTERN = Pattern.compile("[\\uD83C-\\uDBFF\\uDC00-\\uDFFF]+");
 
@@ -48,7 +48,7 @@ public class CommentProcessingTopology {
     private static final Logger logger = LoggerFactory.getLogger(CommentProcessingTopology.class);
 
 
-    public static Topology build() {
+    public static Topology build(String languageUrl, String sentimentAnalyzerUrl) {
 
         StreamsBuilder builder = new StreamsBuilder();
 
@@ -177,6 +177,8 @@ public class CommentProcessingTopology {
                                         .withValueSerde(Serdes.Double())
                                         .withRetention(retentionPeriod)  // Set the retention period
                         );
+
+        //KTable<Windowed<String>, Double> windowedByDay = groupedStream.windowedBy(TimeWindows.of(Duration.ofDays(1)))
 
         windowedSentimentStore = windowedSentiment.queryableStoreName();
 

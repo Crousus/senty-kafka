@@ -48,7 +48,7 @@ public class CommentProcessingTopology {
     private static final Logger logger = LoggerFactory.getLogger(CommentProcessingTopology.class);
 
 
-    public static Topology build(String languageUrl, String sentimentAnalyzerUrl) {
+    public static Topology build() {
 
         StreamsBuilder builder = new StreamsBuilder();
 

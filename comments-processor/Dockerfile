@@ -13,9 +13,6 @@ WORKDIR /app
 COPY pom.xml ./
 COPY src ./src/
 
-# Build the application with Maven
-RUN mvn dependency:purge-local-repository
-
 RUN mvn clean package
 
 

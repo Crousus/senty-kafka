@@ -1,9 +1,10 @@
 # Dockerfile
 
 # Start with a base image containing Java runtime and Maven
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
-RUN apt-get update && apt-get install -y openjdk-17-jdk maven
+#install java and maven
+RUN apt-get update && apt-get install -y openjdk-11-jdk maven
 
 # Set the working directory in the container
 WORKDIR /app
@@ -13,6 +14,8 @@ COPY pom.xml ./
 COPY src ./src/
 
 # Build the application with Maven
+RUN mvn dependency:purge-local-repository
+
 RUN mvn clean package
 
 

@@ -9,7 +9,9 @@ import org.apache.kafka.streams.*;
 import org.apache.kafka.streams.state.*;
 import io.javalin.Javalin;
 
+import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,6 +76,15 @@ public class CommentService {
                         QueryableStoreTypes.windowStore()));
     }
 
+    ReadOnlyWindowStore<String, Long> getCommentCountLast24hStore() {
+        return streams.store(
+                StoreQueryParameters.fromNameAndType(
+                        // state store name
+                        CommentProcessingTopology.windowedCountStore,
+                        // state store type
+                        QueryableStoreTypes.windowStore()));
+    }
+
 
     // This function starts a Javalin server with the given host and port.
     void start() {
@@ -83,7 +94,7 @@ public class CommentService {
         app.post("/comments/count", ctx -> processRequest(ctx, this::getCommentCount));
         app.post("/comments/last5", ctx -> processRequest(ctx, this::getLast5Comment));
         app.post("/sentiment/total", ctx -> processRequest(ctx, this::getTotalSentiment));
-        app.post("/sentiment/total/24h", ctx -> processRequest(ctx, this::getSentimentLast24Hours));
+        app.post("/sentiment/total/24h", this::processRequestForSentiment24h);
 
     }
 
@@ -100,6 +111,19 @@ public class CommentService {
         List<String> videoIds = body.get("videoIds");
         // Process the videoIds using the given processor function
         Map<String, T> result = processor.apply(videoIds);
+        // Return the result as JSON in the response
+        ctx.json(result);
+    }
+
+    private void processRequestForSentiment24h(Context ctx) {
+        // Print the request body
+        logger.debug("New request: " + ctx.body() +" "+ ctx.ip());
+        // Parse the request body as JSON into a map
+        Map<String, List<String>> body = ctx.bodyAsClass(Map.class);
+        // Retrieve the videoIds from the parsed request body
+        List<String> videoIds = body.get("videoIds");
+        // Process the videoIds using the getSentimentLast24Hours function
+        List<Map<String, Object>> result = getSentimentLast24Hours(videoIds);
         // Return the result as JSON in the response
         ctx.json(result);
     }
@@ -169,30 +193,46 @@ public class CommentService {
         return counts;
     }
 
-    private Map<String, Double> getSentimentLast24Hours(List<String> videoIds) {
+    private List<Map<String, Object>> getSentimentLast24Hours(List<String> videoIds) {
         // Initialize an empty map to store the total sentiments
-        HashMap<String, Double> counts = new HashMap<>();
+        List<Map<String, Object>> videoData = new ArrayList<>();
 
         // For each videoId, get the total sentiment from the store and add it to the map
-        videoIds.forEach(s -> {
-            WindowStoreIterator<Double> sentimentIterator = getTotalSentimentLast24hStore().fetch(s, Instant.now().minus(24, ChronoUnit.HOURS), Instant.now());
-            double totalSentimentLast24h = 0;
-            long count = 0;
+        videoIds.forEach(id -> {
+            Instant timeFrom = Instant.now().minus(Duration.ofDays(3000));
+            Instant timeTo = Instant.now();
+            WindowStoreIterator<Double> sentimentIterator = getTotalSentimentLast24hStore().fetch(id, timeFrom, timeTo);
 
-            while (sentimentIterator.hasNext()) {
-                totalSentimentLast24h += sentimentIterator.next().value;
-                count++;
-            }
-            sentimentIterator.close();
+            WindowStoreIterator<Long> countIterator = getCommentCountLast24hStore().fetch(id, timeFrom, timeTo);
 
-            if (count == 0) {
-                counts.put(s, 0.0);
-            } else {
-                counts.put(s, totalSentimentLast24h / count);
+            // Prepare a list to store the sentiment data for this video
+            List<Map<String, Object>> sentimentData = new ArrayList<>();
+
+            while (sentimentIterator.hasNext() && countIterator.hasNext()) {
+                KeyValue<Long, Double> sentimentNext = sentimentIterator.next();
+                KeyValue<Long, Long> countNext = countIterator.next();
+
+                // Prepare a map for this day's data
+                Map<String, Object> dayData = new HashMap<>();
+                dayData.put("date", Instant.ofEpochMilli(sentimentNext.key).toString());
+                dayData.put("sentiment", sentimentNext.value / countNext.value);
+                dayData.put("comments", countNext.value);
+
+                // Add the day's data to the sentiment data list
+                sentimentData.add(dayData);
             }
+
+            // Prepare a map for the video data
+            Map<String, Object> videoMap = new HashMap<>();
+            videoMap.put("videoId", id);
+            videoMap.put("sentiment", sentimentData);
+
+            // Add the video data to the videoData list
+            videoData.add(videoMap);
         });
-        // Return the map of total sentiments
-        return counts;
+        // Return the list of video data
+        return videoData;
+
     }
 
 

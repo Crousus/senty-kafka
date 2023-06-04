@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 public class App {
   private static final Logger logger = LoggerFactory.getLogger(App.class);
   public static void main(String[] args) {
-    System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "Debug");
     Topology topology = CommentProcessingTopology.build();
 
     // we allow the following system properties to be overridden,
@@ -37,11 +36,13 @@ public class App {
 
 
     // build the topology
-    logger.debug("Starting Videogame Leaderboard");
+    logger.info("Starting Senty Streams...");
     KafkaStreams streams = new KafkaStreams(topology, props);
+
 
     // close Kafka Streams when the JVM shuts down (e.g. SIGTERM)
     Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
+
     // start streaming!
     streams.start();
 

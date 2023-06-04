@@ -12,10 +12,13 @@ import org.apache.kafka.common.cache.Cache;
 import org.apache.kafka.common.cache.LRUCache;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
+import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.processor.TimestampExtractor;
+import org.apache.kafka.streams.processor.To;
 import org.apache.kafka.streams.state.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,11 +71,43 @@ public class CommentProcessingTopology {
 
         builder.addStateStore(deduplicationStoreBuilder);
 
+        //We have the reverse the List as we need it in reverse chronological order for the windowed aggregation later
+        KStream<String, Comment> comments = commentBatchStream
+                .mapValues(CommentBatchEvent::getComments)  // Convert CommentBatchEvent to List<Comment>
+                .flatMapValues(commentBatch -> {
+                    // Create a new list to avoid UnsupportedOperationException when calling reverse
+                    List<Comment> commentsList = new ArrayList<>(commentBatch);
+                    // Reverse the list
+                    Collections.reverse(commentsList);
+                    return commentsList;
+                })
+                .selectKey((key, comment) -> comment.getCommentId());
 
-        KStream<String, Comment> comments = commentBatchStream.flatMapValues(batch -> batch.getComments()).selectKey((key, comment) -> comment.getCommentId());
         comments = removeEmojisFromComments(comments);
 
-        comments = comments.transform(() -> new DeduplicationTransformer(), "deduplication-store");
+        comments = comments.transform(() ->
+                new Transformer<>() {
+                    private ProcessorContext context;
+
+                    @Override
+                    public void init(ProcessorContext context) {
+                        this.context = context;
+                    }
+
+                    @Override
+                    public KeyValue<String, Comment> transform(String key, Comment value) {
+                        // Modify the timestamp here
+                        context.forward(key, value, To.all().withTimestamp(Instant.parse(value.getTimestamp()).toEpochMilli()));
+
+                        return null;
+                    }
+
+                    @Override
+                    public void close() {
+                    }
+                });
+
+        comments = comments.transform(DeduplicationTransformer::new, "deduplication-store");
 
         KStream<String, Comment> commentsWithLanguage = comments.transform(new RetryTransformerSupplier());
 
@@ -87,17 +122,17 @@ public class CommentProcessingTopology {
 
         translatable_comments_stream.filter((s, comment) -> !CommentTranslator.availableLanguages.contains(comment.getLanguage())).to("untranslatable-comments");
 
-        KStream<String, Comment> translated_stream = translatable_comments_stream.transform(() -> new CommentTranslator());
+        KStream<String, Comment> translated_stream = translatable_comments_stream.transform(CommentTranslator::new);
 
         KStream<String, Comment> merged_stream = english_stream.merge(translated_stream);
 
         KStream<String, Comment> filteredCommentStream = filterComments(merged_stream);
 
-        KStream<String, Comment> sentiment_classified_stream = filteredCommentStream.transform(() -> new SentimentAnalyzer());
+        KStream<String, Comment> sentiment_classified_stream = filteredCommentStream.transform(SentimentAnalyzer::new);
 
         //sentiment_classified_stream.to("comment-classified");
 
-        sentiment_classified_stream.peek((key, value) -> logger.debug("Key: " + key + ", Value: " + value));
+        sentiment_classified_stream.peek((key, value) -> logger.info("Key: " + key + ", Value: " + value));
 
         KGroupedStream<String, Comment> groupedStream = sentiment_classified_stream.groupBy(
                 (key, comment) -> comment.getVideoId(), Grouped.with(Serdes.String(), JsonSerdes.Comment()));
@@ -149,41 +184,29 @@ public class CommentProcessingTopology {
 
         totalSentimentStore = totalSentimentKTable.queryableStoreName();
 
-        Duration windowSize = Duration.ofHours(24);
-        Duration advanceInterval = Duration.ofMinutes(1); // This is how often the window should "slide". Adjust according to your needs.
-        /**
-        KTable<Windowed<String>, Long> windowedCommentCountKTable = groupedStream
-                .windowedBy(TimeWindows.of(windowSize).grace(advanceInterval))
-                .count(Materialized.<String, Long, WindowStore<Bytes, byte[]>>as("windowed-total-count-store")
+        TimeWindows windows = TimeWindows.of(Duration.ofDays(1));
+        KTable<Windowed<String>, Double> totalSentimentKTableWindowed = groupedStream
+                .windowedBy(windows)
+                .aggregate(sentimentInitializer, sentimentAggregator,
+                        Materialized.<String, Double, WindowStore<Bytes, byte[]>>as("total-sentiment-store-windowed")
+                                .withRetention(Duration.ofDays(3000))
+                                .withKeySerde(Serdes.String())
+                                .withValueSerde(Serdes.Double()));
+
+        totalSentimentKTableWindowed.toStream().peek((key, value) -> logger.info("Key: " + key + ", Value: " + value));
+
+        KTable<Windowed<String>, Long> commentCountWindowed = groupedStream
+                .windowedBy(windows)
+                .count(Materialized.<String, Long, WindowStore<Bytes, byte[]>>as("comment-total-count-store-windowed")
+                        .withRetention(Duration.ofDays(3000))
                         .withKeySerde(Serdes.String())
-                        .withValueSerde(Serdes.Long())
-                );
-         windowedCountStore = windowedCommentCountKTable.queryableStoreName();
-         **/
-
-        final Duration retentionPeriod = windowSize.plus(advanceInterval);
-
-        KTable<Windowed<String>, Double> windowedSentiment =
-                groupedStream
-                        .windowedBy(TimeWindows.of(windowSize).grace(advanceInterval))
-                        .aggregate(
-                                // Initialize the aggregate value
-                                () -> 0.0,
-                                // Adder (aggregator function)
-                                (k, newComment, aggSentiment) -> aggSentiment + newComment.getSentimentScore(),
-                                // Materialize the state store
-                                Materialized.<String, Double, WindowStore<Bytes, byte[]>>as("windowed-sentiment-store")
-                                        .withKeySerde(Serdes.String())
-                                        .withValueSerde(Serdes.Double())
-                                        .withRetention(retentionPeriod)  // Set the retention period
-                        );
-
-        //KTable<Windowed<String>, Double> windowedByDay = groupedStream.windowedBy(TimeWindows.of(Duration.ofDays(1)))
-
-        windowedSentimentStore = windowedSentiment.queryableStoreName();
+                        .withValueSerde(Serdes.Long()));
 
 
-        languagesKTable.toStream().peek((key, value) -> logger.debug("Key: " + key + ", Value: " + value));
+        windowedSentimentStore = totalSentimentKTableWindowed.queryableStoreName();
+        windowedCountStore = commentCountWindowed.queryableStoreName();
+
+        languagesKTable.toStream().peek((key, value) -> logger.info("Key: " + key + ", Value: " + value));
         //Counting the comments grouped by videoId and language
 
         logger.debug(languagesKTable.queryableStoreName());

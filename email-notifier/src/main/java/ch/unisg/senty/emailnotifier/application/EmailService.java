@@ -5,15 +5,18 @@ import org.simplejavamail.api.mailer.Mailer;
 import org.simplejavamail.email.EmailBuilder;
 import org.simplejavamail.mailer.MailerBuilder;
 import org.springframework.stereotype.Component;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.UUID;
 
 
 @Component
 public class EmailService {
 
+  private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
+
   public String sendEmail(String content, String recipient) {
-    System.out.println("Sending Mail: " + content);
+    logger.debug("Sending Mail: " + content);
 
     Mailer mailer = MailerBuilder
             .withSMTPServerHost("smtp.mailgun.org")

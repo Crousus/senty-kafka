@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.messaging.handler.annotation.Header;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -22,12 +24,14 @@ public class MessageListener {
   private ObjectMapper objectMapper;
 
   private int count;
+  private static final Logger logger = LoggerFactory.getLogger(MessageListener.class);
+
 
 
   @KafkaListener(id = "comment-analyzer", topics = MessageSender.TOPIC_NAME)
   public void orderPlaced(String messageJson, @Header("type") String messageType) throws Exception {
     if ("CommentAddedEvent".equals(messageType)) {
-      System.out.println(messageJson);
+      logger.debug(messageJson);
       Message<JsonNode> message = objectMapper.readValue(messageJson, new TypeReference<Message<JsonNode>>(){});
 
       ObjectNode payload = (ObjectNode) message.getData();

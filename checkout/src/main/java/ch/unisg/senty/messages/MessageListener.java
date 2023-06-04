@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Optional;
 
 
@@ -25,9 +26,12 @@ public class MessageListener {
     @Autowired
     private OrderRepository orderRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(MessageListener.class);
+
+
     @KafkaListener(id = "scraper-youtube", topics = MessageSender.TOPIC_NAME)
     public void messageReceived(String messageJson, @Header("type") String messageType) throws Exception {
-        System.out.println("Received message: " + messageJson);
+        logger.debug("Received message: " + messageJson);
 
         JsonNode jsonNode = objectMapper.readTree(messageJson);
         String traceId = jsonNode.get("traceid").asText();
@@ -61,14 +65,14 @@ public class MessageListener {
                 status = OrderStatus.REJECTED;
                 break;
             default:
-                System.out.println("Unknown message type: " + messageType);
+                logger.debug("Unknown message type: " + messageType);
                 return;
         }
 
         Optional<Order> order = orderRepository.findById(traceId);
 
         if (!order.isPresent()) {
-            System.out.println("Order not found");
+            logger.debug("Order not found");
             return;
         }
 

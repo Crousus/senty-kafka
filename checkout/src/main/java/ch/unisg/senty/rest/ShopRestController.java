@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.unisg.senty.domain.Order;
 import ch.unisg.senty.messages.Message;
@@ -29,7 +31,10 @@ public class ShopRestController {
 
   @Autowired
   OrderRepository orderRepository;
-  
+
+  private static final Logger logger = LoggerFactory.getLogger(ShopRestController.class);
+
+
   @PostMapping(path = "/api/cart/order", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> placeOrder(@RequestBody Order order) {
     if (order.getCompanyName().isEmpty()) {
@@ -53,7 +58,7 @@ public class ShopRestController {
     //kickoff workflow
     messageSender.send(message);
 
-    System.out.println("MessageSend");
+    logger.debug("MessageSend");
 
     String responseJson = "{\"traceId\": \"" + message.getTraceid() + "\"}";
     return ResponseEntity.status(HttpStatus.OK).body(responseJson);

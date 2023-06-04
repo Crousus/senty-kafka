@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.HashSet;
 
@@ -22,9 +23,11 @@ public class MessageListener {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private static final Logger logger = LoggerFactory.getLogger(MessageListener.class);
+
     @KafkaListener(id = "email-notifier", topics = MessageSender.TOPIC_NAME)
     public void eventReceived(String messageJson, @Header("type") String messageType) throws Exception {
-        System.out.println(messageJson);
+        logger.debug(messageJson);
         switch (messageType) {
             case "CommentCountMilestoneEvent":
                 commentMileStoneHandler(messageJson);
@@ -69,7 +72,7 @@ public class MessageListener {
         Message<JsonNode> message = objectMapper.readValue(messageJson, new TypeReference<Message<JsonNode>>() {
         });
 
-        System.out.println(messageJson);
+        logger.debug(messageJson);
         String payload = message.getData().get("mailContent").asText();
         String recepient = message.getData().get("email").asText();
 

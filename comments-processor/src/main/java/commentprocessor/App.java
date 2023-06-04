@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 public class App {
   private static final Logger logger = LoggerFactory.getLogger(App.class);
   public static void main(String[] args) {
+    System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "Debug");
     Topology topology = CommentProcessingTopology.build();
 
     // we allow the following system properties to be overridden,

@@ -18,6 +18,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class MessageListener {
@@ -27,6 +29,8 @@ public class MessageListener {
 
   @Autowired
   private ObjectMapper objectMapper;
+
+  private static final Logger logger = LoggerFactory.getLogger(MessageListener.class);
   
   /**
    * Handles incoming OrderPlacedEvents. 
@@ -35,7 +39,7 @@ public class MessageListener {
   @Transactional
   public void orderPlacedReceived(Message<Order> message) throws JsonParseException, JsonMappingException, IOException {
     
-    System.out.println("New order placed, start flow." + message);
+    logger.debug("New order placed, start flow." + message);
 
     Order order = message.getData();
 
@@ -67,7 +71,7 @@ public class MessageListener {
       .count();
     
     if (correlatingInstances==1) {
-      System.out.println("Correlating " + message + " to waiting flow instance");
+      logger.debug("Correlating " + message + " to waiting flow instance");
       
       camunda.getRuntimeService().createMessageCorrelation(message.getType())
         .processInstanceBusinessKey(message.getTraceid())

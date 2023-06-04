@@ -16,6 +16,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class MessageListener {
@@ -26,6 +28,8 @@ public class MessageListener {
 
   @Autowired
   private ObjectMapper objectMapper;
+
+  private static final Logger logger = LoggerFactory.getLogger(MessageListener.class);
   
   /**
    * Handles incoming OrderPlacedEvents. 
@@ -36,7 +40,7 @@ public class MessageListener {
     // persist domain entit
 
     Order order = message.getData();
-    System.out.println("New order placed, start flow. " + order);
+    logger.debug("New order placed, start flow. " + order);
 
     camunda.getRuntimeService().createMessageCorrelation(message.getType())
             .processInstanceBusinessKey(message.getTraceid()).setVariable("order", order)
@@ -66,8 +70,8 @@ public class MessageListener {
       .count();
     
     if (correlatingInstances==1) {
-      System.out.println("Correlating " + message + " to waiting flow instance");
-      System.out.println(message.getData().toString());
+      logger.debug("Correlating " + message + " to waiting flow instance");
+      logger.debug(message.getData().toString());
       
       camunda.getRuntimeService().createMessageCorrelation(message.getType())
         .processInstanceBusinessKey(message.getTraceid())
@@ -78,7 +82,7 @@ public class MessageListener {
 
       camunda.getRuntimeService().createExecutionQuery().processInstanceBusinessKey(message.getTraceid()).list().forEach(e -> {
         camunda.getRuntimeService().getVariables(e.getId()).forEach((s, o) -> {
-          System.out.println(s + " " + o);
+          logger.debug(s + " " + o);
         });
 
       });

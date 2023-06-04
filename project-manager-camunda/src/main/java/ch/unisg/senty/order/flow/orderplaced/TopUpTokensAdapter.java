@@ -7,19 +7,21 @@ import org.springframework.stereotype.Component;
 
 import ch.unisg.senty.order.messages.Message;
 import ch.unisg.senty.order.messages.MessageSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class TopUpTokensAdapter implements JavaDelegate {
   
   @Autowired
-  private MessageSender messageSender;  
+  private MessageSender messageSender;
 
-
+  private static final Logger logger = LoggerFactory.getLogger(TopUpTokensAdapter.class);
   @Override
   public void execute(DelegateExecution context) throws Exception {
     String traceId = context.getProcessBusinessKey();
 
-    System.out.println("TopUp Command placed");
+    logger.debug("TopUp Command placed");
     
     messageSender.send( //
         new Message<TopUpCommandPayload>( //

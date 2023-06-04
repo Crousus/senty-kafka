@@ -26,4 +26,4 @@ EXPOSE 7001
 COPY --from=build /spring-boot-service/target/*.jar app.jar
 
 # Run the jar file
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom", "-Dspring.config.location=application-docker.properties", "-jar", "/app.jar"]

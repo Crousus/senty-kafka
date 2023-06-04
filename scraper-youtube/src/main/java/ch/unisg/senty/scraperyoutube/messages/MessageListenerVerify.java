@@ -27,7 +27,7 @@ public class MessageListenerVerify {
     @Autowired
     private MessageSender messageSender;
 
-    @KafkaListener(id = "scraper-youtube-verify", topics = MessageSender.TOPIC_NAME)
+    @KafkaListener(id = "scraper-youtube-verify", topics = Topics.WORKFLOW_CONSUMER_TOPIC)
     public void messageReceived(String messageJson, @Header("type") String messageType) throws Exception {
         if ("VerifyOrderCommand".equals(messageType)) {
             System.out.println("Received message: " + messageJson);

@@ -17,9 +17,6 @@ import ch.unisg.senty.scraperyoutube.messages.Message;
  */
 @Component
 public class MessageSender {
-
-  public static final String TOPIC_NAME = "senty";
-
   @Autowired
   private KafkaTemplate<String, String> kafkaTemplate;
 
@@ -28,7 +25,7 @@ public class MessageSender {
 
   @Bean
   public NewTopic autoCreateTopicOnStartupIfNotExistant() {
-    return TopicBuilder.name(TOPIC_NAME).partitions(1).replicas(1).build();
+    return TopicBuilder.name(Topics.WORKFLOW_PRODUCER_TOPIC).partitions(1).replicas(1).build();
   }
 
   public void send(Message<?> m) {
@@ -37,7 +34,7 @@ public class MessageSender {
       String jsonMessage = objectMapper.writeValueAsString(m);
 
       // wrap into a proper message for Kafka including a header
-      ProducerRecord<String, String> record = new ProducerRecord<String, String>("senty", jsonMessage);
+      ProducerRecord<String, String> record = new ProducerRecord<String, String>(Topics.WORKFLOW_PRODUCER_TOPIC, jsonMessage);
       record.headers().add("type", m.getType().getBytes());
 
       // and send it

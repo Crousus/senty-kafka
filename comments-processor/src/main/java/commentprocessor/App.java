@@ -16,15 +16,16 @@ public class App {
     // which allows us to run multiple instances of our app.
     // When running directly via IntelliJ, set additional parameters for the run configuration
     // VM Options: -Dhost=localhost -Dport=7000 -DstateDir=/tmp/kafka-streams
-    String host = "0.0.0.0";
-    Integer port = 7000;
-    String stateDir = "/tmp/kafka-streams";
+    String host = System.getProperty("host", "0.0.0.0");
+    Integer port = Integer.parseInt(System.getProperty("port", "7000"));
+    String stateDir = System.getProperty("stateDir", "/tmp/kafka-streams");
+    String kafkaHost = System.getProperty("kafka", "localhost:29092");
     String endpoint = String.format("%s:%s", host, port);
 
     // set the required properties for running Kafka Streams
     Properties props = new Properties();
     props.put(StreamsConfig.APPLICATION_ID_CONFIG, "dev");
-    props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka:9092");
+    props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaHost);
     props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 0);
     props.put(StreamsConfig.APPLICATION_SERVER_CONFIG, endpoint);
     props.put(StreamsConfig.STATE_DIR_CONFIG, stateDir);
@@ -40,7 +41,7 @@ public class App {
     // start streaming!
     streams.start();
 
-    HostInfo hostInfo =  new HostInfo("0.0.0.0", 7000);
+    HostInfo hostInfo =  new HostInfo(host, port);
     CommentService service = new CommentService(hostInfo, streams);
     service.start();
   }

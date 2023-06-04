@@ -15,7 +15,7 @@ public class MessageListenerPing {
     @Autowired
     private MessageSender messageSender;
 
-    @KafkaListener(id = "scraper-youtube-ping", topics = MessageSender.TOPIC_NAME)
+    @KafkaListener(id = "scraper-youtube-ping", topics = Topics.WORKFLOW_CONSUMER_TOPIC)
     public void messageReceived(String messageJson, @Header("type") String messageType) throws Exception {
 
         if ("PingYouTubeScraperCommand".equals(messageType)) {

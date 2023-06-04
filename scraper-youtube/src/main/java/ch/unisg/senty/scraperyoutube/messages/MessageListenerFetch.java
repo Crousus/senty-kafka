@@ -28,6 +28,9 @@ public class MessageListenerFetch {
     @Value("${API-KEY}")
     private String apiKey;
 
+    @Value("${senty.processing-topic-name}")
+    private String processingTopicName;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -57,7 +60,7 @@ public class MessageListenerFetch {
     private void sendBatch(CommentBatchEvent batchEvent) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            ProducerRecord<String, String> record = new ProducerRecord<String, String>("new-comment-batches",  objectMapper.writeValueAsString(batchEvent));
+            ProducerRecord<String, String> record = new ProducerRecord<String, String>(processingTopicName,  objectMapper.writeValueAsString(batchEvent));
             kafkaTemplate.send(record);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -65,7 +68,7 @@ public class MessageListenerFetch {
     }
 
 
-    @KafkaListener(id = "scraper-youtube-fetch", topics = MessageSender.TOPIC_NAME)
+    @KafkaListener(id = "scraper-youtube-fetch", topics = Topics.WORKFLOW_CONSUMER_TOPIC)
     public void messageReceived(String messageJson, @Header("type") String messageType) throws Exception {
         if ("FetchCommentsCommand".equals(messageType)) {
             System.out.println("Received message: " + messageJson);
@@ -163,6 +166,7 @@ public class MessageListenerFetch {
 
         // get comments
         for (JsonNode itemNode : rootNode.path("items")) {
+            //Most of these are not used, but are here for possible future use
             String id = itemNode.path("id").asText();
             String textDisplay = itemNode.path("snippet").path("topLevelComment").path("snippet").path("textDisplay").asText();
             String textOriginal = itemNode.path("snippet").path("topLevelComment").path("snippet").path("textOriginal").asText();

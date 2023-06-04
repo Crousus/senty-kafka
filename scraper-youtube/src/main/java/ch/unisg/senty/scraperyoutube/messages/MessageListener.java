@@ -22,7 +22,7 @@ public class MessageListener {
     @Autowired
     private MessageSender messageSender;
 
-    @KafkaListener(id = "scraper-youtubee", topics = MessageSender.TOPIC_NAME)
+    @KafkaListener(id = "scraper-youtubee", topics = Topics.WORKFLOW_CONSUMER_TOPIC)
     public void messageReceived(String messageJson, @Header("type") String messageType) throws Exception {
         if ("TopUpTokensCommand".equals(messageType)) {
             System.out.println("\nReceived message: " + messageJson);

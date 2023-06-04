@@ -10,6 +10,8 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import reactor.netty.http.client.HttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +26,7 @@ public class SentimentAnalyzer implements Transformer<String, Comment, KeyValue<
     public SentimentAnalyzer() {
         this.httpClient = HttpClient.create();
     }
+    private static final Logger logger = LoggerFactory.getLogger(SentimentAnalyzer.class);
 
     @Override
     public void init(ProcessorContext context) {
@@ -38,14 +41,14 @@ public class SentimentAnalyzer implements Transformer<String, Comment, KeyValue<
             ObjectNode root = mapper.createObjectNode();
             root.set("text", mapper.createArrayNode().add(value.getComment()));
             String requestBody = mapper.writeValueAsString(root);
-            System.out.println("Request body: " + requestBody);
+            logger.debug("Request body: " + requestBody);
 
             HttpResponse<String> response = Unirest.post(SENTIMENT_URI)
                     .header("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
                     .body(requestBody)
                     .asString();
 
-            System.out.println(response.getBody().toString());
+            logger.debug(response.getBody().toString());
             JsonNode rootNode = mapper.readTree(response.getBody().toString());
             JsonNode predictionsNode = rootNode.get("predictions");
             JsonNode firstPredictionNode = predictionsNode.get(0);

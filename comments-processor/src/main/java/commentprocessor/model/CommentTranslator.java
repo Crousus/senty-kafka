@@ -9,6 +9,9 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import reactor.netty.http.client.HttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.util.*;
 
@@ -17,6 +20,8 @@ public class CommentTranslator implements Transformer<String, Comment, KeyValue<
     private static final String TRANSLATE_URI = "http://localhost:5002" +
             "/translate";
     private HttpClient httpClient;
+
+    private static final Logger logger = LoggerFactory.getLogger(CommentTranslator.class);
 
     public static Set<String> availableLanguages = Set.of(
             "ar",
@@ -70,7 +75,7 @@ public class CommentTranslator implements Transformer<String, Comment, KeyValue<
 
             ObjectMapper mapper = new ObjectMapper();
             String requestBody = mapper.writeValueAsString(translateRequestBody);
-            System.out.println("Request body: " + requestBody);
+            logger.debug("Request body: " + requestBody);
 
             HttpResponse<String> response = Unirest.post(TRANSLATE_URI)
                     .header("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
@@ -83,8 +88,8 @@ public class CommentTranslator implements Transformer<String, Comment, KeyValue<
 
             return KeyValue.pair(key, value);
         } catch (Exception e) {
-            System.out.println(rootNode.asText());
-            System.out.println("Error translating comment: " + e.getMessage());
+            logger.debug(rootNode.asText());
+            logger.debug("Error translating comment: " + e.getMessage());
             return KeyValue.pair(key, value);  // return original value on failure
         }
     }

@@ -1,5 +1,7 @@
 package commentprocessor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import commentprocessor.model.Comment;
 import commentprocessor.model.RecentComments;
 import io.javalin.http.Context;
@@ -19,6 +21,8 @@ public class CommentService {
 
     private final HostInfo hostInfo;
     private final KafkaStreams streams;
+    private static final Logger logger = LoggerFactory.getLogger(CommentService.class);
+
 
     public CommentService(HostInfo hostInfo, KafkaStreams streams) {
         this.hostInfo = hostInfo;
@@ -89,7 +93,7 @@ public class CommentService {
      **/
     private <T> void processRequest(Context ctx, Function<List<String>, Map<String, T>> processor) {
         // Print the request body
-        System.out.println("New request: " + ctx.body() +" "+ ctx.ip());
+        logger.debug("New request: " + ctx.body() +" "+ ctx.ip());
         // Parse the request body as JSON into a map
         Map<String, List<String>> body = ctx.bodyAsClass(Map.class);
         // Retrieve the videoIds from the parsed request body

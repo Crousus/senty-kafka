@@ -17,6 +17,8 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.processor.TimestampExtractor;
 import org.apache.kafka.streams.state.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -43,6 +45,9 @@ public class CommentProcessingTopology {
 
     public static String totalSentimentStore;
 
+    private static final Logger logger = LoggerFactory.getLogger(CommentProcessingTopology.class);
+
+
     public static Topology build() {
 
         StreamsBuilder builder = new StreamsBuilder();
@@ -51,7 +56,7 @@ public class CommentProcessingTopology {
                 builder
                         .stream("new-comment-batches", Consumed.with(Serdes.ByteArray(), JsonSerdes.CommentBatch()));
 
-        commentBatchStream.foreach((key, value) -> System.out.println("Key: " + key + ", Value: " + value));
+        commentBatchStream.foreach((key, value) -> logger.debug("Key: " + key + ", Value: " + value));
         // Define the state store.
 
         StoreBuilder<KeyValueStore<String, Boolean>> deduplicationStoreBuilder =
@@ -92,7 +97,7 @@ public class CommentProcessingTopology {
 
         //sentiment_classified_stream.to("comment-classified");
 
-        sentiment_classified_stream.peek((key, value) -> System.out.println("Key: " + key + ", Value: " + value));
+        sentiment_classified_stream.peek((key, value) -> logger.debug("Key: " + key + ", Value: " + value));
 
         KGroupedStream<String, Comment> groupedStream = sentiment_classified_stream.groupBy(
                 (key, comment) -> comment.getVideoId(), Grouped.with(Serdes.String(), JsonSerdes.Comment()));
@@ -176,12 +181,12 @@ public class CommentProcessingTopology {
         windowedSentimentStore = windowedSentiment.queryableStoreName();
 
 
-        languagesKTable.toStream().peek((key, value) -> System.out.println("Key: " + key + ", Value: " + value));
+        languagesKTable.toStream().peek((key, value) -> logger.debug("Key: " + key + ", Value: " + value));
         //Counting the comments grouped by videoId and language
 
-        System.out.println(languagesKTable.queryableStoreName());
+        logger.debug(languagesKTable.queryableStoreName());
 
-        //sentiment_classified_stream.foreach((key, value) -> System.out.println("Key: " + key + ", Value: " + value));
+        //sentiment_classified_stream.foreach((key, value) -> logger.debug("Key: " + key + ", Value: " + value));
         return builder.build();
     }
 
@@ -197,7 +202,7 @@ public class CommentProcessingTopology {
 
         String jsonData = objectMapper.writeValueAsString(Collections.singletonMap("text",commentText));
 
-        System.out.println("Calling language detection API " + jsonData);
+        logger.debug("Calling language detection API " + jsonData);
         String result = Unirest.post(LANGUAGE_DETECTION_URL)
                 .contentType("application/json")
                 .body(jsonData)

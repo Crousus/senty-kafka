@@ -7,8 +7,11 @@ import org.apache.kafka.streams.state.HostInfo;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class App {
+  private static final Logger logger = LoggerFactory.getLogger(App.class);
   public static void main(String[] args) {
     Topology topology = CommentProcessingTopology.build();
 
@@ -33,7 +36,7 @@ public class App {
 
 
     // build the topology
-    System.out.println("Starting Videogame Leaderboard");
+    logger.debug("Starting Videogame Leaderboard");
     KafkaStreams streams = new KafkaStreams(topology, props);
 
     // close Kafka Streams when the JVM shuts down (e.g. SIGTERM)

@@ -23,6 +23,6 @@ public class Order {
   private String voucher;
   private String platform;
   private String password;
-  private OrderStatus status;
+  private OrderStatus status = OrderStatus.CREATED;
   // private String paymentMethod;
 }

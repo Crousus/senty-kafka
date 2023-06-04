@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import static commentprocessor.CommentProcessingTopology.predictLanguage;
 
-public class RetryTransformerSupplier implements TransformerSupplier<String, Comment, KeyValue<String, Comment>> {
+public class TranslationTransformer implements TransformerSupplier<String, Comment, KeyValue<String, Comment>> {
 
-    private static final Logger logger = LoggerFactory.getLogger(RetryTransformerSupplier.class);
+    private static final Logger logger = LoggerFactory.getLogger(TranslationTransformer.class);
     @Override
     public Transformer<String, Comment, KeyValue<String, Comment>> get() {
         return new Transformer<>() {
@@ -27,6 +27,7 @@ public class RetryTransformerSupplier implements TransformerSupplier<String, Com
                     logger.debug("Predicted: " + language);
                     return KeyValue.pair(key, comment);
                 } catch (Exception e) {
+                    logger.warn("Failed to predict language for comment: " + comment.getComment());
                     return KeyValue.pair(key, comment);
                 }
             }

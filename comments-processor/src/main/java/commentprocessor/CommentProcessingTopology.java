@@ -12,22 +12,16 @@ import org.apache.kafka.common.cache.Cache;
 import org.apache.kafka.common.cache.LRUCache;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
-import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.*;
-import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.processor.TimestampExtractor;
-import org.apache.kafka.streams.processor.To;
 import org.apache.kafka.streams.state.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -85,55 +79,48 @@ public class CommentProcessingTopology {
 
         comments = removeEmojisFromComments(comments);
 
-        comments = comments.transform(() ->
-                new Transformer<>() {
-                    private ProcessorContext context;
+        //Here we need to override the timestamp of every comment event with the one we get from youtube, so we are able to use the windows later on
+        comments = comments.transform(OverrideCommentTimestampTransformer::new);
 
-                    @Override
-                    public void init(ProcessorContext context) {
-                        this.context = context;
-                    }
-
-                    @Override
-                    public KeyValue<String, Comment> transform(String key, Comment value) {
-                        // Modify the timestamp here
-                        context.forward(key, value, To.all().withTimestamp(Instant.parse(value.getTimestamp()).toEpochMilli()));
-
-                        return null;
-                    }
-
-                    @Override
-                    public void close() {
-                    }
-                });
-
+        //When a new comment is postet the scraper sends also some old comments in the batch, so we need to filter them out so they don't get processed again
         comments = comments.transform(DeduplicationTransformer::new, "deduplication-store");
 
-        KStream<String, Comment> commentsWithLanguage = comments.transform(new RetryTransformerSupplier());
+        //Here we are using the language classifier to detect the language of the comment
+        KStream<String, Comment> commentsWithLanguage = comments.transform(new TranslationTransformer());
 
+        //Here we are filtering all comments that are not in english
         Predicate<String, Comment> isEnglish = (key, comment) -> "en".equalsIgnoreCase(comment.getLanguage());
 
+        //Non english comments are branched into another stream
         KStream<String, Comment>[] branches = commentsWithLanguage.branch(isEnglish, (key, value) -> !isEnglish.test(key, value));
 
         KStream<String, Comment> english_stream = branches[0];
         KStream<String, Comment> non_english_stream = branches[1];
 
+        //If the comment is in a language the translator cannot translate we filter them
         KStream<String, Comment> translatable_comments_stream = non_english_stream.filter((key, comment) -> CommentTranslator.availableLanguages.contains(comment.getLanguage()));
 
+        //Untranslatable comments are send into a dead letter queue
         translatable_comments_stream.filter((s, comment) -> !CommentTranslator.availableLanguages.contains(comment.getLanguage())).to("untranslatable-comments");
 
+        //Here we are translating the non english comments
         KStream<String, Comment> translated_stream = translatable_comments_stream.transform(CommentTranslator::new);
 
+        //Here we are merging the english and translated comments back together
         KStream<String, Comment> merged_stream = english_stream.merge(translated_stream);
 
+        //Here we are filtering all comments that contain blacklisted words
         KStream<String, Comment> filteredCommentStream = filterComments(merged_stream);
 
+        //Here we are classifying the sentiment of the comments
         KStream<String, Comment> sentiment_classified_stream = filteredCommentStream.transform(SentimentAnalyzer::new);
 
         //sentiment_classified_stream.to("comment-classified");
 
+        //Print the stream to the console, so we can se the progress
         sentiment_classified_stream.peek((key, value) -> logger.info("Key: " + key + ", Value: " + value));
 
+        //Group the comments by video id
         KGroupedStream<String, Comment> groupedStream = sentiment_classified_stream.groupBy(
                 (key, comment) -> comment.getVideoId(), Grouped.with(Serdes.String(), JsonSerdes.Comment()));
 
@@ -141,6 +128,7 @@ public class CommentProcessingTopology {
 
         Aggregator<String, Comment, Languages> languagesAdder = (key, comment, languages) -> languages.add(comment);
 
+        //Here we are using a custom adder to count the comments in each language
         KTable<String, Languages> languagesKTable =
                 groupedStream.aggregate(
                         languagesInitializer,
@@ -151,6 +139,7 @@ public class CommentProcessingTopology {
                                 .withValueSerde(JsonSerdes.Languages()));
         languageStore = languagesKTable.queryableStoreName();
 
+        //Here we are counting the comments for each video by just counting the events
         KTable<String, Long> comment_count = groupedStream.count(
                 Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as("comment-total-count-store")
                         .withKeySerde(Serdes.String())
@@ -184,28 +173,36 @@ public class CommentProcessingTopology {
 
         totalSentimentStore = totalSentimentKTable.queryableStoreName();
 
+        //Set the tumbling window to 1 day
         TimeWindows windows = TimeWindows.of(Duration.ofDays(1));
+        //Retention period is set to 3000 days, so we can be sure to get enough data for the analysis
+        Duration retention = Duration.ofDays(3000);
+
+        //Here we are using the window to get the total sentiments by day
         KTable<Windowed<String>, Double> totalSentimentKTableWindowed = groupedStream
                 .windowedBy(windows)
                 .aggregate(sentimentInitializer, sentimentAggregator,
                         Materialized.<String, Double, WindowStore<Bytes, byte[]>>as("total-sentiment-store-windowed")
-                                .withRetention(Duration.ofDays(3000))
+                                .withRetention(retention)
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(Serdes.Double()));
 
         totalSentimentKTableWindowed.toStream().peek((key, value) -> logger.info("Key: " + key + ", Value: " + value));
 
+        //Here we are using the window to get the total comments by day
         KTable<Windowed<String>, Long> commentCountWindowed = groupedStream
                 .windowedBy(windows)
                 .count(Materialized.<String, Long, WindowStore<Bytes, byte[]>>as("comment-total-count-store-windowed")
-                        .withRetention(Duration.ofDays(3000))
+                        .withRetention(retention)
                         .withKeySerde(Serdes.String())
                         .withValueSerde(Serdes.Long()));
 
 
+        //save the store names for the CommentService
         windowedSentimentStore = totalSentimentKTableWindowed.queryableStoreName();
         windowedCountStore = commentCountWindowed.queryableStoreName();
 
+        //Print the stream to the console, so we can se the progress
         languagesKTable.toStream().peek((key, value) -> logger.info("Key: " + key + ", Value: " + value));
         //Counting the comments grouped by videoId and language
 
@@ -221,9 +218,8 @@ public class CommentProcessingTopology {
         }
         ObjectMapper objectMapper = new ObjectMapper();
         String commentText = comment.getComment();
-        if (commentText.length() > 512)
-            commentText = commentText.substring(0, 512);
-
+        //The classifier can only handle 512 characters
+        commentText = commentText.length() > 512 ? commentText.substring(0, 512): commentText;
 
         String jsonData = objectMapper.writeValueAsString(Collections.singletonMap("text",commentText));
 
@@ -237,7 +233,6 @@ public class CommentProcessingTopology {
 
         JsonNode languageNode = objectMapper.readTree(result);
         String language = languageNode.get("language").asText();
-
         cache.put(comment, language);
 
         return language;

@@ -6,11 +6,13 @@ import Title from "~/components/Title";
 import Track from "~/components/Track";
 import { FaExpandArrowsAlt } from "react-icons/fa";
 import { RefetchContext } from "~/contexts/refetchContext";
+import { OrderedVideosContext } from "~/contexts/orderedVideosContext";
 
 const Home: NextPage = () => {
   const DEBUG = false;
   const [viewMode, setViewMode] = useState(0);
   const { isRefetchActive, setIsRefetchActive } = useContext(RefetchContext);
+  const { orderedVideos, setOrderedVideos } = useContext(OrderedVideosContext);
 
   const toggleView = () => {
     setViewMode((prevMode) => (prevMode + 1) % 3);
@@ -21,7 +23,7 @@ const Home: NextPage = () => {
       <div className="min-h-screen border-slate-700">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <header className="grey fixed inset-x-0 top-0 z-10 mx-auto border-b border-slate-700 bg-slate-900 py-3 pl-8 pr-8 text-center">
-            <div className="mx-auto flex max-w-7xl items-center justify-center px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto flex max-w-7xl items-center justify-center gap-x-8 px-4 sm:px-6 lg:px-8">
               <p className="text-4xl font-thin">Senty</p>
               <button onClick={() => setIsRefetchActive(!isRefetchActive)}>
                 {isRefetchActive ? "Stop Refetch" : "Start Refetch"}
@@ -52,7 +54,11 @@ const Home: NextPage = () => {
             >
               <Title title="Track" />
               <br />
-              <Track />
+              {orderedVideos.length === 0 ? (
+                <p className="text-center text-slate-400">No data to display</p>
+              ) : (
+                <Track />
+              )}
             </div>
 
             {/* 3rd column */}
@@ -67,7 +73,11 @@ const Home: NextPage = () => {
             >
               <Title title="Summarize" />
               <br />
-              <Summarize />
+              {orderedVideos.length === 0 ? (
+                <p className="text-center text-slate-400">No data to display</p>
+              ) : (
+                <Summarize />
+              )}
             </div>
           </div>
           <footer className="fixed inset-x-0 bottom-0 z-10 mx-auto py-4 pl-8 pr-8 text-center">

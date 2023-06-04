@@ -17,7 +17,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   const [checkedVideos, setCheckedVideos] = useState<string[]>([]);
   const [orderedVideos, setOrderedVideos] = useState<string[]>([]);
-  const [isRefetchActive, setIsRefetchActive] = useState<boolean>(true);
+  const [isRefetchActive, setIsRefetchActive] = useState<boolean>(false);
 
   return (
     <SessionProvider session={session}>

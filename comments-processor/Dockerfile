@@ -25,4 +25,4 @@ WORKDIR /app/target
 EXPOSE 7002
 
 # Run the jar file
-CMD ["java", "-jar", "-Dhost=0.0.0.0", "-Dport=7002", "-Dorg.slf4j.simpleLogger.defaultLogLevel=Debug",  "-DstateDir=/tmp/kafka-streams", "-Dkafka=kafka:9092", "-Dtranslate.base=libretranslate:5002","-Dsentiment.base=sentiment-classifier:5001", "-Dlanguage_detection.base=language-classifier:2000", "comment-processor-1.0-SNAPSHOT.jar"]
+CMD ["java", "-jar", "-Dhost=0.0.0.0", "-Dport=7002", "-DstateDir=/tmp/kafka-streams", "-Dkafka=kafka:9092", "-Dtranslate.base=libretranslate:5002","-Dsentiment.base=sentiment-classifier:5001", "-Dlanguage_detection.base=language-classifier:2000", "comment-processor-1.0-SNAPSHOT.jar"]

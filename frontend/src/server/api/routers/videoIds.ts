@@ -6,7 +6,7 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 export const videoIdsRouter = createTRPCRouter({
   checkVideoId: publicProcedure
     .input(z.object({ videoId: z.string() }))
-    .query(async ({ input }) => {
+    .mutation(async ({ input }) => {
       // return if input.videoId is empty string
       if (input.videoId === "") {
         return { isValid: false, error: "Invalid video ID" };
@@ -36,7 +36,7 @@ export const videoIdsRouter = createTRPCRouter({
         platform: z.string(),
       })
     )
-    .query(async ({ input }) => {
+    .mutation(async ({ input }) => {
       // return if input.videoId is empty string
       if (input.videoId === "") {
         return { isValid: false, error: "Invalid video ID" };

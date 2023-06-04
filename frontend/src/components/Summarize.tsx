@@ -13,14 +13,6 @@ const Summarize = () => {
   console.log("checkedVideos", checkedVideos);
   console.log("\n");
 
-  if (checkedVideos.length === 0) {
-    return (
-      <div>
-        <p className="text-center text-slate-400">No data to display</p>
-      </div>
-    );
-  }
-
   return (
     <div>
       <div className="grid grid-cols-1 gap-4">

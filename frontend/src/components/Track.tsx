@@ -36,17 +36,15 @@ const Track = () => {
 
   useEffect(() => {
     if (isRefetchActive) {
-      // Add this condition
-      const interval = setInterval(() => {
-        videosResponse.refetch().catch((err) => {
-          console.log("latestCommentsResponse err", err);
-        });
-        commentsDataResponse.refetch().catch((err) => {
-          console.log("latestCommentsResponse err", err);
-        });
-        sentimentDataResponse.refetch().catch((err) => {
-          console.log("latestCommentsResponse err", err);
-        });
+      const interval = setInterval(async () => {
+        // use async here
+        try {
+          await videosResponse.refetch();
+          await commentsDataResponse.refetch();
+          await sentimentDataResponse.refetch();
+        } catch (err) {
+          console.log("Error during refetch", err);
+        }
       }, 5000);
 
       return () => clearInterval(interval); // clear interval on component unmount
@@ -86,15 +84,7 @@ const Track = () => {
     );
   };
 
-  console.log("videos", videos);
-
-  if (videos.length === 0) {
-    return (
-      <div>
-        <p className="text-center text-slate-400">No data to display</p>
-      </div>
-    );
-  }
+  // console.log("videos", videos);
 
   return (
     <div>
@@ -122,13 +112,15 @@ const Track = () => {
             </div>
             <div className="col-span-3">
               <p className="text-3xl font-bold">
-                {commentsData[video.videoId].toLocaleString() || "-"}
+                {commentsData[video.videoId]?.toLocaleString() || "-"}
               </p>
               <p className="mb-4 text-sm text-slate-400">comments</p>
               <p className="text-3xl font-bold">
-                {sentimentEmojis[
-                  Math.round(sentimentData[video.videoId] * 5)
-                ] || "-"}
+                {sentimentData[video.videoId]
+                  ? sentimentEmojis[
+                      Math.round(sentimentData[video.videoId] * 5)
+                    ]
+                  : "-"}
               </p>
               <p className="text-sm text-slate-400">sentiment</p>
             </div>

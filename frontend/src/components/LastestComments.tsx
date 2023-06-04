@@ -1,11 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { CheckedVideosContext } from "~/contexts/checkedVideosContext";
+import { RefetchContext } from "~/contexts/refetchContext";
 import { api } from "~/utils/api";
 
 const sentimentEmojis = ["🤬", "😢", "🙁", "😐", "🙂", "😄"];
 
 const LastestComments = () => {
   const { checkedVideos } = useContext(CheckedVideosContext);
+  const { isRefetchActive } = useContext(RefetchContext);
 
   const [latestCommentsData, setLatestCommentsData] = useState({});
 
@@ -14,14 +16,16 @@ const LastestComments = () => {
   });
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      latestCommentsResponse.refetch().catch((err) => {
-        console.log("latestCommentsResponse err", err);
-      });
-    }, 5000);
+    if (isRefetchActive) {
+      const interval = setInterval(() => {
+        latestCommentsResponse.refetch().catch((err) => {
+          console.log("latestCommentsResponse err", err);
+        });
+      }, 5000);
 
-    return () => clearInterval(interval); // clear interval on component unmount
-  }, []);
+      return () => clearInterval(interval); // clear interval on component unmount
+    }
+  }, [isRefetchActive]);
 
   useEffect(() => {
     if (latestCommentsResponse.data) {

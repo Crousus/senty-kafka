@@ -1,4 +1,4 @@
-import { useContext, useState, FormEvent } from "react";
+import { useContext, useState, ChangeEvent, FormEvent } from "react";
 import { OrderedVideosContext } from "~/contexts/orderedVideosContext";
 import { api } from "~/utils/api";
 import type { NextPage } from "next";
@@ -9,10 +9,8 @@ const Order: NextPage = () => {
   const [formData, setFormData] = useState({
     companyName: "",
     email: "",
-    password: "",
     videoId: "",
     tokens: "",
-    voucher: "",
     platform: "",
   });
   const [thanksMessage, setThanksMessage] = useState("");
@@ -28,9 +26,7 @@ const Order: NextPage = () => {
     videoId: formData.videoId,
   });
 
-  const fetchVideoIdResponse = api.videoIds.fetchVideoId.useQuery({
-    videoId: formData.videoId,
-  });
+  const fetchVideoIdResponse = api.videoIds.fetchVideoId.useQuery(formData);
 
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,9 +41,14 @@ const Order: NextPage = () => {
       // If not already in orderedVideos, add it
       if (!orderedVideos.includes(formData.videoId)) {
         setOrderedVideos([...orderedVideos, formData.videoId]);
-        fetchVideoIdResponse.refetch().catch((err) => {
-          console.log("fetchVideoIdResponse err", err);
-        });
+        fetchVideoIdResponse
+          .refetch()
+          .then((res) => {
+            console.log("traceId: ", res.data?.traceId);
+          })
+          .catch((err) => {
+            console.log("fetchVideoIdResponse err", err);
+          });
       }
       setThanksMessage("Thank you for your order!");
     }

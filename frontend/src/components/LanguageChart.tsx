@@ -11,9 +11,11 @@ import {
 } from "recharts";
 import { CheckedVideosContext } from "~/contexts/checkedVideosContext";
 import { api } from "~/utils/api";
+import { RefetchContext } from "~/contexts/refetchContext";
 
 const LanguageChart = () => {
   const { checkedVideos } = useContext(CheckedVideosContext);
+  const { isRefetchActive } = useContext(RefetchContext); // Import the refetch context
 
   const [languageData, setLanguageData] = useState({});
 
@@ -24,14 +26,17 @@ const LanguageChart = () => {
   });
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      languageDataResponse.refetch().catch((err) => {
-        console.log("languageDataResponse err", err);
-      });
-    }, 5000);
+    if (isRefetchActive) {
+      // Add this condition
+      const interval = setInterval(() => {
+        languageDataResponse.refetch().catch((err) => {
+          console.log("languageDataResponse err", err);
+        });
+      }, 5000);
 
-    return () => clearInterval(interval); // clear interval on component unmount
-  }, []);
+      return () => clearInterval(interval); // clear interval on component unmount
+    }
+  }, [isRefetchActive]); // Add this dependency
 
   useEffect(() => {
     if (languageDataResponse.data) {

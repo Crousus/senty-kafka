@@ -1,14 +1,16 @@
 import { type NextPage } from "next";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Order from "~/components/Order";
 import Summarize from "~/components/Summarize";
 import Title from "~/components/Title";
 import Track from "~/components/Track";
 import { FaExpandArrowsAlt } from "react-icons/fa";
+import { RefetchContext } from "~/contexts/refetchContext";
 
 const Home: NextPage = () => {
   const DEBUG = false;
   const [viewMode, setViewMode] = useState(0);
+  const { isRefetchActive, setIsRefetchActive } = useContext(RefetchContext);
 
   const toggleView = () => {
     setViewMode((prevMode) => (prevMode + 1) % 3);
@@ -21,6 +23,9 @@ const Home: NextPage = () => {
           <header className="grey fixed inset-x-0 top-0 z-10 mx-auto border-b border-slate-700 bg-slate-900 py-3 pl-8 pr-8 text-center">
             <div className="mx-auto flex max-w-7xl items-center justify-center px-4 sm:px-6 lg:px-8">
               <p className="text-4xl font-thin">Senty</p>
+              <button onClick={() => setIsRefetchActive(!isRefetchActive)}>
+                {isRefetchActive ? "Stop Refetch" : "Start Refetch"}
+              </button>
             </div>
           </header>
           <div className="grid grid-cols-1 gap-10  pt-24 pb-24 md:grid-cols-2 lg:grid-cols-6">

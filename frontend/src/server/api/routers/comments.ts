@@ -25,6 +25,8 @@ export const commentsRouter = createTRPCRouter({
   getCommentsCount: publicProcedure
     .input(z.object({ videoIds: z.array(z.string()) }))
     .query(async ({ input }) => {
+      // TODO: return if input.videoIds is empty array
+
       console.log("getCommentsCount called with", input);
       const response = await fetch(
         `${process.env.BASE_URL_STREAM}/comments/count`,
@@ -48,7 +50,7 @@ export const commentsRouter = createTRPCRouter({
     .query(async ({ input }) => {
       console.log("getSentimentAvg called with", input);
       const response = await fetch(
-        "http://130.82.245.25:7000/sentiment/total",
+        `${process.env.BASE_URL_STREAM}/sentiment/total`,
         {
           method: "POST",
           headers: {
@@ -66,13 +68,16 @@ export const commentsRouter = createTRPCRouter({
   getLatestComments: publicProcedure
     .input(z.object({ videoIds: z.array(z.string()) }))
     .query(async ({ input }) => {
-      const response = await fetch("http://130.82.245.25:7000/comments/last5", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ videoIds: input.videoIds }),
-      });
+      const response = await fetch(
+        `${process.env.BASE_URL_STREAM}/comments/last5`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ videoIds: input.videoIds }),
+        }
+      );
 
       const data = (await response.json()) as Last5;
       return data;

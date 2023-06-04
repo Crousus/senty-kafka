@@ -4,6 +4,7 @@ import cloud from "d3-cloud";
 import { CheckedVideosContext } from "~/contexts/checkedVideosContext";
 import { api } from "~/utils/api";
 import { fillerWords } from "~/utils/fillerWords";
+import { RefetchContext } from "~/contexts/refetchContext";
 
 const remapComments = (data) => {
   if (Object.keys(data).length === 0 || data.data === undefined) return {};
@@ -28,6 +29,7 @@ const remapComments = (data) => {
 
 function Wordcloud() {
   const { checkedVideos } = useContext(CheckedVideosContext);
+  const { isRefetchActive } = useContext(RefetchContext); // Import the refetch context
   const [latestCommentsData, setLatestCommentsData] = useState({});
 
   const latestCommentsResponse = api.comments.getLatestComments.useQuery({
@@ -40,14 +42,17 @@ function Wordcloud() {
   );
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      latestCommentsResponse.refetch().catch((err) => {
-        console.log("latestCommentsResponse err", err);
-      });
-    }, 5000);
+    if (isRefetchActive) {
+      // Add this condition
+      const interval = setInterval(() => {
+        latestCommentsResponse.refetch().catch((err) => {
+          console.log("latestCommentsResponse err", err);
+        });
+      }, 5000);
 
-    return () => clearInterval(interval); // clear interval on component unmount
-  }, []);
+      return () => clearInterval(interval); // clear interval on component unmount
+    }
+  }, [isRefetchActive]); // Add this dependency
 
   useEffect(() => {
     if (latestCommentsResponse.data) {

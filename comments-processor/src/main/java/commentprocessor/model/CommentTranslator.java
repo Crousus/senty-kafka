@@ -87,7 +87,6 @@ public class CommentTranslator implements Transformer<String, Comment, KeyValue<
 
             return KeyValue.pair(key, value);
         } catch (Exception e) {
-            logger.debug(rootNode.asText());
             logger.debug("Error translating comment: " + e.getMessage());
             return KeyValue.pair(key, value);  // return original value on failure
         }

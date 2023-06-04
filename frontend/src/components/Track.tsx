@@ -5,12 +5,14 @@ import Image from "next/image";
 import { api } from "~/utils/api";
 import { OrderedVideosContext } from "~/contexts/orderedVideosContext";
 import { CheckedVideosContext } from "~/contexts/checkedVideosContext";
+import { RefetchContext } from "~/contexts/refetchContext";
 
 const sentimentEmojis = ["🤬", "😢", "🙁", "😐", "🙂", "😄"];
 
 const Track = () => {
   const { orderedVideos, setOrderedVideos } = useContext(OrderedVideosContext);
   const { checkedVideos, setCheckedVideos } = useContext(CheckedVideosContext);
+  const { isRefetchActive } = useContext(RefetchContext); // Import the refetch context
 
   console.log("orderedVideos", orderedVideos);
   console.log("checkedVideos", checkedVideos);
@@ -33,20 +35,23 @@ const Track = () => {
   });
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      videosResponse.refetch().catch((err) => {
-        console.log("latestCommentsResponse err", err);
-      });
-      commentsDataResponse.refetch().catch((err) => {
-        console.log("latestCommentsResponse err", err);
-      });
-      sentimentDataResponse.refetch().catch((err) => {
-        console.log("latestCommentsResponse err", err);
-      });
-    }, 5000);
+    if (isRefetchActive) {
+      // Add this condition
+      const interval = setInterval(() => {
+        videosResponse.refetch().catch((err) => {
+          console.log("latestCommentsResponse err", err);
+        });
+        commentsDataResponse.refetch().catch((err) => {
+          console.log("latestCommentsResponse err", err);
+        });
+        sentimentDataResponse.refetch().catch((err) => {
+          console.log("latestCommentsResponse err", err);
+        });
+      }, 5000);
 
-    return () => clearInterval(interval); // clear interval on component unmount
-  }, []);
+      return () => clearInterval(interval); // clear interval on component unmount
+    }
+  }, [isRefetchActive]); // Add this dependency
 
   useEffect(() => {
     if (videosResponse.data) {

@@ -9,6 +9,7 @@ import "~/styles/globals.css";
 import { useState } from "react";
 import { CheckedVideosContext } from "~/contexts/checkedVideosContext";
 import { OrderedVideosContext } from "~/contexts/orderedVideosContext";
+import { RefetchContext } from "~/contexts/refetchContext";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -16,6 +17,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   const [checkedVideos, setCheckedVideos] = useState<string[]>([]);
   const [orderedVideos, setOrderedVideos] = useState<string[]>([]);
+  const [isRefetchActive, setIsRefetchActive] = useState<boolean>(true);
 
   return (
     <SessionProvider session={session}>
@@ -25,7 +27,11 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <CheckedVideosContext.Provider
           value={{ checkedVideos, setCheckedVideos }}
         >
-          <Component {...pageProps} />
+          <RefetchContext.Provider
+            value={{ isRefetchActive, setIsRefetchActive }}
+          >
+            <Component {...pageProps} />
+          </RefetchContext.Provider>
         </CheckedVideosContext.Provider>
       </OrderedVideosContext.Provider>
     </SessionProvider>

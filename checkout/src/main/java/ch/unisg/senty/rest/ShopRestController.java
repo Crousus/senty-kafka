@@ -58,6 +58,9 @@ public class ShopRestController {
     //kickoff workflow
     messageSender.send(message);
 
+    //print message
+    System.out.println(message.toString());
+
     logger.debug("MessageSend");
 
     String responseJson = "{\"traceId\": \"" + message.getTraceid() + "\"}";

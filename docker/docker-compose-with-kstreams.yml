@@ -182,7 +182,7 @@ services:
       - senty
     environment:
       - BASE_URL_SCRAPER=http://scraper:7001
-      - BASE_URL_STREAM=http://comment-processor:5000
+      - BASE_URL_STREAM=http://comment-processor:7002
 
 
   scraper:
@@ -210,7 +210,7 @@ services:
     depends_on:
       - kafka
     ports:
-      - "7000:7000"
+      - "7002:7002"
 networks:
   senty:
     driver: bridge

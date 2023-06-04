@@ -17,7 +17,7 @@ public class App {
     // When running directly via IntelliJ, set additional parameters for the run configuration
     // VM Options: -Dhost=localhost -Dport=7000 -DstateDir=/tmp/kafka-streams
     String host = System.getProperty("host", "0.0.0.0");
-    Integer port = Integer.parseInt(System.getProperty("port", "7000"));
+    Integer port = Integer.parseInt(System.getProperty("port", "7002"));
     String stateDir = System.getProperty("stateDir", "/tmp/kafka-streams");
     String kafkaHost = System.getProperty("kafka", "localhost:29092");
     String endpoint = String.format("%s:%s", host, port);

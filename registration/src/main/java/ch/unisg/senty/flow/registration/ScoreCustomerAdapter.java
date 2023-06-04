@@ -18,7 +18,7 @@ public class ScoreCustomerAdapter implements JavaDelegate {
 
         Customer customer = ((Customer) context.getVariable("customer"));
 
-        if (customer.getCompany().equals("Porsche")) { // change to find domain substring in email
+        if (customer.getCompany().equalsIgnoreCase("Porsche")) { // change to find domain substring in email
             context.setVariable("automaticProcessing", true);
             customer.setHumanApproved(true);
             context.setVariable("customer", customer);

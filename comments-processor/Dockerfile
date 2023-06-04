@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y libstdc++6
 WORKDIR /app/target
 
 # Make port 7001 available to the world outside this container
-EXPOSE 7000
+EXPOSE 7002
 
 # Run the jar file
-CMD ["java", "-jar", "-Dhost=0.0.0.0", "-Dport=7000", "-DstateDir=/tmp/kafka-streams", "-Dkafka=kafka:9092", "comment-processor-1.0-SNAPSHOT.jar"]
+CMD ["java", "-jar", "-Dhost=0.0.0.0", "-Dport=7002", "-DstateDir=/tmp/kafka-streams", "-Dkafka=kafka:9092", "comment-processor-1.0-SNAPSHOT.jar"]

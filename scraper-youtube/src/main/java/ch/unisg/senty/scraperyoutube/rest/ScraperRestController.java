@@ -32,6 +32,8 @@ public class ScraperRestController {
   
   @Autowired
   private MessageSender messageSender;
+
+  Pattern pattern = Pattern.compile("(?<=v=|/videos/|/embed/|youtu\\.be/|/v/|/e/)[^#&?\\n]*");
   
   @GetMapping(path = "/api/scraperyoutube/ping")
   public ResponseEntity<String> ping() {
@@ -53,7 +55,7 @@ public class ScraperRestController {
 
     // e.g., https://www.youtube.com/watch?v=s_Nbg1tdDUA
     // e.g., https://youtu.be/s_Nbg1tdDUA
-    Pattern pattern = Pattern.compile("(?<=v=|/videos/|/embed/|youtu\\.be/|/v/|/e/)[^#&?\\n]*");
+
     Matcher matcher = pattern.matcher(url);
     Map<String, String> filteredData = null;
     if (matcher.find()) {
@@ -107,6 +109,11 @@ public class ScraperRestController {
 
   @GetMapping(path = "/api/scraperyoutube/fetch")
   public ResponseEntity<String> fetch(@RequestParam String videoId) {
+
+    if (videoId.length() != 12) {
+      return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Invalid video ID");
+    }
+
     Message<String> message = new Message<String>("FetchCommentsCommand",
             videoId);
 

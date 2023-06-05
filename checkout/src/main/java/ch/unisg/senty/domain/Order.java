@@ -1,5 +1,6 @@
 package ch.unisg.senty.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,9 +21,10 @@ public class Order {
   private String email;
   private String videoId;
   private String tokens;
-  private String voucher;
   private String platform;
+  @JsonProperty("password")
   private String password;
+  private String voucher;
   private OrderStatus status = OrderStatus.CREATED;
   // private String paymentMethod;
 }

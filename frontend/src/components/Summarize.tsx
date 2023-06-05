@@ -8,11 +8,6 @@ import LanguageChart from "./LanguageChart";
 import LastestComments from "./LastestComments";
 
 const Summarize = () => {
-  const { checkedVideos } = useContext(CheckedVideosContext);
-
-  console.log("checkedVideos SUMMARIZE", checkedVideos);
-  console.log("\n");
-
   return (
     <div>
       <div className="grid grid-cols-1 gap-4">

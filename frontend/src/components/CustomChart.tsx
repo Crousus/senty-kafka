@@ -41,20 +41,28 @@ const lineTypes = [
 ];
 
 const createChartData = (checkedData: VideoDataType) => {
-  if (checkedData.length === 0 || !checkedData[0].sentiment) {
-    return [];
-  }
-
-  return checkedData[0].sentiment.map((_, i) => {
-    const dataPoint: Record<string, any> = {
-      date: checkedData[0].sentiment[i].date,
-    };
-    checkedData.forEach((video) => {
-      dataPoint[`sentiment_${video.videoId}`] = video.sentiment[i].sentiment;
-      dataPoint[`comments_${video.videoId}`] = video.sentiment[i].comments;
+  const allDates = new Set();
+  checkedData.forEach((video) => {
+    video.sentiment.forEach(({ date }) => {
+      allDates.add(date);
     });
-    return dataPoint;
   });
+
+  const data: Record<string, any>[] = Array.from(allDates).map((date) => ({
+    date,
+  }));
+
+  checkedData.forEach((video, i) => {
+    video.sentiment.forEach(({ date, sentiment, comments }) => {
+      const existingPoint = data.find((point) => point.date === date);
+      if (existingPoint) {
+        existingPoint[`sentiment_${video.videoId}`] = sentiment;
+        existingPoint[`comments_${video.videoId}`] = comments;
+      }
+    });
+  });
+
+  return data;
 };
 
 const CustomChart = () => {

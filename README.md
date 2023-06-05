@@ -41,7 +41,8 @@ Welcome to _Senty_, a real-time social media market intelligence platform design
 
 Senty is designed to enable users to conduct extensive analysis of YouTube video comment responses. Users can register with our service, paste links to the YouTube videos they want to analyze, and let our backend handle the rest. Leveraging the YouTube API, Kafka, and Camunda, our platform streamlines the process from user registration to payment orchestration and data streaming. With our custom topology and machine learning classification services for language detection and sentiment analysis, users receive a comprehensive overview of their audience's engagement and sentiments.
 
-// TODO: Add screenshot of dashboard
+![senty-dashboard-1](assets/senty-dashboard-1.png)
+![senty-dashboard-2](assets/senty-dashboard-2.png)
 
 <br /><hr /><br />
 
@@ -151,20 +152,23 @@ The following use cases are scenarios for Part I of the course, focusing on demo
 
 <u>Goal</u>: Register and validate a user who can then place an order to monitor a YouTube video and receive comment milestone email updates.
 
-1. Register user with real email and approved company by posting to
+1. Register user with real email and approved company (please use "HSG" or 
+   "Porsche") by 
+   posting to
    http://localhost:8096/registration with the following JSON body:
 
 ```
 {
-  "company": "PORSCHE",
+  "company": "HSG",
   "firstName": "John",
   "lastName": "Doe",
-  "email": "your email",
+  "email": "your.actual@email.com",
   "password": "mypassword"
 }
 ```
 
-// TODO: Provide company
+You should receive a 200 with a response similar to: `{"status":"completed", 
+"traceId": "d4a1a0f6-8f01-4c03-8a0c-5229aa8654f7"}`.
 
 In the `registration` service on Camunda
 (http://localhost:8096/camunda/app/welcome/default/#!/login ; log in with username and password: `demo`), we can now see a new token that waits for email verification. Because the company is on a list of approved companies, the token waits at the merge
@@ -173,14 +177,18 @@ gate for the email verification.
 2. Verify your email by clicking on the link you should receive in your
    email inbox (or spam folder). Alternatively, you can check the logs of
    the `EmailNotifierApplication` and click the link that is printed in the
-   logs.
-   This is an example verification string: `localhost:8096/verify?email=john.
-doe@example.com&traceId=5bf59967-df3b-11ed-aae2-34298f74d12c`. The trace
+   logs. The log looks something like this: `Sending Mail: Please verify at http://localhost:8096/verify?email=philipp.john@student.unisg.ch&traceId=59f8b15d-03ad-11ee-8afa-acde48001122`
+
+Currently, only Amine's E-Mail (amine.abbad-andaloussi@unisg.ch) is registered 
+with our MailGun account and 
+would receive an actual E-Mail, so
+should anyone else test the app, please click the log in the 
+`EmailNotifierApplication`.
+
+The trace
    id here is the id of the process instance in Camunda. You can find it in
    the Camunda Cockpit. Once clicked, we update the user record in our
    database.
-
-// TODO: Provide E-Mail and check with them to authenticate account
 
 In Camunda, we can now see that the token went through.
 

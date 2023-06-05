@@ -93,7 +93,7 @@ const Track = () => {
         <div
           key={index}
           className={`mb-4 cursor-pointer rounded-md border p-4 ${
-            checkedVideos.some((v) => v.videoId === video.videoId)
+            checkedVideos.some((v) => v === video.videoId)
               ? "border-emerald-700 bg-[#022c22] hover:bg-[#022c22]"
               : "border-slate-700 bg-slate-900 hover:bg-slate-800"
           }`}

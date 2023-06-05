@@ -70,7 +70,7 @@ public class MessageListenerFetch {
 
     @KafkaListener(id = "scraper-youtube-fetch", topics = Topics.WORKFLOW_CONSUMER_TOPIC)
     public void messageReceived(String messageJson, @Header("type") String messageType) throws Exception {
-        if ("FetchCommentsCommand".equals(messageType)) {
+        if ("FetchCommentsCommand".equals(messageType) || "TopUpCommand".equals(messageType)) {
             System.out.println("Received message: " + messageJson);
             JsonNode jsonNode = objectMapper.readTree(messageJson);
             System.out.println(jsonNode);
@@ -79,7 +79,7 @@ public class MessageListenerFetch {
             String videoId = jsonNode.get("data").asText();
             // e.g., "s_Nbg1tdDUA", "r0cM20WPyqI"
 
-            System.out.println("\nFetchCommentsCommand received: " + videoId);
+            System.out.println("\n"+messageType+" received: " + videoId);
 
             // add video ID to list of video IDs
             if (!videoIds.contains(videoId)) {

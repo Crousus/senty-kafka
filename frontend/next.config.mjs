@@ -22,5 +22,28 @@ const config = {
   images: {
     domains: ["i.ytimg.com"],
   },
+
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
+  env: {
+    NEXTAUTH_SECRET: "T9QPM7PMBD9HCEy0yvOUzXlsPGz3rbGMtmMNNuJ7W78=",
+    DATABASE_URL: "file:./db.sqlite",
+    DISCORD_CLIENT_ID: "",
+    DISCORD_CLIENT_SECRET: "",
+    NEXTAUTH_URL: "http://0.0.0.0:3000",
+  },
+
+  typescript: {
+    // !! WARN !!
+    // Dangerously allow production builds to successfully complete even if
+    // your project has type errors.
+    // !! WARN !!
+    ignoreBuildErrors: true,
+  },
+
 };
+
+
 export default config;

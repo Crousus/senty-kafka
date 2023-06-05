@@ -56,6 +56,11 @@ To begin, add the YouTube API key and Mailgun API key (both provided via email a
 
 Next, fire up the docker container from `/docker` with the command: `docker-compose -f docker-compose.yml up --build`
 
+Warning: This will take very long (depending on internet 20-30 mins because 20 containers), and eat around 70 GB of your disk space.
+Plus your RAM will be used to 100% if you have 16 GB. Don't run it with less. 32 GB would be ideal.
+
+//TODO SPLIT Services?
+
 ### Backend Services
 
 Following this, activate the following services from IntelliJ:
@@ -88,6 +93,35 @@ Prior to exploring specific use cases, familiarize yourself with our services an
 - `ScraperApplication`: Fetches YouTube video meta data and comments based on the URL or videoId of the video.
 - `PaymentApplication`: Bills the customer for bought tokens or other services such as receiving “payment” via a voucher
 - `CommentAnalysisApplication`: So far only a rudimentary service that counts comments and emits and event once a milestone of “n” comments is reached.
+
+### Used Ports
+#### Camunda Side:
+
+- `ProjectManagerCamundaApplication`: 8093
+- `OrderApplication`: 8092
+- `CheckoutApplication`: 8091
+- `EmailNotifierApplication`: 8099
+- `RegistrationApplication`: 8096
+- `PaymentApplication`: 8097
+- `ScraperApplication`: 7001
+
+#### Old deprecated services used for earlier assignments:
+- `CommentAnalysisApplication`: 8082
+
+#### Kafka Streams:
+- `CommentsProcessor`: 7002
+- `ScraperApplication`: 7001
+
+#### Docker
+- `Frontend`: 3000
+- `Kafka`: 9092 (29092 on localhost)
+- `Zookeeper`: 32181
+- `MongoDB`: 27017
+- `DbAdmin`: 8089
+- `Monitor`: 8095
+- `Libretranslate`: 5002
+- `sentiment-classifier`: 5001
+- `language-classifier`: 2000
 
 ### REST Endpoints
 
@@ -157,9 +191,9 @@ Alternatively, post an order via Postman to `http://localhost:8091/api/cart/orde
 
 ```
 {
-    "companyName": "",
+    "companyName": "hsg",
     "customerId": "0001",
-    "videoId": "asdfghjkl",
+    "videoId": "r0cM20WPyqI",
     "tokens": "100",
     "voucher": "",
     "platform": "YouTube"
@@ -180,7 +214,7 @@ Goal: Demonstrate that a failed registration results in a customer being deleted
 
 ```
 {
-  "company": "PORSCHE",
+  "company": "BMW",
   "firstName": "John",
   "lastName": "Doe",
   "email": "your email",

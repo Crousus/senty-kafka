@@ -1,5 +1,5 @@
 version: "4"
-
+#Attention. This will put your little macbook pro on fire.
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:6.0.0
@@ -123,15 +123,6 @@ services:
       - "3000:3000"
     networks:
       - senty
-    environment:
-      - BASE_URL_SCRAPER=http://scraper:7001
-      - BASE_URL_STREAM=http://comment-processor:7002
-      - DATABASE_URL="file:./db.sqlite"
-      - DISCORD_CLIENT_ID="file:./db.sqlite"
-      - DISCORD_CLIENT_SECRET=""
-      - DEBUG=false
-      - NEXTAUTH_SECRET="T9QPM7PMBD9HCEy0yvOUzXlsPGz3rbGMtmMNNuJ7W78="
-      - NEXTAUTH_URL="http://0.0.0.0:3000"
 
 
   scraper:

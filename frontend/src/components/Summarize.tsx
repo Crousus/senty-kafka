@@ -10,7 +10,7 @@ import LastestComments from "./LastestComments";
 const Summarize = () => {
   const { checkedVideos } = useContext(CheckedVideosContext);
 
-  console.log("checkedVideos", checkedVideos);
+  console.log("checkedVideos SUMMARIZE", checkedVideos);
   console.log("\n");
 
   return (

@@ -31,6 +31,8 @@ export const videoIdsRouter = createTRPCRouter({
         videoId: z.string(),
         tokens: z.string(),
         platform: z.string(),
+        password: z.string(),
+        voucher: z.string(),
       })
     )
     .mutation(async ({ input }) => {
@@ -52,6 +54,8 @@ export const videoIdsRouter = createTRPCRouter({
             videoId: input.videoId,
             tokens: input.tokens,
             platform: input.platform,
+            password: input.password,
+            voucher: input.voucher,
           }),
         }
       );

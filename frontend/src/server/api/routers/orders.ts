@@ -30,7 +30,6 @@ export const ordersRouter = createTRPCRouter({
       );
 
       const data = await response.json();
-      console.log("BOOM!", data);
       return data;
     }),
 });

@@ -41,6 +41,8 @@ export const videoIdsRouter = createTRPCRouter({
         return { isValid: false, error: "Invalid video ID" };
       }
 
+      console.log("EDPO INPUT: ", input);
+
       const response = await fetch(
         `${process.env.BASE_URL_CHECKOUT}/api/cart/order`,
         {

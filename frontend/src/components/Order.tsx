@@ -47,6 +47,8 @@ const Order: NextPage = () => {
             ) {
               fetchVideoIdMutation.mutate(formData, {
                 onSuccess: (data) => {
+                  console.log("EDPO MUTATED WITH: ", formData);
+                  console.log("EDPO DATA: ", data);
                   if (data?.traceId) {
                     setOrderedVideos([
                       ...orderedVideos,

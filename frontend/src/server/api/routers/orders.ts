@@ -18,14 +18,14 @@ export const ordersRouter = createTRPCRouter({
     }),
 
   getStatuses: publicProcedure
-    .input(z.array(z.string()))
+    .input(z.object({ traceIds: z.array(z.string()) }))
     .query(async ({ input }) => {
       const response = await fetch(
         `${process.env.BASE_URL_CHECKOUT}/api/cart/order/ids`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(input),
+          body: JSON.stringify(input.traceIds),
         }
       );
 

@@ -1,5 +1,6 @@
 package ch.unisg.senty.order.flow.orderplaced;
 
+import ch.unisg.senty.order.domain.Order;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,16 +22,18 @@ public class TopUpTokensAdapter implements JavaDelegate {
   public void execute(DelegateExecution context) throws Exception {
     String traceId = context.getProcessBusinessKey();
 
-    logger.debug("TopUp Command placed");
+    logger.info("TopUp Command placed");
+    Order order = (Order) context.getVariable("order");
+    order.setVideoId(order.getVideoId().split("=")[1]);
     
     messageSender.send( //
         new Message<TopUpCommandPayload>( //
             "TopUpTokensCommand", //
             traceId, //
             new TopUpCommandPayload() //
-              .setVideoId((String) context.getVariable("videoId")) //
-              .setCustomerId((String) context.getVariable("customerId"))
-              .setTokenAmount((String) context.getVariable("tokens"))));
+              .setVideoId(order.getVideoId()) //
+              .setCustomerId(order.getVideoId())
+              .setTokenAmount(order.getTokens())));
   }
 
 }

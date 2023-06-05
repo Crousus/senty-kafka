@@ -22,7 +22,7 @@ public class NotifyScrapeStartAdapter implements JavaDelegate {
   public void execute(DelegateExecution context) throws Exception {
     String traceId = context.getProcessBusinessKey();
 
-    logger.debug("Scrape job placed Successful");
+    logger.info("Scrape job placed Successful");
 
     Order order = (Order) context.getVariable("order");
 

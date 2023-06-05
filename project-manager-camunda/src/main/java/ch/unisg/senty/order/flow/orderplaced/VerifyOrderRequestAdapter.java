@@ -18,6 +18,7 @@ public class VerifyOrderRequestAdapter implements JavaDelegate {
         String traceId = context.getProcessBusinessKey();
 
         Order order = (Order) context.getVariable("order");
+        System.out.println("Verify : " +order);
 
         messageSender.send( //
                 new Message<String>( //

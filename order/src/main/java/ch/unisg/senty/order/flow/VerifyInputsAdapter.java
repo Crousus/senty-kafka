@@ -22,6 +22,6 @@ public class VerifyInputsAdapter implements JavaDelegate {
 
 
         context.setVariable("useVoucher", true);
-        logger.debug("Input check passed");
+        logger.info("Input check passed");
     }
 }

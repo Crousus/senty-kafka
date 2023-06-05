@@ -14,6 +14,7 @@
         <module>project-manager-camunda</module>
         <module>scraper-youtube</module>
         <module>comment-analysis</module>
+        <module>comments-processor</module>
         <module>email-notifier</module>
         <module>payment-camunda</module>
         <module>monitor</module>

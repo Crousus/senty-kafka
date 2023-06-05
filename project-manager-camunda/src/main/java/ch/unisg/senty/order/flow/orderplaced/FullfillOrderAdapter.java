@@ -18,6 +18,7 @@ public class FullfillOrderAdapter implements JavaDelegate {
         String traceId = context.getProcessBusinessKey();
 
         Order order = (Order) context.getVariable("order");
+        System.out.println("Fullfill : " +order);
 
         messageSender.send( //
                 new Message<Order>( //

@@ -16,7 +16,7 @@ public class EmailService {
   private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
 
   public String sendEmail(String content, String recipient) {
-    logger.debug("Sending Mail: " + content);
+    logger.info("Sending Mail: " + content);
 
     Mailer mailer = MailerBuilder
             .withSMTPServerHost("smtp.mailgun.org")
@@ -32,8 +32,12 @@ public class EmailService {
             .withPlainText(content)
             .buildEmail();
 
-    mailer.sendMail(email);
-    
+    try {
+      mailer.sendMail(email);
+    } catch (Exception e) {
+      logger.error("Error sending email: " + e.getMessage());
+      return null;
+    }
     return UUID.randomUUID().toString();
   }
 

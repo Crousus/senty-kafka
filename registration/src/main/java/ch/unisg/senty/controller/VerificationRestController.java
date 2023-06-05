@@ -22,7 +22,7 @@ public class VerificationRestController {
     @RequestMapping(path = "/verify", method = RequestMethod.GET)
     public String verify(@RequestParam String email, @RequestParam String traceId) throws Exception{
 
-        WorkflowLogger.info(logger, "Payment received",
+        WorkflowLogger.info(logger, "Verification received",
                 " for customer: " + email);
 
         try {

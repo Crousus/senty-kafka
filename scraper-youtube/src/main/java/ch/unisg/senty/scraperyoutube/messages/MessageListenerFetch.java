@@ -70,17 +70,26 @@ public class MessageListenerFetch {
 
     @KafkaListener(id = "scraper-youtube-fetch", topics = Topics.WORKFLOW_CONSUMER_TOPIC)
     public void messageReceived(String messageJson, @Header("type") String messageType) throws Exception {
-        if ("FetchCommentsCommand".equals(messageType)) {
+        if ("FetchCommentsCommand".equals(messageType) || "TopUpTokensCommand".equals(messageType)) {
             System.out.println("Received message: " + messageJson);
             JsonNode jsonNode = objectMapper.readTree(messageJson);
             System.out.println(jsonNode);
             String traceId = jsonNode.get("traceid").asText();
-
             String videoId = jsonNode.get("data").asText();
+
+            //Since the format for the TopUpCommand is different, we need to check for that
+            if (messageType.equals("TopUpTokensCommand")) {
+                videoId = jsonNode.get("data").get("videoId").asText();
+            }
+
             // e.g., "s_Nbg1tdDUA", "r0cM20WPyqI"
 
-            System.out.println("\nFetchCommentsCommand received: " + videoId);
+            System.out.println("\n"+messageType+" received: " + videoId);
 
+            if (videoId == null || videoId.length() != 11) {
+                System.out.println("No video ID provided");
+                return;
+            }
             // add video ID to list of video IDs
             if (!videoIds.contains(videoId)) {
                 videoIds.add(videoId);

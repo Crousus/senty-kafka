@@ -26,7 +26,9 @@ public class OrderSuccessfulAdapter implements JavaDelegate {
     String videoId = (String) context.getVariable("videoId");
     String token = (String) context.getVariable("tokens");
 
-    logger.debug("Order Successful");
+    logger.info("Order Successful");
+
+    logger.info("VideoId "+videoId);
 
     messageSender.send( //
         new Message<OrderSuccessfulEventPayload>( //

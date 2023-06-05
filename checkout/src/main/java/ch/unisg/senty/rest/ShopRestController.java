@@ -3,6 +3,8 @@ package ch.unisg.senty.rest;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import ch.unisg.senty.repositoy.OrderRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +24,7 @@ import ch.unisg.senty.messages.MessageSender;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,7 +41,16 @@ public class ShopRestController {
 
 
   @PostMapping(path = "/api/cart/order", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> placeOrder(@RequestBody Order order) {
+  public ResponseEntity<String> placeOrder(@RequestBody Map<String, Object> requestBody) {
+    ObjectMapper mapper = new ObjectMapper();
+
+    try {
+      System.out.println(mapper.writeValueAsString(requestBody));
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+    Order order = new Order();
+
     if (order.getCompanyName().isEmpty()) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Company Name is required\"}");
     } else if (order.getEmail().isEmpty()) {
@@ -49,8 +61,11 @@ public class ShopRestController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Tokens are required\"}");
     } else if (order.getPlatform().isEmpty()) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Platform is required\"}");
+    } else if (order.getPassword().isEmpty()) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Password is required\"}");
     }
 
+    order.setVideoId("https://www.youtube.com/watch?v=" + order.getVideoId());
     Message<Order> message = new Message<Order>("OrderPlacedEvent", order);
     order.setOrderId(message.getTraceid());
 

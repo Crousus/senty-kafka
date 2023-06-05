@@ -72,18 +72,10 @@ const Track = () => {
 
   const handleCheckboxChange = (videoId: string) => {
     console.log("CHECKED videoId", videoId);
-    setCheckedVideos((prevVideos: OrderedVideoType[]) =>
-      prevVideos.some((video) => video.videoId === videoId)
-        ? prevVideos.filter((video) => video.videoId !== videoId)
-        : [
-            ...prevVideos,
-            {
-              videoId: videoId,
-              traceId:
-                orderedVideos.find((video) => video.videoId === videoId)
-                  ?.traceId || "",
-            },
-          ]
+    setCheckedVideos((prevVideos: string[]) =>
+      prevVideos.includes(videoId)
+        ? prevVideos.filter((id) => id !== videoId)
+        : [...prevVideos, videoId]
     );
   };
 

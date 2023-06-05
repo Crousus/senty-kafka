@@ -110,7 +110,7 @@ public class ScraperRestController {
   @GetMapping(path = "/api/scraperyoutube/fetch")
   public ResponseEntity<String> fetch(@RequestParam String videoId) {
 
-    if (videoId.length() != 12) {
+    if (videoId.length() != 11) {
       return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Invalid video ID");
     }
 

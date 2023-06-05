@@ -23,15 +23,15 @@ const Track = () => {
   const [sentimentData, setSentimentData] = useState({});
 
   const videosResponse = api.videos.getVideos.useQuery({
-    videoIds: orderedVideos,
+    videoIds: orderedVideos.map((video) => video.videoId),
   });
 
   const commentsDataResponse = api.comments.getCommentsCount.useQuery({
-    videoIds: orderedVideos,
+    videoIds: orderedVideos.map((video) => video.videoId),
   });
 
   const sentimentDataResponse = api.comments.getSentimentAvg.useQuery({
-    videoIds: orderedVideos,
+    videoIds: orderedVideos.map((video) => video.videoId),
   });
 
   useEffect(() => {
@@ -71,20 +71,28 @@ const Track = () => {
   ]);
 
   const handleCheckboxChange = (videoId: string) => {
-    setCheckedVideos((prevVideos: string[]) =>
-      prevVideos.includes(videoId)
-        ? prevVideos.filter((id) => id !== videoId)
-        : [...prevVideos, videoId]
+    setCheckedVideos((prevVideos: OrderedVideoType[]) =>
+      prevVideos.some((video) => video.videoId === videoId)
+        ? prevVideos.filter((video) => video.videoId !== videoId)
+        : [
+            ...prevVideos,
+            {
+              videoId: videoId,
+              traceId:
+                orderedVideos.find((video) => video.videoId === videoId)
+                  ?.traceId || "",
+            },
+          ]
     );
   };
 
   const handleDeleteVideo = (videoId: string) => {
-    setOrderedVideos((prevVideoIds) =>
-      prevVideoIds.filter((id) => id !== videoId)
+    setOrderedVideos((prevVideos) =>
+      prevVideos.filter((video) => video.videoId !== videoId)
     );
   };
 
-  // console.log("videos", videos);
+  console.log("videos", videos);
 
   return (
     <div>
@@ -92,20 +100,26 @@ const Track = () => {
         <div
           key={index}
           className={`mb-4 cursor-pointer rounded-md border p-4 ${
-            checkedVideos.includes(video.videoId)
+            checkedVideos.some((v) => v.videoId === video.videoId)
               ? "border-emerald-700 bg-[#022c22] hover:bg-[#022c22]"
               : "border-slate-700 bg-slate-900 hover:bg-slate-800"
           }`}
           onClick={() => handleCheckboxChange(video.videoId)}
         >
+          <p className="mb-1 text-slate-400">
+            Trace ID:{" "}
+            {orderedVideos.find((v) => v.videoId === video.videoId)?.traceId ||
+              "Not found"}
+          </p>
           <div className="mb-4 grid grid-cols-12 gap-4">
-            <Image
+            <img
               src={video.defaultThumbnailUrl}
               alt={video.title}
               className="col-span-4 rounded-md"
               width={640}
               height={360}
             />
+
             <div className="col-span-4">
               <h3 className="font-bold">{video.title}</h3>
               <p className="text-slate-400">{video.channelTitle}</p>

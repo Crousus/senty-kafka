@@ -7,6 +7,7 @@ import { wordcloudDataRouter } from "~/server/api/routers/wordcloudData";
 import { languageDataRouter } from "~/server/api/routers/languageData";
 import { videoIdsRouter } from "./routers/videoIds";
 import { commentsRouter } from "./routers/comments";
+import { ordersRouter } from "./routers/orders";
 
 export const appRouter = createTRPCRouter({
   example: exampleRouter,
@@ -16,6 +17,7 @@ export const appRouter = createTRPCRouter({
   languageData: languageDataRouter,
   videoIds: videoIdsRouter,
   comments: commentsRouter,
+  orders: ordersRouter,
 });
 
 export type AppRouter = typeof appRouter;

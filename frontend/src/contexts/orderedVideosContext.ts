@@ -1,9 +1,14 @@
 // contexts/orderedVideosContext.ts
 import { createContext } from "react";
 
+type OrderedVideoType = {
+  videoId: string;
+  traceId: string;
+};
+
 type OrderedVideosContextType = {
-  orderedVideos: string[];
-  setOrderedVideos: React.Dispatch<React.SetStateAction<string[]>>;
+  orderedVideos: OrderedVideoType[];
+  setOrderedVideos: React.Dispatch<React.SetStateAction<OrderedVideoType[]>>;
 };
 
 export const OrderedVideosContext = createContext<

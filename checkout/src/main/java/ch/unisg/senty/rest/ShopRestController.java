@@ -20,6 +20,8 @@ import ch.unisg.senty.domain.Order;
 import ch.unisg.senty.messages.Message;
 import ch.unisg.senty.messages.MessageSender;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -81,6 +83,20 @@ public class ShopRestController {
     }
     Order presentOrder = order.get();
     return ResponseEntity.status(HttpStatus.OK).body(presentOrder);
+  }
+
+  @PostMapping(path = "/api/cart/order/ids", consumes =
+          MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity checkOrdersByIds(@RequestBody List<String> traceIds) {
+    List<Order> orders = new ArrayList<>();
+    for (String traceId : traceIds) {
+      Optional<Order> order = orderRepository.findById(traceId);
+      if (!order.isPresent()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\": \"Order not found for id: " + traceId + "\"}");
+      }
+      orders.add(order.get());
+    }
+    return ResponseEntity.status(HttpStatus.OK).body(orders);
   }
 
 }

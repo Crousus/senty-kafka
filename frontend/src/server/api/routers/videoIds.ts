@@ -12,12 +12,9 @@ export const videoIdsRouter = createTRPCRouter({
         return { isValid: false, error: "Invalid video ID" };
       }
 
-      console.log("checkVideoId called with", input.videoId);
       const response = await fetch(
         `${process.env.BASE_URL_SCRAPER}/api/scraperyoutube/verify?url=https://www.youtube.com/watch?v=${input.videoId}`
       );
-      console.log("checkVideoId response", response);
-      console.log("\n");
 
       if (response.ok) {
         return { isValid: true };
@@ -42,7 +39,6 @@ export const videoIdsRouter = createTRPCRouter({
         return { isValid: false, error: "Invalid video ID" };
       }
 
-      console.log("fetchVideoId called with", input);
       const response = await fetch(
         `${process.env.BASE_URL_CHECKOUT}/api/cart/order`,
         {
@@ -59,8 +55,6 @@ export const videoIdsRouter = createTRPCRouter({
           }),
         }
       );
-      console.log("fetchVideoId response", response);
-      console.log("\n");
 
       if (response.ok) {
         const data = await response.json();

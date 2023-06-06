@@ -90,25 +90,26 @@ Prior to exploring specific use cases, familiarize yourself with our services an
 
 - `ProjectManagerCamundaApplication`: The heart of Senty. Is the Orchestrating Service which sends Commands and Tokens. Most of the other services report back to it. The service includes the Project Manager workflow.
 - `CheckoutApplication`: Allows users to place orders (via frontend) and listens on all relevant events concerning the order status and updates placed orders in its database respectively, so users can query the order status.
-- `CustomerOnboardingCamundaApplication`: Handles user registration requests. Includes the registration workflow and also the authentication workflow used for placing an Order.
+- `RegistrationApplication`: Handles user registration requests. Includes the registration workflow and also the authentication workflow used for placing an Order.
 - `EmailNotifierApplication`: Notifies users with various emails regarding their accounts, payments, milestones, and other events.
 - `ScraperApplication`: Fetches YouTube video meta data and comments based on the URL or videoId of the video.
 - `PaymentApplication`: Bills the customer for bought tokens or other services such as receiving “payment” via a voucher
 - `CommentAnalysisApplication`: So far only a rudimentary service that counts comments and emits and event once a milestone of “n” comments is reached.
+- `CommentProcessor`: Kafka Streams application that processes comments and classifies them using our custom sentiment and language classifiers. 
 
 ### Used Ports
 #### Camunda Side:
 
 - `ProjectManagerCamundaApplication`: 8093
-- `OrderApplication`: 8092
 - `CheckoutApplication`: 8091
 - `EmailNotifierApplication`: 8099
 - `RegistrationApplication`: 8096
-- `PaymentApplication`: 8097
+- `PaymentApplication`: 8100
 - `ScraperApplication`: 7001
 
 #### Old deprecated services used for earlier assignments:
 - `CommentAnalysisApplication`: 8082
+- `OrderApplication`: 8092
 
 #### Kafka Streams:
 - `CommentsProcessor`: 7002
@@ -129,8 +130,8 @@ Prior to exploring specific use cases, familiarize yourself with our services an
 
 - `ProjectManagerCamundaApplication`: http://localhost:8093/camunda/app/welcome/default/#!/login (user and password: _demo_)
 - `CheckoutApplication`: http://localhost:8091/shop.html
-- `OrderApplication`: http://localhost:8092/orders
-- `CustomerOnboardingCamundaApplication`: http://localhost:8096
+- `OrderApplication`: http://localhost:8092/orders (deprecated)
+- `RegistrationApplication`: http://localhost:8096
 - `EmailNotifierApplication`: http://localhost:8095/emails
 - `ScraperApplication`: http://localhost:8094/scraper
 
@@ -204,7 +205,7 @@ Alternatively, post an order via Postman to `http://localhost:8091/api/cart/orde
     "customerId": "0001",
     "videoId": "r0cM20WPyqI",
     "tokens": "100",
-    "voucher": "",
+    "voucher": "edpo",
     "platform": "YouTube"
 }
 ```

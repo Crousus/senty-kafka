@@ -35,6 +35,7 @@ Welcome to _Senty_, a real-time social media market intelligence platform design
 7. [Reflection and Learnings](#reflection-and-learnings)
 
 <br /><hr /><br />
+
 # Still needs some finishing touches!
 
 ## Introduction
@@ -95,9 +96,10 @@ Prior to exploring specific use cases, familiarize yourself with our services an
 - `ScraperApplication`: Fetches YouTube video meta data and comments based on the URL or videoId of the video.
 - `PaymentApplication`: Bills the customer for bought tokens or other services such as receiving “payment” via a voucher
 - `CommentAnalysisApplication`: So far only a rudimentary service that counts comments and emits and event once a milestone of “n” comments is reached.
-- `CommentProcessor`: Kafka Streams application that processes comments and classifies them using our custom sentiment and language classifiers. 
+- `CommentProcessor`: Kafka Streams application that processes comments and classifies them using our custom sentiment and language classifiers.
 
 ### Used Ports
+
 #### Camunda Side:
 
 - `ProjectManagerCamundaApplication`: 8093
@@ -108,14 +110,17 @@ Prior to exploring specific use cases, familiarize yourself with our services an
 - `ScraperApplication`: 7001
 
 #### Old deprecated services used for earlier assignments:
+
 - `CommentAnalysisApplication`: 8082
 - `OrderApplication`: 8092
 
 #### Kafka Streams:
+
 - `CommentsProcessor`: 7002
 - `ScraperApplication`: 7001
 
 #### Docker
+
 - `Frontend`: 3000
 - `Kafka`: 9092 (29092 on localhost)
 - `Zookeeper`: 32181
@@ -153,8 +158,8 @@ The following use cases are scenarios for Part I of the course, focusing on demo
 
 <u>Goal</u>: Register and validate a user who can then place an order to monitor a YouTube video and receive comment milestone email updates.
 
-1. Register user with real email and approved company (please use "HSG" or 
-   "Porsche") by 
+1. Register user with real email and approved company (please use "HSG" or
+   "Porsche") by
    posting to
    http://localhost:8096/registration with the following JSON body:
 
@@ -180,22 +185,19 @@ gate for the email verification.
    the `EmailNotifierApplication` and click the link that is printed in the
    logs. The log looks something like this: `Sending Mail: Please verify at http://localhost:8096/verify?email=philipp.john@student.unisg.ch&traceId=59f8b15d-03ad-11ee-8afa-acde48001122`
 
-Currently, only Amine's E-Mail (amine.abbad-andaloussi@unisg.ch) is registered 
-with our MailGun account and 
+Currently, only Amine's E-Mail (amine.abbad-andaloussi@unisg.ch) is registered
+with our MailGun account and
 would receive an actual E-Mail, so
-should anyone else test the app, please click the log in the 
+should anyone else test the app, please click the log in the
 `EmailNotifierApplication`.
 
-The trace
-   id here is the id of the process instance in Camunda. You can find it in
-   the Camunda Cockpit. Once clicked, we update the user record in our
-   database.
+The traceid here is the id of the process instance in Camunda. You can find it in the Camunda Cockpit. Once clicked, we update the user record in our database.
 
 In Camunda, we can now see that the token went through.
 
-3. Place order with real YouTube URL (// TODO: Provide url) via our simple checkout frontend at http://localhost:8091/shop.html:
+3. Place order with real YouTube Video ID via our frontend. You can find the Video ID by clicking on the "Share" button and copying the part after the last `"/"`:
 
-// TODO: Add screenshot
+![](assets/youtube-videoid.png)
 
 Alternatively, post an order via Postman to `http://localhost:8091/api/cart/order`. The details of your order should be specified in the request body:
 
@@ -213,6 +215,8 @@ Alternatively, post an order via Postman to `http://localhost:8091/api/cart/orde
 4. View E-Mail inbox to receive milestone updates on how many comments we could fetch. This will also be visible in the logs of the `XXX `(//TODO: Add which service shows this)
 
 // TODO: Add screenshot
+
+5. Since we connected Part I and Part II of EDPO, the frontend will also display all analytics features we have implemented as part of our Kafka Stream.
 
 <hr />
 

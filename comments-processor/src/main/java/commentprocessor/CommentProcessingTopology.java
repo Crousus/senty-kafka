@@ -66,16 +66,7 @@ public class CommentProcessingTopology {
         builder.addStateStore(deduplicationStoreBuilder);
 
         //We have the reverse the List as we need it in reverse chronological order for the windowed aggregation later
-        KStream<String, Comment> comments = commentBatchStream
-                .mapValues(CommentBatchEvent::getComments)  // Convert CommentBatchEvent to List<Comment>
-                .flatMapValues(commentBatch -> {
-                    // Create a new list to avoid UnsupportedOperationException when calling reverse
-                    List<Comment> commentsList = new ArrayList<>(commentBatch);
-                    // Reverse the list
-                    Collections.reverse(commentsList);
-                    return commentsList;
-                })
-                .selectKey((key, comment) -> comment.getCommentId());
+        KStream<String, Comment> comments = commentBatchStream.flatMapValues(CommentBatchEvent::getComments).selectKey((key, comment) -> comment.getCommentId());
 
         comments = removeEmojisFromComments(comments);
 

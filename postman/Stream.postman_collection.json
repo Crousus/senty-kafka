@@ -1,0 +1,287 @@
+{
+	"info": {
+		"_postman_id": "e7c185cd-5d54-4cfd-9113-416d5d4ad6f4",
+		"name": "Stream",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27559044",
+		"_collection_link": "https://winter-comet-687421.postman.co/workspace/EDPO~be27a9b3-1d50-46c0-9bb3-2207d51de9fe/collection/27559044-e7c185cd-5d54-4cfd-9113-416d5d4ad6f4?action=share&creator=27559044&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "Get Comments Count by Lang",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"videoIds\": [\"lRuzXBN79Fw\"]}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7002/comments/count/lang",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7002",
+					"path": [
+						"comments",
+						"count",
+						"lang"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Comments Count",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"videoIds\": [\"lRuzXBN79Fw\"]}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7002/comments/count",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7002",
+					"path": [
+						"comments",
+						"count"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Comments Sentiment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"videoIds\": [\"lRuzXBN79Fw\"]}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7002/sentiment/total",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7002",
+					"path": [
+						"sentiment",
+						"total"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Comments Last 5",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"videoIds\": [\"lRuzXBN79Fw\"]}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7002/comments/last5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7002",
+					"path": [
+						"comments",
+						"last5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Language Classifier",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"text\":\"This thin is ridiculous!\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://130.82.245.25:2000/predict",
+					"protocol": "http",
+					"host": [
+						"130",
+						"82",
+						"245",
+						"25"
+					],
+					"port": "2000",
+					"path": [
+						"predict"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Language Classifier [NOT IN USE]",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "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",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"inputs\": \"Die Universität St.Gallen – Hochschule für Wirtschafts-, Rechts- und Sozialwissenschaften, Internationale Beziehungen und Informatik.\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api-inference.huggingface.co/models/papluca/xlm-roberta-base-language-detection",
+					"protocol": "https",
+					"host": [
+						"api-inference",
+						"huggingface",
+						"co"
+					],
+					"path": [
+						"models",
+						"papluca",
+						"xlm-roberta-base-language-detection"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Translator",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"q\": \"If you want to run the Docker image in a complete offline environment, you need to add the --build-arg with_models=true parameter. Then the language models get downloaded during the build process of the image. Otherwise these models get downloaded on the first run of the image/container.\",\r\n\"source\": \"en\",\r\n\"target\": \"de\"\r\n}\r\n\t",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/translate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"translate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sentiment Predictor",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"text\": [\"The Model Asset Exchange is a crucial element of a developer's toolkit.\"]}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5001/model/predict",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"model",
+						"predict"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Daily Sentiment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"videoIds\": [\"u36A-YTxiOw\", \"Th8JoIan4dg\", \"zBUhQPPS9AY\"]}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7002/sentiment/total/24h",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7002",
+					"path": [
+						"sentiment",
+						"total",
+						"24h"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

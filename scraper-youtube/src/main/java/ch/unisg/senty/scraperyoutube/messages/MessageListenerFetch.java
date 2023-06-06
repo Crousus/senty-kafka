@@ -5,6 +5,7 @@ import ch.unisg.senty.scraperyoutube.domain.CommentFetched;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -105,6 +106,7 @@ public class MessageListenerFetch {
             // fetch comments for each video ID
             // in the future we would thread this...
             CommentBatchEvent batchEvent = buildBatch(videoId);
+
             sendBatch(batchEvent);
         }
 
@@ -174,8 +176,23 @@ public class MessageListenerFetch {
         // print length of list
         System.out.println("Fetched " + rootNode.path("items").size() + " comments");
 
+        ArrayNode itemsNode = (ArrayNode) rootNode.get("items");
+
+        // Convert items array to list for sorting
+        List<JsonNode> items = new ArrayList<>();
+        itemsNode.forEach(items::add);
+
+        // Sort the items list
+        items.sort(Comparator.comparing(item -> ZonedDateTime.parse(item.get("snippet").get("topLevelComment").get("snippet").get("publishedAt").asText())));
+
+        // Clear the original items array
+        itemsNode.removeAll();
+
+        // Add sorted items back into the array
+        items.forEach(itemsNode::add);
+
         // get comments
-        for (JsonNode itemNode : rootNode.path("items")) {
+        for (JsonNode itemNode : items) {
             //Most of these are not used, but are here for possible future use
             String id = itemNode.path("id").asText();
             String textDisplay = itemNode.path("snippet").path("topLevelComment").path("snippet").path("textDisplay").asText();
@@ -193,7 +210,7 @@ public class MessageListenerFetch {
         }
 
         // get timestamps
-        String newestCommentTimestamp = rootNode.path("items").get(0).path("snippet").path("topLevelComment").path("snippet").path("publishedAt").asText();
+        String newestCommentTimestamp = items.get(items.size()-1).path("snippet").path("topLevelComment").path("snippet").path("publishedAt").asText();
         System.out.println("Newest comment timestamp (api): " + newestCommentTimestamp);
 
         ZonedDateTime newestCommentApiTimestamp = ZonedDateTime.parse(newestCommentTimestamp);
@@ -202,11 +219,11 @@ public class MessageListenerFetch {
         // Check if we have a timestamp for this videoId
         if (newestCommentListTimestampStr == null || newestCommentListTimestampStr.isEmpty()) {
             // This is the first fetch for this videoId, update newestComments and continue fetching
-            newestComments.put(videoId, newestCommentTimestamp);
             if (rootNode.has("nextPageToken")) {
                 String nextPageToken = rootNode.get("nextPageToken").asText();
                 comments.addAll(fetchComments(videoId, apiKey, nextPageToken));
             }
+            newestComments.put(videoId, newestCommentTimestamp);
         } else {
             ZonedDateTime newestCommentListTimestamp = ZonedDateTime.parse(newestCommentListTimestampStr);
 

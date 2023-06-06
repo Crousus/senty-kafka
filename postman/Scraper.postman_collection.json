@@ -1,0 +1,219 @@
+{
+	"info": {
+		"_postman_id": "156e60ee-a84f-4e68-be80-55551ef764c9",
+		"name": "Scraper",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27559044",
+		"_collection_link": "https://winter-comet-687421.postman.co/workspace/EDPO~be27a9b3-1d50-46c0-9bb3-2207d51de9fe/collection/12375670-156e60ee-a84f-4e68-be80-55551ef764c9?action=share&creator=27559044&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "Ping Scraper",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://130.82.245.25:7001/api/scraperyoutube/ping",
+					"protocol": "http",
+					"host": [
+						"130",
+						"82",
+						"245",
+						"25"
+					],
+					"port": "7001",
+					"path": [
+						"api",
+						"scraperyoutube",
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify URL",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:7001/api/scraperyoutube/verify?url=https://www.youtube.com/watch?v=lRuzXBN79Fw",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7001",
+					"path": [
+						"api",
+						"scraperyoutube",
+						"verify"
+					],
+					"query": [
+						{
+							"key": "url",
+							"value": "https://www.youtube.com/watch?v=r0cM20WPyqI",
+							"description": "162 c.: The new Porsche 718 Spyder RS: A rebel unleashed",
+							"disabled": true
+						},
+						{
+							"key": "url",
+							"value": "https://www.youtube.com/watch?v=y7p3YC4CAGI",
+							"description": "168 c.: Go further together with the new Porsche Cayenne\n",
+							"disabled": true
+						},
+						{
+							"key": "url",
+							"value": "https://www.youtube.com/watch?v=lRuzXBN79Fw",
+							"description": "69 c.: Porsche and L’Art De L’Automobile took the 968 L’Art for a road trip in California"
+						},
+						{
+							"key": "url",
+							"value": "https://www.youtube.com/watch?v=zmADLllSxOE",
+							"description": "1114 c.: The new 911 Dakar",
+							"disabled": true
+						},
+						{
+							"key": "url",
+							"value": "https://www.youtube.com/watch?v=G8gRkJ9cnzo",
+							"description": "HSG",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fetch videoId",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:7001/api/scraperyoutube/fetch?videoId=lRuzXBN79Fw",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7001",
+					"path": [
+						"api",
+						"scraperyoutube",
+						"fetch"
+					],
+					"query": [
+						{
+							"key": "videoId",
+							"value": "r0cM20WPyqI",
+							"description": "162 c.: The new Porsche 718 Spyder RS: A rebel unleashed",
+							"disabled": true
+						},
+						{
+							"key": "videoId",
+							"value": "y7p3YC4CAGI",
+							"description": "168 c.: Go further together with the new Porsche Cayenne",
+							"disabled": true
+						},
+						{
+							"key": "videoId",
+							"value": "lRuzXBN79Fw",
+							"description": "69 c.: Porsche and L’Art De L’Automobile took the 968 L’Art for a road trip in California"
+						},
+						{
+							"key": "videoId",
+							"value": "1rKrLXGWzNQ",
+							"description": "79 c.: Behind the production scenes: the Porsche 911 Sport Classic",
+							"disabled": true
+						},
+						{
+							"key": "videoId",
+							"value": "zmADLllSxOE",
+							"description": "1114 c.: The new 911 Dakar",
+							"disabled": true
+						},
+						{
+							"key": "videoId",
+							"value": "_-jfkVk4s4w",
+							"description": "96",
+							"disabled": true
+						},
+						{
+							"key": "videoId",
+							"value": "G8gRkJ9cnzo",
+							"description": "HSG",
+							"disabled": true
+						},
+						{
+							"key": "videoId",
+							"value": "UDhE0uBtv7M",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove videoId",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:7001/api/scraperyoutube/remove?videoId=lRuzXBN79Fw",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7001",
+					"path": [
+						"api",
+						"scraperyoutube",
+						"remove"
+					],
+					"query": [
+						{
+							"key": "videoId",
+							"value": "r0cM20WPyqI",
+							"description": "162 c.: The new Porsche 718 Spyder RS: A rebel unleashed",
+							"disabled": true
+						},
+						{
+							"key": "videoId",
+							"value": "y7p3YC4CAGI",
+							"description": "168 c.: Go further together with the new Porsche Cayenne",
+							"disabled": true
+						},
+						{
+							"key": "videoId",
+							"value": "lRuzXBN79Fw",
+							"description": "69 c.: Porsche and L’Art De L’Automobile took the 968 L’Art for a road trip in California"
+						},
+						{
+							"key": "videoId",
+							"value": "1rKrLXGWzNQ",
+							"description": "79 c.: Behind the production scenes: the Porsche 911 Sport Classic",
+							"disabled": true
+						},
+						{
+							"key": "videoId",
+							"value": "zmADLllSxOE",
+							"description": "1114 c.: The new 911 Dakar",
+							"disabled": true
+						},
+						{
+							"key": "videoId",
+							"value": "G8gRkJ9cnzo",
+							"description": "HSG",
+							"disabled": true
+						},
+						{
+							"key": "videoId",
+							"value": "UDhE0uBtv7M",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,153 @@
+{
+	"info": {
+		"_postman_id": "0ad0e212-ca6e-413a-91e8-7bbf5f61cb30",
+		"name": "Camunda",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27559044",
+		"_collection_link": "https://winter-comet-687421.postman.co/workspace/EDPO~be27a9b3-1d50-46c0-9bb3-2207d51de9fe/collection/12375670-0ad0e212-ca6e-413a-91e8-7bbf5f61cb30?action=share&creator=27559044&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "Register New Customer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"company\": \"HSG\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"john.doe@student.unisg.ch\",\n    \"password\": \"iloveedpo\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8096/registration",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8096",
+					"path": [
+						"registration"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Order",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"companyName\": \"HSG\",\n    \"email\": \"john.doe@student.unisg.ch\",\n    \"password\": \"iloveedpo\",\n    \"videoId\": \"zBUhQPPS9AY\",\n    \"tokens\": \"voucher\",\n    \"voucher\": \"edpo\",\n    \"platform\": \"YouTube\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8091/api/cart/order",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8091",
+					"path": [
+						"api",
+						"cart",
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check Order Status",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8091/api/cart/order/id/029cfa56-2eee-4151-83c7-d0bfd726285d",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8091",
+					"path": [
+						"api",
+						"cart",
+						"order",
+						"id",
+						"029cfa56-2eee-4151-83c7-d0bfd726285d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check Order Statuses",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  \"70f35cbf-a6b5-40fd-af3a-130936ee00b2\",\n  \"7c31dace-fbaf-425e-87a9-f318aa2c30a5\",\n  \"e78495ff-742d-4574-bda5-fe9541df95a4\"\n]\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8091/api/cart/order/ids",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8091",
+					"path": [
+						"api",
+						"cart",
+						"order",
+						"ids"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

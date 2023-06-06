@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -65,9 +66,17 @@ public class CommentProcessingTopology {
 
         builder.addStateStore(deduplicationStoreBuilder);
 
-        //We have the reverse the List as we need it in reverse chronological order for the windowed aggregation later
-        KStream<String, Comment> comments = commentBatchStream.flatMapValues(CommentBatchEvent::getComments).selectKey((key, comment) -> comment.getCommentId());
-
+        //We make a combined key out of videoID and commentID to make sure they are unique
+        KStream<String, Comment> comments = commentBatchStream
+                .mapValues(CommentBatchEvent::getComments)  // Convert CommentBatchEvent to List<Comment>
+                .flatMapValues(commentBatch -> {
+                    List<Comment> commentsList = new ArrayList<>(commentBatch);
+                    // Sort the comments by timestamp in ascending order (oldest first)
+                    //So they dont mess up the windows later
+                    commentsList.sort(Comparator.comparing(comment -> ZonedDateTime.parse(comment.getTimestamp())));
+                    return commentsList;
+                })
+                .selectKey((key, comment) -> comment.getVideoId()+comment.getCommentId());
         comments = removeEmojisFromComments(comments);
 
         //Here we need to override the timestamp of every comment event with the one we get from youtube, so we are able to use the windows later on

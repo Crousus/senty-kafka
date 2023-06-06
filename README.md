@@ -32,7 +32,7 @@ Welcome to _Senty_, a real-time social media market intelligence platform design
    3.3 [Postman](#postman)
 
 4. [Use Cases](#use-cases)
-5. [Additional Information](#additional-information)
+5. [Feature outlook](#feature-outlook)
 
 <br /><hr /><br />
 
@@ -44,6 +44,7 @@ Senty is designed to enable users to conduct extensive analysis of YouTube video
 
 ![senty-dashboard-1](assets/senty-dashboard-1.png)
 ![senty-dashboard-2](assets/senty-dashboard-2.png)
+![senty-dashboard-2](assets/senty-dashboard-3.jpg)
 
 <br /><hr /><br />
 
@@ -200,6 +201,7 @@ Alternatively, post an order via Postman (Camunda/New Order) to `http://localhos
 ```
 
 4. Wait a while for the processing to finish. You can check if it actually works in the logs of the comment-processor
+5. Make a new comment and wait ~30 seconds and your comment will appear in the last 5 comment list.
 
 5. Since we connected Part I and Part II of EDPO, the frontend will also display all analytics features we have implemented as part of our Kafka Stream.
 
@@ -283,7 +285,12 @@ Goal of both scenarios: Analyze a YouTube video and display a number of analytic
 2. After the order has been processed, proceed to got to the (Stream/*) folder in Postman and try out the requests replacing the videoIds with the videoId of the video you ordered.
 
 
-## Additional Information
+## Feature Outlook
 
 If the payment fails actually no information why it failed is propagated to the order status. We planned to implement this but due to time constraints we didn't
 But we would add a field to the Order status containing that message and display it in the frontend if we had time.
+
+We planned this system to be able to be extended by any scraper and also multiple instances of the same scraper for high availablity 
+and also performance. For that reason we have implemented a basic version of a findscraper technique that should use an aggregator to find the best scraper
+for the job. (Just like tapas in ASSE). Due to time constraints we didn't implement this and stayed with the youtube scraper, hence the findscraper bpmn looks a bit
+weird.

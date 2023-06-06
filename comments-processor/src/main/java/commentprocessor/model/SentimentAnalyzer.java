@@ -45,6 +45,8 @@ public class SentimentAnalyzer implements Transformer<String, Comment, KeyValue<
             String requestBody = mapper.writeValueAsString(root);
             logger.debug("Request body: " + requestBody);
 
+            logger.info("Processing "+value.getTimestamp());
+
             HttpResponse<String> response = Unirest.post(SENTIMENT_URI)
                     .header("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
                     .body(requestBody)

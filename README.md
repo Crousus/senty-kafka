@@ -32,9 +32,7 @@ Welcome to _Senty_, a real-time social media market intelligence platform design
    3.3 [Postman](#postman)
 
 4. [Use Cases](#use-cases)
-5. [Assignment Details](#assignment-details)
-6. [Contributions](#contributions)
-7. [Reflection and Learnings](#reflection-and-learnings)
+5. [Additional Information](#additional-information)
 
 <br /><hr /><br />
 
@@ -60,9 +58,12 @@ If you run all in docker (recommended) you might have to update the API-KEY fiel
 ### Docker
 
 Next, fire up the docker container from `/docker` with the command: `docker-compose -f docker-compose-everything.yml up --build`
+The kafka container might fail on startup because zookeeper is not read yet. Just start it again, and potential other containers that fail because kafka is offline
 
-*Warning*: This will take very long (depending on internet 20-30 mins because 17 containers), and eat around 70 GB of your disk space.
+*Warning*: This will take very long (depending on internet 20 mins because 17 containers), and eat around 70 GB of your disk space.
 Plus your RAM will be used to 100% if you have 16 GB. Don't run it with less. 32 GB would be ideal.
+
+After all containers are up and running, open the monitor service at http://localhost:8095/ and connect the socket to see the events in real time.
 
 
 ## Services and REST Endpoints
@@ -77,7 +78,7 @@ Prior to exploring specific use cases, familiarize yourself with our services an
 - `EmailNotifierApplication`: Notifies users with various emails regarding their accounts, payments, milestones, and other events.
 - `ScraperApplication`: Fetches YouTube video meta data and comments based on the URL or videoId of the video.
 - `PaymentApplication`: Bills the customer for bought tokens or other services such as receiving “payment” via a voucher
-- `CommentAnalysisApplication`: So far only a rudimentary service that counts comments and emits and event once a milestone of “n” comments is reached.
+- `CommentAnalysisApplication`: So far only a rudimentary service that counts comments and emits and event once a milestone of “n” comments is reached. (deprecated)
 - `CommentProcessor`: Kafka Streams application that processes comments and classifies them using our custom sentiment and language classifiers.
 
 ### Used Ports
@@ -123,12 +124,12 @@ Prior to exploring specific use cases, familiarize yourself with our services an
 - `CommentProcessor`: http://localhost:7002
 - `Frontend`: http://localhost:3000
 
-For more details about the available endpoints, please refer to the next section. (Postman)[#postman]
+For more details about the available endpoints, please refer to the next section. [Postman](#postman)
 
 ### Postman
 
 Our Postman collection is stored in `/postman`. We suggest importing this collection into Postman for the easiest interaction with our application apart from our frontend.
-
+https://learning.postman.com/docs/getting-started/importing-and-exporting-data/#importing-postman-data
 <br /><hr /><br />
 
 ## Use Cases
@@ -235,13 +236,9 @@ Leave Approve empty to disprove the registration.
 
 <hr />
 
-#### Use Case 3: Payment failed
 
-// TODO
 
-<hr />
-
-#### Use Case 4: Invalid YouTube URL
+#### Use Case 3: Invalid YouTube URL
 
 1. Use a registered customer E-Mail (produced in the Use Case 1: Happy Path) to place an order via our simple checkout frontend at http://localhost:3000 (or Postman Camunda/New Order). Only this time, provide an INVALID YouTube URL, for example: "invalidVideoId".
 
@@ -250,6 +247,15 @@ Leave Approve empty to disprove the registration.
 ![](assets/video_not_verified.jpg)
 
 <hr />
+
+#### Use Case 4: Payment failed
+
+1. Follow the same steps as in Use Case 3 but with a VALID YouTube URL but a wrong voucher code. (One that is not "edpo")
+
+![](assets/wrong_voucher.jpg)
+
+<hr />
+
 
 ### Use Cases – Part II
 
@@ -275,3 +281,9 @@ Goal of both scenarios: Analyze a YouTube video and display a number of analytic
 1. Place a new order via Postman as seen in (Camunda/New Order)
 
 2. After the order has been processed, proceed to got to the (Stream/*) folder in Postman and try out the requests replacing the videoIds with the videoId of the video you ordered.
+
+
+## Additional Information
+
+If the payment fails actually no information why it failed is propagated to the order status. We planned to implement this but due to time constraints we didn't
+But we would add a field to the Order status containing that message and display it in the frontend if we had time.

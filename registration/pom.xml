@@ -9,8 +9,8 @@
         <camunda.spring-boot.version>7.16.0</camunda.spring-boot.version>
         <spring-boot.version>2.5.4</spring-boot.version>
         <spring.kafka.version>2.8.5</spring.kafka.version>
-        <maven.compiler.source>1.17</maven.compiler.source>
-        <maven.compiler.target>1.17</maven.compiler.target>
+        <maven.compiler.source>15</maven.compiler.source>
+        <maven.compiler.target>15</maven.compiler.target>
         <camunda.spring.boot.version>7.18.0</camunda.spring.boot.version>
     </properties>
 

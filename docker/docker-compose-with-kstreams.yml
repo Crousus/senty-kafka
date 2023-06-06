@@ -144,7 +144,7 @@ services:
     ports:
       - "5002:5000"
     networks:
-        - senty
+      - senty
 
 
   sentiment-classifier:
@@ -197,7 +197,7 @@ services:
     ports:
       - "7001:7001"
     environment:
-      - API-KEY=AIzaSyA2DbBX746709VDuBfiSJkGouIE_DHilbg
+      - API-KEY=AIzaSyA2DbBX746709VDuBfiSJkGouIE_DHilbg #CHANGE IF NECESSARY!
 
 
   comment-processor:
@@ -211,6 +211,8 @@ services:
       - kafka
     ports:
       - "7002:7002"
+
+
 networks:
   senty:
     driver: bridge

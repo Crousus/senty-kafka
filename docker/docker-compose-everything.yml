@@ -1,5 +1,5 @@
 version: "4"
-#Attention. This will put your little macbook pro on fire.
+
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:6.0.0
@@ -49,6 +49,7 @@ services:
     volumes:
       - ../scripts:/scripts
 
+
   mongodb:
     image: mongo
     container_name: mongodb
@@ -87,7 +88,7 @@ services:
     ports:
       - "5002:5000"
     networks:
-        - senty
+      - senty
 
 
   sentiment-classifier:
@@ -123,6 +124,9 @@ services:
       - "3000:3000"
     networks:
       - senty
+    environment:
+      - BASE_URL_SCRAPER=http://scraper:7001
+      - BASE_URL_STREAM=http://comment-processor:7002
 
 
   scraper:
@@ -151,6 +155,90 @@ services:
       - kafka
     ports:
       - "7002:7002"
+
+  #
+  # Begin of Camunda Orchestrator Services
+  #
+
+  payment:
+    build:
+      context: ../payment-camunda
+      dockerfile: Dockerfile
+    container_name: payment
+    networks:
+      - senty
+    ports:
+      - "8100:8100"
+    depends_on:
+      - kafka
+
+
+  registration:
+    build:
+      context: ../registration
+      dockerfile: Dockerfile
+    container_name: registration
+    networks:
+      - senty
+    ports:
+      - "8096:8096"
+    depends_on:
+      - kafka
+
+
+  email:
+    build:
+      context: ../email-notifier
+      dockerfile: Dockerfile
+    container_name: email
+    networks:
+      - senty
+    ports:
+      - "8099:8099"
+    depends_on:
+      - kafka
+
+
+  project-manager:
+    build:
+      context: ../project-manager-camunda
+      dockerfile: Dockerfile
+    container_name: project-manager
+    networks:
+      - senty
+    ports:
+      - "8093:8093"
+    depends_on:
+      - kafka
+
+
+  checkout:
+    build:
+      context: ../checkout
+      dockerfile: Dockerfile
+    container_name: checkout
+    networks:
+      - senty
+    ports:
+      - "8091:8091"
+    depends_on:
+      - mongodb
+      - kafka
+
+
+  monitor:
+    build:
+      context: ../monitor
+      dockerfile: Dockerfile
+    container_name: monitor
+    networks:
+      - senty
+    depends_on:
+      - kafka
+    ports:
+      - "8095:8095"
+
+
 networks:
   senty:
     driver: bridge

@@ -1,7 +1,7 @@
 # Dockerfile
 
 # Start with a base image containing Java runtime and Maven
-FROM maven:3.8.1-openjdk-17-slim AS build
+FROM maven:3.8.5-eclipse-temurin-17-alpine AS build
 
 # The application's base directory
 WORKDIR /spring-boot-service
@@ -10,11 +10,13 @@ WORKDIR /spring-boot-service
 COPY src /spring-boot-service/src
 COPY pom.xml /spring-boot-service
 
+RUN mv src/main/resources/application-docker.properties src/main/resources/application.properties
+
 # Package the application
 RUN mvn clean package -DskipTests
 
 # Use openjdk for runtime
-FROM openjdk:17-alpine AS runtime
+FROM eclipse-temurin:17-jdk-alpine AS runtime
 
 # Add a volume pointing to /tmp
 VOLUME /tmp
@@ -26,4 +28,4 @@ EXPOSE 7001
 COPY --from=build /spring-boot-service/target/*.jar app.jar
 
 # Run the jar file
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom", "-Dspring.config.location=application-docker.properties", "-jar", "/app.jar"]
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.jar"]

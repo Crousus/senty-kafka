@@ -1,13 +1,31 @@
-FROM maven as build
+# Dockerfile
 
-COPY . /app
+# Start with a base image containing Java runtime and Maven
+FROM maven:3.8.5-eclipse-temurin-17-alpine AS build
 
-RUN mvn -f app/pom.xml --batch-mode --update-snapshots verify -DskipTests
+# The application's base directory
+WORKDIR /spring-boot-service
 
-FROM openjdk
+# Add the source code to the container
+COPY src /spring-boot-service/src
+COPY pom.xml /spring-boot-service
 
-COPY --from=build /app/target/checkout-0.0.1-SNAPSHOT.jar ./checkout-0.0.1-SNAPSHOT.jar
+RUN mv src/main/resources/application-docker.properties src/main/resources/application.properties
 
-COPY --from=build /app/src/main/resources/application.properties ./application.properties
+# Package the application
+RUN mvn clean package -DskipTests
 
-CMD java -jar checkout-0.0.1-SNAPSHOT.jar --spring.config.location=application.properties
+# Use openjdk for runtime
+FROM eclipse-temurin:17-jdk-alpine AS runtime
+
+# Add a volume pointing to /tmp
+VOLUME /tmp
+
+# Make port 8091 available to the world outside this container
+EXPOSE 8091
+
+# Copy the jar file from the build image
+COPY --from=build /spring-boot-service/target/*.jar app.jar
+
+# Run the jar file
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.jar"]

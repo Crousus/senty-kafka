@@ -1,5 +1,5 @@
 # Use the official Node.js 14 image as the base image
-FROM node:14
+FROM node:19-alpine3.17
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -13,7 +13,10 @@ RUN npm install
 # Copy the entire project directory to the working directory
 COPY . .
 
-# Build the Next.js application
+#Replace .env with .env.docker to apply docker specific environment variables
+RUN mv .env.docker .env
+
+RUN prisma generate
 
 # Expose the port that the application will run on
 EXPOSE 3000

@@ -52,6 +52,8 @@ Senty is designed to enable users to conduct extensive analysis of YouTube video
 
 The process of setting up and running Senty is straightforward and user-friendly.
 
+Also please watch the [short demo video](https://www.canva.com/design/DAFlEnci8iU/HA6DIu9sjZEk-aitNtzBYg/watch?utm_content=DAFlEnci8iU&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink).
+
 ### API keys
 
 To begin, add the YouTube API (provided in the assignment submission pdf) as environment variables to the `ScraperApplication` and `EmailNotifierApplication` configurations in IntelliJ respectively (as `API-KEY=...` in both cases).

@@ -204,7 +204,6 @@ public class MessageListenerFetch {
             int likeCount = itemNode.path("snippet").path("topLevelComment").path("snippet").path("likeCount").asInt();
             String publishedAt = itemNode.path("snippet").path("topLevelComment").path("snippet").path("publishedAt").asText();
             String updatedAt = itemNode.path("snippet").path("topLevelComment").path("snippet").path("updatedAt").asText();
-            System.out.println(publishedAt);
 
             comments.add(new CommentFetched(id, videoId, textDisplay, likeCount, publishedAt, null));
         }

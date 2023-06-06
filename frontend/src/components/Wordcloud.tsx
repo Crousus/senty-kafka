@@ -29,6 +29,7 @@ const remapComments = (data) => {
 
 function Wordcloud() {
   const { checkedVideos } = useContext(CheckedVideosContext);
+  console.log("checkedVideos WORDCLOUD", checkedVideos);
   const { isRefetchActive } = useContext(RefetchContext); // Import the refetch context
   const [latestCommentsData, setLatestCommentsData] = useState({});
 

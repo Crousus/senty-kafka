@@ -21,6 +21,7 @@ const Track = () => {
   const [videos, setVideos] = useState([]);
   const [commentsData, setCommentsData] = useState({});
   const [sentimentData, setSentimentData] = useState({});
+  const [statusData, setStatusData] = useState({});
 
   const videosResponse = api.videos.getVideos.useQuery({
     videoIds: orderedVideos.map((video) => video.videoId),
@@ -34,6 +35,10 @@ const Track = () => {
     videoIds: orderedVideos.map((video) => video.videoId),
   });
 
+  const statusDataResponse = api.orders.getStatuses.useQuery({
+    traceIds: orderedVideos.map((video) => video.traceId),
+  });
+
   useEffect(() => {
     if (isRefetchActive) {
       const interval = setInterval(async () => {
@@ -42,6 +47,7 @@ const Track = () => {
           await videosResponse.refetch();
           await commentsDataResponse.refetch();
           await sentimentDataResponse.refetch();
+          await statusDataResponse.refetch();
         } catch (err) {
           console.log("Error during refetch", err);
         }
@@ -64,10 +70,15 @@ const Track = () => {
       setSentimentData(sentimentDataResponse.data);
       // console.log("sentimentData", sentimentDataResponse.data);
     }
+    if (statusDataResponse.data) {
+      setStatusData(statusDataResponse.data);
+      console.log("statusData", statusDataResponse.data);
+    }
   }, [
     videosResponse.data,
     commentsDataResponse.data,
     sentimentDataResponse.data,
+    statusDataResponse.data,
   ]);
 
   const handleCheckboxChange = (videoId: string) => {
@@ -93,7 +104,7 @@ const Track = () => {
         <div
           key={index}
           className={`mb-4 cursor-pointer rounded-md border p-4 ${
-            checkedVideos.some((v) => v.videoId === video.videoId)
+            checkedVideos.some((v) => v === video.videoId)
               ? "border-emerald-700 bg-[#022c22] hover:bg-[#022c22]"
               : "border-slate-700 bg-slate-900 hover:bg-slate-800"
           }`}
@@ -103,6 +114,14 @@ const Track = () => {
             Trace ID:{" "}
             {orderedVideos.find((v) => v.videoId === video.videoId)?.traceId ||
               "Not found"}
+          </p>
+          <p className="mb-1 text-slate-400">
+            <p className="mb-1 text-slate-400">
+              Status:{" "}
+              {statusData.find(
+                (status) => status.videoId.split("=")[1] === video.videoId
+              )?.status || "Not found"}
+            </p>
           </p>
           <div className="mb-4 grid grid-cols-12 gap-4">
             <img

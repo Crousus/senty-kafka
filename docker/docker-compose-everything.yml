@@ -96,7 +96,7 @@ services:
     image: codait/max-text-sentiment-classifier
     restart: unless-stopped
     ports:
-      - "5001:5000"
+      - "5000:5000"
     networks:
       - senty
 

@@ -25,6 +25,8 @@ Welcome to _Senty_, a real-time social media market intelligence platform design
 
    3.1 [Services](#services)
 
+   3.1 [Used Ports](#used-ports)
+
    3.2 [REST Endpoints](#rest-endpoints)
 
    3.3 [Postman](#postman)
@@ -53,41 +55,21 @@ The process of setting up and running Senty is straightforward and user-friendly
 
 ### API keys
 
-To begin, add the YouTube API key and Mailgun API key (both provided via email and in the assignment submission pdf) as environment variables to the `ScraperApplication` and `EmailNotifierApplication` configurations in IntelliJ respectively (as `API-KEY=...` in both cases).
-
+To begin, add the YouTube API (provided in the assignment submission pdf) as environment variables to the `ScraperApplication` and `EmailNotifierApplication` configurations in IntelliJ respectively (as `API-KEY=...` in both cases).
+If you run all in docker (recommended) you might have to update the API-KEY field in the `docker-compose-everything.yml` file only.
 ### Docker
 
-Next, fire up the docker container from `/docker` with the command: `docker-compose -f docker-compose.yml up --build`
+Next, fire up the docker container from `/docker` with the command: `docker-compose -f docker-compose-everything.yml up --build`
 
-Warning: This will take very long (depending on internet 20-30 mins because 20 containers), and eat around 70 GB of your disk space.
+*Warning*: This will take very long (depending on internet 20-30 mins because 17 containers), and eat around 70 GB of your disk space.
 Plus your RAM will be used to 100% if you have 16 GB. Don't run it with less. 32 GB would be ideal.
 
-//TODO SPLIT Services?
-
-### Backend Services
-
-Following this, activate the following services from IntelliJ:
-
-- `ProjectManagerCamundaApplication` (camunda)
-- `CheckoutApplication`
-- `OrderApplication`
-- `CustomerOnboardingCamundaApplication`
-- `EmailNotifierApplication`
-- `ScraperApplication`
-
-### Frontend
-
-Finally, start the frontend from `/frontend` with the command: `npm run dev`
-
-Voila! Senty is now up and running, ready to delve into YouTube video analysis for you.
-
-<br /><hr /><br />
 
 ## Services and REST Endpoints
 
 Prior to exploring specific use cases, familiarize yourself with our services and REST endpoints.
 
-### Services
+### Relevant Core Services
 
 - `ProjectManagerCamundaApplication`: The heart of Senty. Is the Orchestrating Service which sends Commands and Tokens. Most of the other services report back to it. The service includes the Project Manager workflow.
 - `CheckoutApplication`: Allows users to place orders (via frontend) and listens on all relevant events concerning the order status and updates placed orders in its database respectively, so users can query the order status.
@@ -128,17 +110,20 @@ Prior to exploring specific use cases, familiarize yourself with our services an
 - `DbAdmin`: 8089
 - `Monitor`: 8095
 - `Libretranslate`: 5002
-- `sentiment-classifier`: 5001
+- `sentiment-classifier`: 5000
 - `language-classifier`: 2000
 
 ### REST Endpoints
 
 - `ProjectManagerCamundaApplication`: http://localhost:8093/camunda/app/welcome/default/#!/login (user and password: _demo_)
-- `CheckoutApplication`: http://localhost:8091/shop.html
+- `CheckoutApplication`: http://localhost:8091/shop.html (deprecated)
 - `OrderApplication`: http://localhost:8092/orders (deprecated)
 - `RegistrationApplication`: http://localhost:8096
-- `EmailNotifierApplication`: http://localhost:8095/emails
-- `ScraperApplication`: http://localhost:8094/scraper
+- `ScraperApplication`: http://localhost:8094
+- `CommentProcessor`: http://localhost:7002
+- `Frontend`: http://localhost:3000
+
+For more details about the available endpoints, please refer to the next section. (Postman)[#postman]
 
 ### Postman
 
@@ -162,6 +147,7 @@ The following use cases are scenarios for Part I of the course, focusing on demo
    "Porsche") by
    posting to
    http://localhost:8096/registration with the following JSON body:
+   Find this in Postman under Camunda/Register New Customer
 
 ```
 {
@@ -181,7 +167,7 @@ In the `registration` service on Camunda
 gate for the email verification.
 
 2. Verify your email by clicking on the link you should receive in your
-   email inbox (or spam folder). Alternatively, you can check the logs of
+   email inbox (or spam folder most likely). Alternatively, you can also check the logs of
    the `EmailNotifierApplication` and click the link that is printed in the
    logs. The log looks something like this: `Sending Mail: Please verify at http://localhost:8096/verify?email=philipp.john@student.unisg.ch&traceId=59f8b15d-03ad-11ee-8afa-acde48001122`
 
@@ -199,7 +185,7 @@ In Camunda, we can now see that the token went through.
 
 ![](assets/youtube-videoid.png)
 
-Alternatively, post an order via Postman to `http://localhost:8091/api/cart/order`. The details of your order should be specified in the request body:
+Alternatively, post an order via Postman (Camunda/New Order) to `http://localhost:8091/api/cart/order`. The details of your order should be specified in the request body:
 
 ```
 {
@@ -212,9 +198,7 @@ Alternatively, post an order via Postman to `http://localhost:8091/api/cart/orde
 }
 ```
 
-4. View E-Mail inbox to receive milestone updates on how many comments we could fetch. This will also be visible in the logs of the `XXX `(//TODO: Add which service shows this)
-
-// TODO: Add screenshot
+4. Wait a while for the processing to finish. You can check if it actually works in the logs of the comment-processor
 
 5. Since we connected Part I and Part II of EDPO, the frontend will also display all analytics features we have implemented as part of our Kafka Stream.
 
@@ -236,17 +220,18 @@ Goal: Demonstrate that a failed registration results in a customer being deleted
 }
 ```
 
-// TODO: Provide DISPROVED company
-
 In Camunda, we can now see a Human Task was created. If the Human Task does NOT approve the registration; this sets `approved` variable to `false`. The `approvalOutcomeAdapter` sets `humanApproved` to `false`.
 
 The token then waits for email verification. If the email gets verified, by clicking on the authorization link, `mailVerified` is set to `true`. If email does not get verified within 48h `mailVerified` stays `false`.
 
 The token now merges at the gateway, and `customer verified?` gate checks if `mailVerified == true` and `humanApproved_ == true`.
 
+http://localhost:8096/camunda/app/tasklist/default/#/
+
 Since `humanApproved == false`, the registration service now triggers a `cancel registration` compensation event. This deletes the unregistered customer from our database.
 
-// TODO: Add screenshot(s)
+Leave Approve empty to disprove the registration.
+![](assets/disprove_customer.jpg)
 
 <hr />
 
@@ -258,15 +243,11 @@ Since `humanApproved == false`, the registration service now triggers a `cancel 
 
 #### Use Case 4: Invalid YouTube URL
 
-1. Use a registered customer E-Mail (produced in the Use Case 1: Happy Path) to place an order via our simple checkout frontend at http://localhost:8091/shop.html (or Postman). Only this time, provide an INVALID YouTube URL, for example: https://www.youtube.com/watch?v=invalidVideoId.
+1. Use a registered customer E-Mail (produced in the Use Case 1: Happy Path) to place an order via our simple checkout frontend at http://localhost:3000 (or Postman Camunda/New Order). Only this time, provide an INVALID YouTube URL, for example: "invalidVideoId".
 
-2. In the `scraper` service logs, we can now see that an event `NAME OF EVENT` has been triggered, indicating that the YouTube URL is invalid.
+2. In the `monitor` service, we can now see that an event `OrderVerifiedEvent` has been triggered, if the data body doesn't contain information about the video, it is invalid and the Order gets rejected.
 
-// TODO: How do we refund the tokens?
-
-// TODO: Rather see logs in `monitor` service?
-
-// TODO: Add screenshot(s)
+![](assets/video_not_verified.jpg)
 
 <hr />
 
@@ -291,64 +272,6 @@ Goal of both scenarios: Analyze a YouTube video and display a number of analytic
 
 #### Use Case 2: Analyze YouTube video and view analytics with Postman
 
-1. Place a new order via Postman to
+1. Place a new order via Postman as seen in (Camunda/New Order)
 
-2.
-
-<hr />
-
-#### Use Case 2:
-
-<br /><hr /><br />
-
-## Assignment Details
-
-Assignments covered:
-
-- Exercise 2: Kafka with Spring
-
-  For the initial implementation, we aimed to keep the system simple. We developed a scraper that mimics comment post events for eight YouTube videos from two YouTube channels by extracting data from the "data/comments_filtered_merged_sorted_timed.json" file (previous versions of our data source, prior to cleaning, are also stored in this directory). We also created an analyzer that simply counts the number of posted comments and generates an event when certain milestones are met. The mail service retrieves this event and sends an email to a recipient that is currently hardcoded. The relevant services in the repository at the moment were the scraper, comment-analyzer, and email-notifier.
-
-  Architecture and message flow diagram:
-  ![img.png](img.png)
-
-This exercise was inspired by the Flowing retail example especially the creation of producers and consumers and the concepts we had in Lecture 2. Especially the four different patterns of Event-Driven Architectures were kept in mind planning and beginning the senty project. Since the lecture was also about choreography we thought about which different coupling forces will be needed in our project. We decided to go for the Event notification with the mail service as our first EDA Pattern implemented.
-
-- Exercise 3: Process Orchestration with Camunda
-
-We used Camunda for creating BPMN-based processes with simple HTML user interfaces to start processes and extended sets of process elements such as different types of gateways, external tasks, user tasks, as well as timers, message events, and exceptions. We also implemented a simple HTML Frontend to start the order process. We leveraged Camunda Lafayette3 tutorials to learn and implement these features. Additionally, we used Kafka as a message broker in some parts of the system. We used the Camunda Modeler to create all BPMN diagrams.
-From Lecture 3 and 4 we learned more about Process Orchestration and Automation. Especially the new Information about Boundaries and Business Processes with pointing out that respecting boundaries and avoiding Process Monoliths was a key input for us when we designed the workflows in camunda. With this we created our first workflow which is orchestrated by the project manager.
-Through Lecture 3 we got to know more about Fundamentals of Process Automation with Process Engines. The learned knowledge about Workflow Engines and Process Solutions, the development of said and how to orchestrate everything helped us with the creation of the workflows in camunda.
-Understanding that the BPMN Process as XML can be understood by the workflow engine and the concept of Tokens and the happy path helped us tremendously.
-It was also usefull to see some more complex workflows with Gateways and decisions in the exercise.
-
-- Exercise 4: Orchestration vs Choreography in Flowing Retail
-
-We extended our project to realize the "order BPMN" flow. To optimize the sequence of crucial actions and ensure their reliability, different commands were used for example payment retrieval and topUp messages. The payment service and scraper service will be responsible for these actions, respectively.
-For events we implemented the order succeeded/placed as one and the retrieve active scrapers step in order to guarantee that all active scrapers can respond to the event.
-Key Input for us here was lecture 4 and Balancing Orchestration and Choreography. Before the implementation of the project we thought about the clear responsibilities of each service and the tasks it should be included/concerned with.
-Additionally we discussed the difference between Events and Commands and how to implement them in our system. We tried to find a good balance between events and commands for our workflow.
-
-- Exercise 5: Sagas and Stateful Resilience Patterns
-
-Group reflections and lessons learned:
-
-<br /><hr /><br />
-
-## Contributions
-
-Below is a table detailing the contributions made to each topic. In general, we've had a healthy task distribution and engaged in lots of pair programming at Torstraße. This helped us learn from one another and maximize the learnings from this course.
-
-// TODO: Add topics and ranges from `0, +, ++`
-
-|     | Johannes | Luka | Philipp |
-| --- | -------- | ---- | ------- |
-| ... |          |      |         |
-| ... |          |      |         |
-| ... |          |      |         |
-
-<br /><hr /><br />
-
-## Reflection and Learnings
-
-...
+2. After the order has been processed, proceed to got to the (Stream/*) folder in Postman and try out the requests replacing the videoIds with the videoId of the video you ordered.

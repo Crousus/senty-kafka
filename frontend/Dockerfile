@@ -16,7 +16,7 @@ COPY . .
 #Replace .env with .env.docker to apply docker specific environment variables
 RUN mv .env.docker .env
 
-RUN prisma generate
+RUN npm run postinstall
 
 # Expose the port that the application will run on
 EXPOSE 3000

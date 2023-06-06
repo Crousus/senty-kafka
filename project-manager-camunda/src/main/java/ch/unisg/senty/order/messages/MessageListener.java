@@ -57,7 +57,7 @@ public class MessageListener {
   @Transactional
   @KafkaListener(id = "project-manager", topics = MessageSender.TOPIC_NAME)
   public void messageReceived(String messagePayloadJson, @Header("type") String messageType) throws Exception{
-    if ("OrderPlacedEvent".equals(messageType) || "FullfillOrderCommand".equals(messageType)) {
+    if ("OrderPlacedEvent".equals(messageType) || "OrderPaidEvent".equals(messageType)) {
       orderPlacedReceived(objectMapper.readValue(messagePayloadJson, new TypeReference<Message<Order>>() {}));
     }
     Message<JsonNode> message = objectMapper.readValue( //

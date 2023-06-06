@@ -2,6 +2,7 @@ package ch.unisg.senty.rest;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
+import ch.unisg.senty.domain.OrderStatus;
 import ch.unisg.senty.repositoy.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -95,9 +96,21 @@ public class ShopRestController {
     for (String traceId : traceIds) {
       Optional<Order> order = orderRepository.findById(traceId);
       if (!order.isPresent()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\": \"Order not found for id: " + traceId + "\"}");
+        // Add new order with order status NA
+        Order newOrder = new Order();
+        newOrder.setOrderId(traceId);
+        newOrder.setCompanyName("NA");
+        newOrder.setEmail("NA");
+        newOrder.setVideoId("NA");
+        newOrder.setTokens("NA");
+        newOrder.setPlatform("NA");
+        newOrder.setPassword("NA");
+        newOrder.setVoucher("NA");
+        newOrder.setStatus(OrderStatus.NA);
+        orders.add(newOrder);
+      } else {
+        orders.add(order.get());
       }
-      orders.add(order.get());
     }
     return ResponseEntity.status(HttpStatus.OK).body(orders);
   }

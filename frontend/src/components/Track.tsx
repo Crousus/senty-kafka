@@ -1,7 +1,6 @@
 // src/components/Track.tsx
 
 import React, { useContext, useEffect, useState } from "react";
-import Image from "next/image";
 import { api } from "~/utils/api";
 import { OrderedVideosContext } from "~/contexts/orderedVideosContext";
 import { CheckedVideosContext } from "~/contexts/checkedVideosContext";
@@ -12,7 +11,7 @@ const sentimentEmojis = ["🤬", "😢", "🙁", "😐", "🙂", "😄"];
 const Track = () => {
   const { orderedVideos, setOrderedVideos } = useContext(OrderedVideosContext);
   const { checkedVideos, setCheckedVideos } = useContext(CheckedVideosContext);
-  const { isRefetchActive } = useContext(RefetchContext); // Import the refetch context
+  const { isRefetchActive } = useContext(RefetchContext);
 
   console.log("orderedVideos", orderedVideos);
   console.log("checkedVideos", checkedVideos);
@@ -22,6 +21,8 @@ const Track = () => {
   const [commentsData, setCommentsData] = useState({});
   const [sentimentData, setSentimentData] = useState({});
   const [statusData, setStatusData] = useState({});
+
+  console.log("statusData", statusData);
 
   const videosResponse = api.videos.getVideos.useQuery({
     videoIds: orderedVideos.map((video) => video.videoId),
@@ -42,7 +43,6 @@ const Track = () => {
   useEffect(() => {
     if (isRefetchActive) {
       const interval = setInterval(async () => {
-        // use async here
         try {
           await videosResponse.refetch();
           await commentsDataResponse.refetch();
@@ -53,9 +53,9 @@ const Track = () => {
         }
       }, 5000);
 
-      return () => clearInterval(interval); // clear interval on component unmount
+      return () => clearInterval(interval);
     }
-  }, [isRefetchActive]); // Add this dependency
+  }, [isRefetchActive]);
 
   useEffect(() => {
     if (videosResponse.data) {
@@ -72,7 +72,7 @@ const Track = () => {
     }
     if (statusDataResponse.data) {
       setStatusData(statusDataResponse.data);
-      console.log("statusData", statusDataResponse.data);
+      // console.log("statusData", statusDataResponse.data);
     }
   }, [
     videosResponse.data,
@@ -118,9 +118,14 @@ const Track = () => {
           <p className="mb-1 text-slate-400">
             <p className="mb-1 text-slate-400">
               Status:{" "}
-              {statusData.find(
-                (status) => status.videoId.split("=")[1] === video.videoId
-              )?.status || "Not found"}
+              {Array.isArray(statusData)
+                ? statusData.find(
+                    (status) =>
+                      typeof status.videoId === "string" &&
+                      status.videoId.split("=").length > 1 &&
+                      status.videoId.split("=")[1] === video.videoId
+                  )?.status || "N/A"
+                : "N/A"}
             </p>
           </p>
           <div className="mb-4 grid grid-cols-12 gap-4">

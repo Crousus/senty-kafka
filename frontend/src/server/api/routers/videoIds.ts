@@ -33,6 +33,7 @@ export const videoIdsRouter = createTRPCRouter({
         platform: z.string(),
         password: z.string(),
         voucher: z.string(),
+        orderType: z.string(),
       })
     )
     .mutation(async ({ input }) => {
@@ -41,26 +42,34 @@ export const videoIdsRouter = createTRPCRouter({
         return { isValid: false, error: "Invalid video ID" };
       }
 
-      console.log("EDPO INPUT: ", input);
-
-      const response = await fetch(
-        `${process.env.BASE_URL_CHECKOUT}/api/cart/order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            companyName: input.companyName,
-            email: input.email,
-            videoId: input.videoId,
-            tokens: input.tokens,
-            platform: input.platform,
-            password: input.password,
-            voucher: input.voucher,
-          }),
-        }
-      );
+      let response;
+      if (input.orderType === "camunda") {
+        console.log("camunda");
+        response = await fetch(
+          `${process.env.BASE_URL_CHECKOUT}/api/cart/order`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              companyName: input.companyName,
+              email: input.email,
+              videoId: input.videoId,
+              tokens: input.tokens,
+              platform: input.platform,
+              password: input.password,
+              voucher: input.voucher,
+            }),
+          }
+        );
+      } else if (input.orderType === "scraper") {
+        console.log("scraper");
+        response = await fetch(
+          `${process.env.BASE_URL_SCRAPER}/api/scraperyoutube/fetch?videoId=${input.videoId}`
+        );
+        console.log(response);
+      }
 
       if (response.ok) {
         const data = await response.json();

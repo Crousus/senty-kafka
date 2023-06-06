@@ -15,7 +15,10 @@ const Order: NextPage = () => {
     platform: "",
     password: "", // Add this line
     voucher: "", // Add this line
+    orderType: "camunda",
   });
+
+  console.log("formData", formData);
 
   const [thanksMessage, setThanksMessage] = useState("");
   const [loading, setLoading] = useState(false); // New state for loading
@@ -110,9 +113,6 @@ const Order: NextPage = () => {
           onSubmit={handleFormSubmit}
           className="w-full space-y-4 rounded-md border border-slate-700 pt-4 pl-4 pr-4 md:max-w-2xl"
         >
-          {/* <label htmlFor="company-name" className="block">
-            Company Name
-          </label> */}
           <input
             type="text"
             id="company-name"
@@ -124,9 +124,6 @@ const Order: NextPage = () => {
             className="w-full rounded-md px-4 py-2"
           />
 
-          {/* <label htmlFor="email" className="block">
-            Email
-          </label> */}
           <input
             type="text"
             id="email"
@@ -138,9 +135,6 @@ const Order: NextPage = () => {
             className="rounded-mdpx-4 w-full px-3 py-2"
           />
 
-          {/* <label htmlFor="password" className="block">
-            Password
-          </label> */}
           <input
             type="password"
             id="password"
@@ -152,9 +146,6 @@ const Order: NextPage = () => {
             className="w-full rounded-md px-3 py-2"
           />
 
-          {/* <label htmlFor="video-id" className="block">
-            Video ID
-          </label> */}
           <input
             type="text"
             id="video-id"
@@ -166,9 +157,6 @@ const Order: NextPage = () => {
             className="w-full rounded-md px-3 py-2"
           />
 
-          {/* <label htmlFor="tokens" className="block">
-            Tokens
-          </label> */}
           <select
             id="tokens"
             name="tokens"
@@ -213,11 +201,26 @@ const Order: NextPage = () => {
             required
             value={formData.platform}
             onChange={handleInputChange}
-            className="w-full rounded-md px-3 py-2"
+            className="mb-4 w-full rounded-md px-3 py-2"
           >
             <option value="">Platform</option>
             <option value="YouTube">YouTube</option>
           </select>
+          <div />
+          <label className="pt-8">
+            Order with
+            <select
+              id="orderType"
+              name="orderType"
+              required
+              value={formData.orderType}
+              onChange={handleInputChange}
+              className="mb-2 w-full rounded-md px-3 py-2"
+            >
+              <option value="camunda">Camunda</option>
+              <option value="scraper">Scraper only</option>
+            </select>
+          </label>
           <button
             type="submit"
             className="mt-4 w-full rounded-md border border-slate-700 py-2 text-white hover:border-slate-600 hover:bg-slate-800"

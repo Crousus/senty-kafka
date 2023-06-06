@@ -1,7 +1,8 @@
 // contexts/orderedVideosContext.ts
+
 import { createContext } from "react";
 
-type OrderedVideoType = {
+export type OrderedVideoType = {
   videoId: string;
   traceId: string;
 };

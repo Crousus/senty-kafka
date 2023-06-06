@@ -1,4 +1,4 @@
-import { useContext, useState, ChangeEvent, FormEvent } from "react";
+import { useContext, useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { OrderedVideosContext } from "~/contexts/orderedVideosContext";
 import { api } from "~/utils/api";
 import type { NextPage } from "next";
@@ -18,7 +18,9 @@ const Order: NextPage = () => {
     orderType: "camunda",
   });
 
-  console.log("formData", formData);
+  useEffect(() => {
+    toggleVoucherField();
+  }, [formData.tokens]);
 
   const [thanksMessage, setThanksMessage] = useState("");
   const [loading, setLoading] = useState(false); // New state for loading
@@ -163,10 +165,7 @@ const Order: NextPage = () => {
             placeholder="Tokens"
             required
             value={formData.tokens}
-            onChange={(e) => {
-              handleInputChange(e);
-              toggleVoucherField();
-            }}
+            onChange={handleInputChange}
             className="w-full rounded-md px-3 py-2"
           >
             <option value="">Tokens</option>

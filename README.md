@@ -36,8 +36,6 @@ Welcome to _Senty_, a real-time social media market intelligence platform design
 
 <br /><hr /><br />
 
-# Still needs some finishing touches!
-
 ## Introduction
 
 Senty is designed to enable users to conduct extensive analysis of YouTube video comment responses. Users can register with our service, paste links to the YouTube videos they want to analyze, and let our backend handle the rest. Leveraging the YouTube API, Kafka, and Camunda, our platform streamlines the process from user registration to payment orchestration and data streaming. With our custom topology and machine learning classification services for language detection and sentiment analysis, users receive a comprehensive overview of their audience's engagement and sentiments.
